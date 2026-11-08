@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import { FALLBACK_AGENT_TYPE, RESERVED_ROOM_IDS } from './constants.js';
 import { AgentTypeSchema, ColorSchema, NameSchema, VersionSchema } from './primitives.js';
 import { slugify } from './text.js';

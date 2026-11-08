@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import {
   CategorySchema,
   ColorSchema,
@@ -141,6 +141,13 @@ export const StatusMessageSchema = z.strictObject({
   until: UnixSecondsSchema.optional(),
 });
 
+/** Today's count for one room and category changed (R8). */
+export const TodayMessageSchema = z.strictObject({
+  type: z.literal('today'),
+  v: VersionSchema,
+  count: TodayCountSchema,
+});
+
 /** Any message the relay sends to visitors. */
 export const ViewerMessageSchema = z.discriminatedUnion('type', [
   SnapshotMessageSchema,
@@ -149,6 +156,7 @@ export const ViewerMessageSchema = z.discriminatedUnion('type', [
   LeaveMessageSchema,
   RoomClosedMessageSchema,
   StatusMessageSchema,
+  TodayMessageSchema,
 ]);
 
 /** Any message the relay sends to visitors. */
