@@ -1,0 +1,28 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      nx:
+        patterns: ['nx', '@nx/*']
+      lint:
+        patterns: ['eslint', '@eslint/*', 'typescript-eslint', 'eslint-*', 'jsonc-eslint-parser']
+      test:
+        patterns: ['vitest', '@vitest/*', 'vite']
+      commitlint:
+        patterns: ['@commitlint/*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci

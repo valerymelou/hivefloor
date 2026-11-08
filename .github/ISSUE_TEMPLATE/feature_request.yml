@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement to the CLI, the relay or the office.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy impact
+      description: Would this send, store or show anything new? Hivefloor only sends allowlisted fields.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

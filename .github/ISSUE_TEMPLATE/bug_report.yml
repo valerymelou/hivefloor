@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in the CLI, the relay or the office doesn't work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please don't paste hook payloads, secrets or private project names.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI (hivefloor init, hook, doctor, ...)
+        - Relay (Cloudflare Worker and Durable Object)
+        - Office web app
+        - Docs or landing page
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `npx hivefloor ...`
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `npx hivefloor doctor`
+      description: Optional. It never prints your secret.
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: hivefloor 0.1.0, Claude Code 2.1.150, Node 22, macOS 26
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device (office issues)
+      placeholder: Safari 26 on iPhone 17
