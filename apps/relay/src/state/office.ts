@@ -292,7 +292,11 @@ export function applyEvent(
   const delta: ViewerMessageInput[] = changed
     ? [{ type: 'delta', v: 1, robot: robotView(robot) }]
     : [];
-  return { state: next, messages: [...settled.messages, ...delta] };
+  // Visitors keep today's counts current without polling (R8).
+  const count = next.today.find((c) => c.room === roomId && c.cat === event.cat);
+  const today: ViewerMessageInput[] =
+    next.today !== state.today && count !== undefined ? [{ type: 'today', v: 1, count }] : [];
+  return { state: next, messages: [...settled.messages, ...delta, ...today] };
 }
 
 /**

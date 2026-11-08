@@ -6,8 +6,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-08-01",
   "assets": {
-    // Replaced by the built office web app in M5.
-    "directory": "./public",
+    // The built office web app (pnpm nx build web), with its _headers file.
+    "directory": "../../dist/apps/web/browser",
     "run_worker_first": ["/ingest", "/live", "/api/*"],
   },
   "durable_objects": {

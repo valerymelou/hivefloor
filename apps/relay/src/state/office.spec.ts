@@ -84,6 +84,7 @@ describe('applyEvent', () => {
           cat: 'coding',
         },
       },
+      { type: 'today', v: 1, count: { room: 'ledgerly', cat: 'coding', n: 1 } },
     ]);
   });
 
@@ -217,13 +218,18 @@ describe('applyEvent', () => {
   });
 
   it('counts tool events per room and category for today (R8)', () => {
-    const { state } = run([
+    const { state, messages } = run([
       event(),
       event({ seq: 2 }),
       event({ seq: 3, cat: 'testing' }),
       event({ seq: 4, kind: 'thinking', cat: undefined }),
     ]);
     expect(state.today).toEqual([
+      { room: 'ledgerly', cat: 'coding', n: 2 },
+      { room: 'ledgerly', cat: 'testing', n: 1 },
+    ]);
+    expect(messages.flatMap((m) => (m.type === 'today' ? [m.count] : []))).toEqual([
+      { room: 'ledgerly', cat: 'coding', n: 1 },
       { room: 'ledgerly', cat: 'coding', n: 2 },
       { room: 'ledgerly', cat: 'testing', n: 1 },
     ]);
