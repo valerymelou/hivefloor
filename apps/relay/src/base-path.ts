@@ -7,7 +7,8 @@
  * @returns The request to route: the original when there is nothing to remove.
  */
 export function withoutBasePath(request: Request, basePath: string | undefined): Request {
-  const base = basePath?.replace(/\/+$/, '') ?? '';
+  let base = basePath ?? '';
+  while (base.endsWith('/')) base = base.slice(0, -1);
   if (base === '') return request;
   const url = new URL(request.url);
   if (url.pathname !== base && !url.pathname.startsWith(`${base}/`)) return request;
