@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import type { CommandIo } from '../commands/context.js';
 
 /** A recording CommandIo for tests: answers questions from a list. */
@@ -24,8 +25,9 @@ export function testIo(options: {
   const io: CommandIo = {
     env: { HIVEFLOOR_HOME: options.hivefloorHome, CLAUDE_CONFIG_DIR: options.claudeDir },
     home: options.home,
-    cwd: options.cwd ?? `${options.home}/code/ledgerly`,
-    windows: options.windows ?? false,
+    cwd: options.cwd ?? join(options.home, 'code', 'ledgerly'),
+    // Real files are used, so default to the platform the tests run on.
+    windows: options.windows ?? process.platform === 'win32',
     execPath: '/usr/local/bin/node',
     script: options.script ?? '/usr/local/lib/node_modules/hivefloor/bin.mjs',
     now: () => (clock += 1000),
