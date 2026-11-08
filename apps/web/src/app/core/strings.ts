@@ -73,6 +73,42 @@ export const STRINGS = {
     goal: 'Current task',
     since: 'For',
   },
+  scene: {
+    label: 'The office in 3D. Every agent is also listed in the list view.',
+    loading: 'Setting up the office…',
+    failed: 'The 3D office could not load. The list view shows everyone.',
+    noWebGl: 'This browser cannot draw the 3D office, so the list view is shown.',
+    showList: 'List view',
+    panels: 'Office activity',
+    arriving: 'Arriving',
+    leaving: 'Leaving',
+    subagentLeaving: 'Done, heading out',
+    toCoffee: 'Heading for coffee',
+    toDesk: 'Back to the desk',
+    thinking: 'Thinking',
+    waiting: 'Waiting for input',
+    onBreak: 'On a break',
+    subagent: (role: string): string => `${role} · subagent`,
+    main: (room: string): string => `Claude · ${room}`,
+    otherProjects: 'Other projects',
+    coffee: 'Coffee corner',
+    onBreakCount: (n: number): string => (n === 0 ? '' : `${String(n)} on a break`),
+    more: (n: number): string => `+${String(n)}`,
+    people: (sessions: number, subagents: number): string => {
+      if (sessions + subagents === 0) return 'empty, lights off';
+      const main = sessions === 1 ? '1 session' : `${String(sessions)} sessions`;
+      if (subagents === 0) return main;
+      return `${main} + ${subagents === 1 ? '1 subagent' : `${String(subagents)} subagents`}`;
+    },
+    hint: 'Drag or use the arrow keys to orbit · scroll to zoom',
+  },
+  card: {
+    close: 'Close',
+    role: 'Role',
+    project: 'Project',
+    status: 'Status',
+    since: 'For',
+  },
   privacy: {
     title: 'Private by design',
     body: 'Private projects share only which agent, what kind of work and when. File paths, commands, prompts and private project names never leave the owner’s machine.',

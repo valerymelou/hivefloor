@@ -1,9 +1,16 @@
-import { ViewerMessageSchema } from '@hivefloor/schema';
+import { rowsNeeded, ViewerMessageSchema } from '@hivefloor/schema';
 import { describe, expect, it, vi } from 'vitest';
 import { DEMO_CONFIG } from '../core/config-store';
 import { applyMessage, EMPTY_OFFICE } from '../core/office-view';
-import { DemoSource, DEMO_STEP_MS } from './demo-source';
+import { demoSessions, DemoSource, DEMO_STEP_MS } from './demo-source';
 import { seededRandom, Simulator } from './simulator';
+
+describe('demoSessions', () => {
+  it('starts crowded only with #demo-crowd', () => {
+    expect(demoSessions('#demo')).toBe(3);
+    expect(demoSessions('#demo-crowd')).toBe(10);
+  });
+});
 
 describe('Simulator (W7)', () => {
   it('only emits contract-valid messages and never seats two robots together', () => {
@@ -24,6 +31,13 @@ describe('Simulator (W7)', () => {
           .map((r) => r.seat);
         expect(new Set(desks).size).toBe(desks.length);
         expect(new Set(seats).size).toBe(seats.length);
+        // Every desk exists: the room grew a row for it (E5).
+        expect(room.rows).toBeGreaterThanOrEqual(
+          rowsNeeded(
+            desks.map((d) => d ?? 0),
+            DEMO_CONFIG.layout,
+          ),
+        );
       }
       expect(view.robots.length).toBeGreaterThan(0);
     }

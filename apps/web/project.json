@@ -96,9 +96,10 @@
         "coverageInclude": [
           "apps/web/src/app/core/**/*.ts",
           "apps/web/src/app/overlay/**/*.ts",
-          "apps/web/src/app/demo/**/*.ts"
+          "apps/web/src/app/demo/**/*.ts",
+          "apps/web/src/app/scene/**/*.ts"
         ],
-        "coverageExclude": ["**/*.spec.ts"],
+        "coverageExclude": ["**/*.spec.ts", "apps/web/src/app/scene/render/**"],
         "coverageReporters": ["text-summary", "lcov"],
         "coverageThresholds": {
           "statements": 80,

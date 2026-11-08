@@ -6,6 +6,17 @@ import { seededRandom, Simulator } from './simulator';
 export const DEMO_STEP_MS = 1500;
 
 /**
+ * How many sessions demo mode starts with: three for `#demo`, ten for
+ * `#demo-crowd`, the load the frame-rate targets are set for.
+ *
+ * @param hash - `location.hash`.
+ * @returns The number of sessions.
+ */
+export function demoSessions(hash: string): number {
+  return hash === '#demo-crowd' ? 10 : 3;
+}
+
+/**
  * Feeds the store from the {@link Simulator} instead of the relay (W7): no
  * network, same messages, validated against the same schema.
  */
@@ -14,6 +25,7 @@ export class DemoSource implements OfficeSource {
    * @param config - The office to simulate.
    * @param timers - Interval functions, injected for tests.
    * @param seed - The random seed.
+   * @param sessions - How many sessions it starts with.
    */
   constructor(
     private readonly config: OfficeConfig,
@@ -27,6 +39,7 @@ export class DemoSource implements OfficeSource {
       },
     },
     private readonly seed = 7,
+    private readonly sessions = 3,
   ) {}
 
   /**
@@ -43,7 +56,7 @@ export class DemoSource implements OfficeSource {
       if (parsed.success) events.message(parsed.data);
     };
     events.state('demo');
-    emit(simulator.start(now()));
+    emit(simulator.start(now(), this.sessions));
     const handle = this.timers.setInterval(() => {
       for (const message of simulator.step(now())) emit(message);
     }, DEMO_STEP_MS);

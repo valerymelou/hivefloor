@@ -116,3 +116,165 @@
     --sidebar-ring: oklch(0.556 0 0);
   }
 }
+
+/*
+ * The 3D office (W1, W4). The scene is a lit diorama at night in both themes,
+ * as in the prototype; tags and labels are DOM elements placed by CSS2DRenderer.
+ */
+.hf-stage {
+  background: radial-gradient(120% 90% at 60% 30%, #1b1d36 0%, #0c0f1d 70%);
+}
+
+.hf-stage canvas:focus-visible {
+  outline: 2px solid #9cc3ff;
+  outline-offset: -2px;
+}
+
+.hf-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transform: translateY(calc(-50% - 4px));
+  pointer-events: none;
+}
+
+.hf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid var(--hf-tag-color, #6ea8fe);
+  border-radius: 999px;
+  background: rgb(14 16 28 / 0.82);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
+  color: #f4f5fa;
+  font: 500 12px/16px var(--font-sans);
+  white-space: nowrap;
+}
+
+.hf-badge svg {
+  fill: none;
+  stroke: var(--hf-tag-color, #6ea8fe);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hf-badge-quiet {
+  border-style: dashed;
+  border-color: #4a5070;
+  color: #b2b8cc;
+}
+
+.hf-badge-quiet svg {
+  stroke: #b2b8cc;
+}
+
+.hf-dots {
+  display: inline-flex;
+  gap: 3px;
+  margin-right: 2px;
+}
+
+.hf-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hf-tag-color, #6ea8fe);
+  animation: hf-blink 1.2s infinite;
+}
+
+.hf-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.hf-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes hf-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.hf-name {
+  color: #e6e8f2;
+  font: 600 11.5px/14px var(--font-mono);
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.8);
+  white-space: nowrap;
+}
+
+.hf-name-sub {
+  color: #c4c9da;
+  font-weight: 500;
+}
+
+.hf-goal {
+  max-width: 230px;
+  overflow: hidden;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgb(14 16 28 / 0.78);
+  color: #d9dceb;
+  font: 400 11.5px/16px var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hf-room-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid #2f3456;
+  border-radius: 8px;
+  background: rgb(12 14 26 / 0.72);
+  color: #dfe2ee;
+  font: 700 11.5px/14px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hf-room-label.hf-dim {
+  opacity: 0.55;
+}
+
+.hf-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.hf-room-detail {
+  color: #8d94ab;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.hf-room-detail:empty {
+  display: none;
+}
+
+.hf-more {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #2f3456;
+  color: #eef0f7;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hf-dots span {
+    animation: none;
+  }
+}
