@@ -291,7 +291,7 @@ All contracts are versioned with a `v` field and defined as Zod schemas in `pack
 }
 ```
 
-The repo ships this as `office.config.example.json`. Your real copy is git-ignored and deployed with `hivefloor deploy` (H16).
+The repo ships this as `office.config.example.json`. Your real copy is git-ignored and deployed with `hivefloor deploy` (H16), which validates it and passes it to the relay as the `OFFICE_CONFIG` Worker variable (at most 5 KB).
 
 **Machine config (`~/.config/hivefloor/config.json`, private)**
 
@@ -353,7 +353,7 @@ The second event has no `project`, so it belongs to the Private projects room. T
 | `project` | string, max 40 characters  | Optional; must be in `publicProjects`. Absent means the Private projects room      |
 | `goal`    | string, max 60 characters  | Optional; only with `project`; no control characters or links; passed H2 locally   |
 
-Headers: `X-Office-Timestamp` and `X-Office-Signature` = hex HMAC-SHA256(secret, timestamp + "." + body).
+Headers: `X-Office-Timestamp` and `X-Office-Signature` = hex HMAC-SHA256(secret, timestamp + "." + body). `hivefloor doctor` adds `X-Office-Dry-Run: 1`: the relay verifies the event in full and answers as usual, but changes nothing ([ADR 0012](adr/0012-cli-setup-and-relay-handshake.md)).
 
 **Relay to viewers (WebSocket and `/api/snapshot`)**
 
@@ -504,5 +504,12 @@ Tip: once M2 and M4 work, install the hook on this repo itself. Claude Code buil
 - [x] **Goal source:** the in-progress task subject, else the session title; `goals.fromSessionTitle` added to the machine config.
 - [x] **Compiled binary:** Bun `--compile` for five targets; npm package bundled with tsdown.
 - [x] **Hooks registered (M3):** `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `Stop`, `SubagentStart`, `SubagentStop`, `TaskCreated`, `TaskCompleted`, `SessionEnd`, all with `"async": true`.
+
+**Decided in M3 (8 November 2026)** — see [ADR 0012](adr/0012-cli-setup-and-relay-handshake.md)
+
+- [x] **Doctor dry run:** `X-Office-Dry-Run: 1` on `POST /ingest`; the relay verifies but changes nothing (M4).
+- [x] **Office config delivery:** `hivefloor deploy` passes the validated config as the `OFFICE_CONFIG` variable (M4 reads it).
+- [x] **Hook command:** absolute paths to the binary, or to Node and the script; `npx` only as a fallback with a warning.
+- [x] **init** can also mark the current folder as a public project (`--public NAME`, or a question when interactive).
 
 **Still open:** nothing right now. Revisit this list at the start of each milestone.

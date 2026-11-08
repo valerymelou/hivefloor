@@ -15,3 +15,4 @@ We record significant decisions here in [MADR](https://adr.github.io/madr/) form
 | [0009](0009-v1-contract-details.md)              | Settle the v1 contract details left open by the PRD             | accepted           |
 | [0010](0010-goals-from-task-or-session-title.md) | Take goals from the in-progress task, or else the session title | accepted           |
 | [0011](0011-compiled-binary-with-bun.md)         | Compile the standalone CLI binary with Bun                      | accepted           |
+| [0012](0012-cli-setup-and-relay-handshake.md)    | CLI setup commands and their contract with the relay            | accepted           |

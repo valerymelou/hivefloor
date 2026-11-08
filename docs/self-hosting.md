@@ -1,16 +1,37 @@
 # Self-hosting
 
-> Status: skeleton. This guide is written in M4 and finished in M8.
+> Status: draft. The relay arrives in M4 and the web app in M5; this guide is finished in M8, with timings for the 10-minute setup.
 
-How to deploy your own office on Cloudflare's free plan in about 10 minutes and connect it with `npx hivefloor init`.
+## 1. Deploy your office
+
+From a clone of this repository, after `pnpm install`:
+
+```bash
+cp office.config.example.json office.config.json   # then edit it: title, owner, public projects
+npx hivefloor deploy
+npx wrangler secret put HIVEFLOOR_SECRET --config apps/relay/wrangler.jsonc
+```
+
+`hivefloor deploy` validates `office.config.json` and deploys the relay with it (as the `OFFICE_CONFIG` variable). Your `office.config.json` stays out of git. Add `--dry-run` to check everything without deploying.
+
+## 2. Connect your machine
+
+```bash
+npm install -g hivefloor      # or download the standalone binary
+hivefloor init --url https://your-office.example.com
+```
+
+`init` writes `~/.config/hivefloor/config.json`, creates a secret (shown once: use it for `wrangler secret put` above, or paste the relay's secret instead), and registers the Claude Code hooks. To show a project by name, run `hivefloor init --public "Ledgerly"` from its folder; every other folder stays private.
+
+## 3. Check
+
+```bash
+hivefloor doctor
+```
 
 ## Planned sections
 
-- Requirements (a Cloudflare account on the free plan, Node, Claude Code)
-- Deploy the relay and the office with `hivefloor deploy`
-- Connect your machine with `hivefloor init`
-- Mark projects public
-- Protect `/ingest` with a rate-limiting rule
+- Protect `/ingest` with Cloudflare's free rate-limiting rule
 - What happens when the daily free-plan limit is reached
-- Rotate the shared secret
-- Sessions not on your machine (Claude Code on the web, CI) are not supported in v1
+- Rotate the shared secret (`hivefloor init --rotate`)
+- Uninstall (`hivefloor uninstall`, `--purge`)
