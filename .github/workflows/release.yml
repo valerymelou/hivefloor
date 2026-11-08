@@ -8,6 +8,10 @@ on:
         description: Preview the release without changing anything
         type: boolean
         default: true
+      publish-only:
+        description: Only publish the version on main to npm, after a release whose publish step failed
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -44,32 +48,38 @@ jobs:
       - run: pnpm nx run-many -t lint typecheck test build
 
       - name: Preview
-        if: inputs.dry-run
+        if: ${{ inputs.dry-run && !inputs.publish-only }}
         run: pnpm nx release --skip-publish --dry-run
 
       - name: Set the Git author
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && !inputs.publish-only }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Version, changelog, tag and GitHub release
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && !inputs.publish-only }}
         run: pnpm nx release --skip-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Rebuild with the new version
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && !inputs.publish-only }}
         run: pnpm nx run cli:compile --skip-nx-cache
 
       - name: Attach the standalone binaries
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && !inputs.publish-only }}
         run: gh release upload "v$(node -p "require('./packages/cli/package.json').version")" dist/packages/cli/binaries/*
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Publish-only finishes a release that was already tagged, so what goes to
+      # npm has to be what the tag points at.
+      - name: Check the CLI still matches its tag
+        if: ${{ inputs.publish-only }}
+        run: git diff --exit-code --stat "v$(node -p "require('./packages/cli/package.json').version")" HEAD -- packages/cli packages/schema
+
       # Uses npm directly: trusted publishing needs npm 11.5 or later.
       - name: Publish to npm with provenance
-        if: ${{ !inputs.dry-run }}
-        run: npm publish dist/packages/cli --provenance --access public
+        if: ${{ !inputs.dry-run || inputs.publish-only }}
+        run: npm publish dist/packages/cli --provenance --access public ${{ inputs.dry-run && '--dry-run' || '' }}
