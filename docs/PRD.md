@@ -538,4 +538,10 @@ Tip: once M2 and M4 work, install the hook on this repo itself. Claude Code buil
 
 - [x] **Compact tags:** three-line tags collided at neighbouring desks, so a tag is an icon until it's hovered or its robot's activity changes (W4).
 
+**Decided in M7 (8 November 2026)**
+
+- [x] **The closed office checks every 2–5 minutes** rather than every 30 s, because it stays closed until the daily reset (H11, H12).
+- [x] **Bundle budget:** `pnpm nx run web:size` fails CI above 1.5 MB gzipped, counting the scripts, styles, page, robot model and two Latin fonts.
+- [x] **On phones, a vertical swipe on the office scrolls the page;** a horizontal swipe orbits.
+
 **Still open:** nothing right now. Revisit this list at the start of each milestone.
