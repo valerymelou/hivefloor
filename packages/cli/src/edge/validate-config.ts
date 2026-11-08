@@ -48,6 +48,25 @@ export function checkMachineConfig(text: string): Checked<MachineConfig> {
 }
 
 /**
+ * Checks one `publicProjects` entry against every rule of the office config,
+ * reserved room ids included, without needing the office config itself.
+ *
+ * @param project - The entry.
+ * @returns One line per problem, empty when the entry is valid.
+ */
+export function publicProjectProblems(project: unknown): string[] {
+  const result = OfficeConfigSchema.safeParse({
+    v: 1,
+    owner: 'Owner',
+    timezone: 'UTC',
+    publicProjects: [project],
+  });
+  return result.success
+    ? []
+    : describe(result.error.issues.map((issue) => ({ ...issue, path: issue.path.slice(2) })));
+}
+
+/**
  * Validates machine config text.
  *
  * @param text - The contents of `config.json`.

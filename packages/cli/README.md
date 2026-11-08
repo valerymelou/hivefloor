@@ -10,7 +10,7 @@ hivefloor init --url https://your-office.example.com
 hivefloor doctor
 ```
 
-Run `hivefloor init --public "Ledgerly"` from a project folder to show it by name; every other folder stays private. Deploying your own office: [self-hosting guide](https://github.com/valerymelou/hivefloor/blob/main/docs/self-hosting.md).
+Run `hivefloor add-project "Ledgerly"` from a project folder to show it by name; every other folder stays private. Deploying your own office: [self-hosting guide](https://github.com/valerymelou/hivefloor/blob/main/docs/self-hosting.md).
 
 - **Private by construction.** Each event is built field by field from the allowlist in `@hivefloor/schema`. Private projects send only which robot, what kind of work and when. See [privacy](https://github.com/valerymelou/hivefloor/blob/main/docs/privacy.md).
 - **Never in Claude's way.** `hivefloor hook` always exits 0, prints nothing and hands sending to a detached process. Hooks are registered with `"async": true`.
@@ -23,6 +23,7 @@ Run `hivefloor init --public "Ledgerly"` from a project folder to show it by nam
 | `hivefloor init [--url URL] [--public NAME]` | Writes the config and secret and registers the Claude Code hooks. Safe to run again; backs up settings.     |
 | `hivefloor init --rotate`                    | Creates a new secret (set it on the relay too).                                                             |
 | `hivefloor init --secret-stdin`              | Reads the relay's existing secret from stdin.                                                               |
+| `hivefloor add-project NAME`                 | Makes a project public: in the machine config and in `office.config.json`. Safe to run again. See below.    |
 | `hivefloor doctor`                           | Checks config, secret, hooks, relay, names and clock; sends a dry-run event; shows what leaves the machine. |
 | `hivefloor preview`                          | Prints the event a hook payload on stdin would send, without sending it.                                    |
 | `hivefloor pause` / `resume`                 | Stops or restarts sending.                                                                                  |
@@ -32,6 +33,19 @@ Run `hivefloor init --public "Ledgerly"` from a project folder to show it by nam
 | `hivefloor --version`                        | Prints the version.                                                                                         |
 
 Set `HIVEFLOOR_DEBUG=1` to log each decision (never the payload) to `debug.log`, and `HIVEFLOOR_HOME` to use another folder than `~/.config/hivefloor`. Details: [docs/hooks.md](https://github.com/valerymelou/hivefloor/blob/main/docs/hooks.md).
+
+### Public projects
+
+A public project's name must match in your machine config and in the relay's `office.config.json`; the relay rejects any other name. `hivefloor add-project "Name"` updates both.
+
+| Option                 | What it does                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| `--path DIR`           | The project's folder. Defaults to the current folder.                                        |
+| `--office-config FILE` | The relay's config. Defaults to `office.config.json` in the current folder, if there is one. |
+| `--color #RRGGBB`      | The room's colour. Without it, an existing colour is kept.                                   |
+| `--deploy`             | Runs `hivefloor deploy` afterwards, from the folder that holds the office config.            |
+
+Without an office config, it updates your machine config and prints the exact entry to add on the relay. Anyone viewing the office can see a public project's name and its task titles.
 
 ## Develop
 

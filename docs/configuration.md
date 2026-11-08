@@ -5,6 +5,8 @@ Hivefloor uses two config files on purpose ([ADR 0006](adr/0006-two-config-files
 - **`office.config.json`** is public. It describes the office and is served to every visitor at `/api/config`; the relay also builds its allowlists from it. The repository ships [`office.config.example.json`](../office.config.example.json); your real copy is git-ignored.
 - **`~/.config/hivefloor/config.json`** lives only on your machine. It is never committed or uploaded. The shared secret sits next to it in a `secret` file with mode 600, never in the JSON.
 
+A public project is named in both files, and the names must match exactly: the relay rejects any name that isn't in `publicProjects`. `hivefloor add-project "Name"` updates both at once ([self-hosting](self-hosting.md#3-make-a-project-public)).
+
 Both files are validated by the Zod schemas in `packages/schema` and have generated JSON Schema for editor autocomplete. Unknown fields are errors in both, so a typo never goes unnoticed.
 
 > This page is written by hand for now. In M8 it is generated from the schemas so it can't drift.

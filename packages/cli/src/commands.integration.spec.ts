@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -147,6 +147,46 @@ describe.skipIf(!existsSync(BIN))('commands (built bundle, temporary home)', () 
     expect(result.stdout).toContain('"deploy"');
     expect(result.stdout).toContain('OFFICE_CONFIG:{');
     expect(result.stdout).toContain('"--dry-run"');
+  });
+
+  it('add-project twice changes nothing the second time', async () => {
+    const { dirs, run, read } = await sandbox();
+    expect((await run(['init', '--url', 'https://office.example.com'])).status).toBe(0);
+    const officePath = join(dirs.home, 'code', 'ledgerly', 'office.config.json');
+    await writeFile(officePath, JSON.stringify(exampleOfficeConfig));
+    const args = ['add-project', 'Paywall', '--color', '#123456'];
+
+    const first = await run(args);
+    expect(first.status).toBe(0);
+    expect(first.stdout).toContain('task titles');
+    expect(first.stdout).toContain('hivefloor deploy');
+    const config = JSON.parse(read(dirs.hivefloor, 'config.json')) as {
+      projects: { public: boolean; name: string }[];
+    };
+    expect(config.projects).toMatchObject([{ public: true, name: 'Paywall' }]);
+    const office = JSON.parse(read(officePath)) as { publicProjects: unknown[] };
+    expect(office.publicProjects.at(-1)).toEqual({ name: 'Paywall', color: '#123456' });
+
+    const files = [join(dirs.hivefloor, 'config.json'), officePath];
+    const contents = files.map((file) => read(file));
+    const times = files.map((file) => statSync(file).mtimeMs);
+    const second = await run(args);
+    expect(second.status).toBe(0);
+    expect(second.stdout).toContain('Nothing to change');
+    expect(files.map((file) => read(file))).toEqual(contents);
+    expect(files.map((file) => statSync(file).mtimeMs)).toEqual(times);
+  });
+
+  it('add-project says what to add on the relay when it finds no office config', async () => {
+    const { dirs, run, read } = await sandbox();
+    expect((await run(['init', '--url', 'https://office.example.com'])).status).toBe(0);
+    const result = await run(['add-project', 'Paywall']);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('{"name":"Paywall"}');
+    expect(result.stdout).toContain('"publicProjects"');
+    expect(JSON.parse(read(dirs.hivefloor, 'config.json'))).toMatchObject({
+      projects: [{ public: true, name: 'Paywall' }],
+    });
   });
 
   it('reports usage errors on stderr', async () => {
