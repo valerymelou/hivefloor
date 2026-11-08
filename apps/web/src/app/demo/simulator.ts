@@ -3,6 +3,7 @@ import {
   lowestFree,
   PRIVATE_ROOM_ID,
   projectColor,
+  rowsNeeded,
   slugify,
   type Category,
   type OfficeConfig,
@@ -91,11 +92,13 @@ export class Simulator {
     const desks = this.robots
       .filter((r) => r.room === room && r.desk !== undefined)
       .map((r) => r.desk ?? 0);
+    const desk = lowestFree(desks);
+    this.growRows(room, [...desks, desk], out);
     const robot: RobotInput = {
       key: this.hex(),
       role: 'claude',
       room,
-      desk: lowestFree(desks),
+      desk,
       status: 'working',
       cat: this.pick(CATEGORIES),
       since: now,
@@ -103,6 +106,17 @@ export class Simulator {
     };
     this.robots.push(robot);
     out.push({ type: 'delta', v: 1, robot });
+  }
+
+  /** Adds desk rows when a robot needs a desk in a new row, as the relay does (E5). */
+  private growRows(id: string, desks: readonly number[], out: ViewerMessageInput[]): void {
+    const index = this.rooms.findIndex((r) => r.id === id);
+    const room = this.rooms[index];
+    const rows = rowsNeeded(desks, this.config.layout);
+    if (room === undefined || rows <= room.rows) return;
+    const grown = { ...room, rows };
+    this.rooms[index] = grown;
+    out.push({ type: 'room', v: 1, room: grown });
   }
 
   private update(robot: RobotInput, change: Partial<RobotInput>, out: ViewerMessageInput[]): void {
@@ -125,10 +139,10 @@ export class Simulator {
    * @param now - Unix seconds.
    * @returns The snapshot message.
    */
-  start(now: number): ViewerMessageInput {
+  start(now: number, sessions = 3): ViewerMessageInput {
     const ignored: ViewerMessageInput[] = [];
     this.room(undefined, ignored);
-    for (let i = 0; i < 3; i++) this.arrive(now, ignored);
+    for (let i = 0; i < sessions; i++) this.arrive(now, ignored);
     return {
       type: 'snapshot',
       v: 1,

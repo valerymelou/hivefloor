@@ -7,7 +7,9 @@ The Angular app visitors open: a live view of the office built from the relay's 
 | Folder        | What                                                                                                                        |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `core/`       | The signal store (`office-store.ts`), the pure message reducer and feed, the live connection with backoff, timing and copy. |
-| `demo/`       | The seeded simulator behind `#demo`, emitting exactly the relay's messages.                                                 |
+| `demo/`       | The seeded simulator behind `#demo`, emitting exactly the relay's messages. `#demo-crowd` starts with ten sessions.         |
+| `scene/`      | The 3D office: pure geometry, walks and behaviour, with all Three.js code in `scene/render/`.                               |
+| `office/`     | The Angular component that wraps the scene.                                                                                 |
 | `overlay/`    | Presentational components: header, feed, Building in public, today's counts, privacy note, list view.                       |
 | `ui/`, `lib/` | Ndop UI components and helpers, copied in by `ndop add`. Change them with `pnpm exec ndop update`, not by hand.             |
 

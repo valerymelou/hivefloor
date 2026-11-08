@@ -42,6 +42,15 @@ export class OfficeStore {
   /** Today's counts, largest first. */
   readonly today = computed(() => [...this.view().today].sort((a, b) => b.n - a.n));
 
+  /** The robot whose card is open (W9). */
+  readonly selected = signal<string | undefined>(undefined);
+
+  /** The selected robot, while it is still in the office. */
+  readonly selectedRobot = computed(() => {
+    const key = this.selected();
+    return key === undefined ? undefined : this.view().robots.find((r) => r.key === key);
+  });
+
   /**
    * Applies one message from the source.
    *

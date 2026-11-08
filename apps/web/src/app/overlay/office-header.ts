@@ -4,7 +4,10 @@ import { OfficeStore } from '../core/office-store';
 import { STRINGS } from '../core/strings';
 import { Badge, type BadgeVariant } from '../ui/badge/badge';
 
-/** The page header: office title and owner, agent counts and the connection state (W5, W6). */
+/**
+ * The page header: office title and owner, agent counts and the connection state
+ * (W5, W6). Projected content, such as the view switch, goes at the end.
+ */
 @Component({
   selector: 'hf-office-header',
   imports: [Badge],
@@ -20,6 +23,7 @@ import { Badge, type BadgeVariant } from '../ui/badge/badge';
         <span ndBadge variant="secondary">{{ working() }}</span>
         <span ndBadge variant="outline">{{ total() }}</span>
         <span ndBadge [variant]="statusVariant()" role="status">{{ status() }}</span>
+        <ng-content />
       </div>
     </header>
   `,
