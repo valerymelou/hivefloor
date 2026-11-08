@@ -3,14 +3,17 @@
   "type": "object",
   "properties": {
     "$schema": {
+      "description": "The JSON Schema, for editor autocomplete.",
       "type": "string"
     },
     "v": {
       "type": "number",
-      "const": 1
+      "const": 1,
+      "description": "The config version. Always 1."
     },
     "title": {
       "default": "Hivefloor",
+      "description": "The office name, shown in the header.",
       "type": "string",
       "minLength": 1,
       "maxLength": 40
@@ -18,13 +21,16 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 40
+      "maxLength": 40,
+      "description": "Your name, shown under the title."
     },
     "timezone": {
-      "type": "string"
+      "type": "string",
+      "description": "Your IANA time zone, such as \"Africa/Douala\". Used for the daily reset time."
     },
     "publicProjects": {
       "default": [],
+      "description": "Projects shown by name. Everything else goes to the private room.",
       "maxItems": 100,
       "type": "array",
       "items": {
@@ -33,13 +39,16 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 40
+            "maxLength": 40,
+            "description": "The room name. Must match the project name in the machine config exactly."
           },
           "color": {
+            "description": "The room colour as #rrggbb. Without one, a colour is picked from a fixed palette.",
             "type": "string",
             "pattern": "^#[0-9a-fA-F]{6}$"
           },
           "group": {
+            "description": "A lowercase slug such as \"web\". Stored, but not used yet.",
             "type": "string",
             "maxLength": 40,
             "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
@@ -57,21 +66,25 @@
         "color": "#8d94ab",
         "visible": true
       },
+      "description": "The shared room for every private session.",
       "type": "object",
       "properties": {
         "name": {
           "default": "Private projects",
+          "description": "The room name.",
           "type": "string",
           "minLength": 1,
           "maxLength": 40
         },
         "color": {
           "default": "#8d94ab",
+          "description": "The room colour as #rrggbb.",
           "type": "string",
           "pattern": "^#[0-9a-fA-F]{6}$"
         },
         "visible": {
           "default": true,
+          "description": "Set to false to hide the private room and its robots from visitors entirely.",
           "type": "boolean"
         }
       },
@@ -81,6 +94,7 @@
       "default": [
         "Helper"
       ],
+      "description": "Subagent types the relay accepts by name.",
       "maxItems": 50,
       "type": "array",
       "items": {
@@ -94,22 +108,26 @@
         "awayAfterSec": 900,
         "leaveAfterSec": 3600
       },
+      "description": "When quiet robots go for coffee, step out and leave.",
       "type": "object",
       "properties": {
         "idleAfterSec": {
           "default": 180,
+          "description": "Seconds without an event before a robot goes for coffee.",
           "type": "integer",
           "minimum": 30,
           "maximum": 3600
         },
         "awayAfterSec": {
           "default": 900,
+          "description": "Seconds without an event before a robot leaves the building until its next event.",
           "type": "integer",
           "minimum": 60,
           "maximum": 86400
         },
         "leaveAfterSec": {
           "default": 3600,
+          "description": "Seconds without an event before a robot is removed from the office.",
           "type": "integer",
           "minimum": 120,
           "maximum": 604800
@@ -128,10 +146,12 @@
         "maxRenderedRobots": 40,
         "maxVisibleRooms": 12
       },
+      "description": "Limits of the elastic office.",
       "type": "object",
       "properties": {
         "roomsPerFloor": {
           "default": 8,
+          "description": "Rooms on a floor before a new floor starts. Must be even.",
           "type": "integer",
           "minimum": 2,
           "maximum": 16,
@@ -139,42 +159,49 @@
         },
         "desksPerRow": {
           "default": 3,
+          "description": "Desks in a row.",
           "type": "integer",
           "minimum": 1,
           "maximum": 6
         },
         "maxRowsPerRoom": {
           "default": 4,
+          "description": "Desk rows a room can grow to.",
           "type": "integer",
           "minimum": 1,
           "maximum": 8
         },
         "tableSeats": {
           "default": 6,
+          "description": "Seats for subagents at the team table.",
           "type": "integer",
           "minimum": 1,
           "maximum": 12
         },
         "roomCloseAfterSec": {
           "default": 1800,
+          "description": "Seconds a room stays empty before it closes and frees its place.",
           "type": "integer",
           "minimum": 60,
           "maximum": 86400
         },
         "rowRemoveAfterSec": {
           "default": 600,
+          "description": "Seconds an empty desk row stays before it is removed.",
           "type": "integer",
           "minimum": 0,
           "maximum": 86400
         },
         "maxRenderedRobots": {
           "default": 40,
+          "description": "Robots drawn at once. The rest show as a \"+N\" sign; the list view shows everyone.",
           "type": "integer",
           "minimum": 1,
           "maximum": 500
         },
         "maxVisibleRooms": {
           "default": 12,
+          "description": "Rooms drawn at once. The quietest fold into an \"Other projects\" room.",
           "type": "integer",
           "minimum": 2,
           "maximum": 64
@@ -184,6 +211,7 @@
     },
     "viewerCap": {
       "default": 500,
+      "description": "Live visitors at once. Others get a view that updates every few minutes.",
       "type": "integer",
       "minimum": 1,
       "maximum": 10000

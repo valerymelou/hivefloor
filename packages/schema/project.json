@@ -20,9 +20,13 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
-        "command": "vitest run src/json-schema.spec.ts --update --coverage.enabled=false"
+        "command": "vitest run src/json-schema.spec.ts src/config-reference.spec.ts --update --coverage.enabled=false"
       },
-      "outputs": ["{projectRoot}/office.schema.json", "{projectRoot}/machine.schema.json"]
+      "outputs": [
+        "{projectRoot}/office.schema.json",
+        "{projectRoot}/machine.schema.json",
+        "{workspaceRoot}/docs/configuration-reference.md"
+      ]
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/office.config.example.json"]

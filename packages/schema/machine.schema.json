@@ -3,17 +3,21 @@
   "type": "object",
   "properties": {
     "$schema": {
+      "description": "The JSON Schema, for editor autocomplete.",
       "type": "string"
     },
     "v": {
       "type": "number",
-      "const": 1
+      "const": 1,
+      "description": "The config version. Always 1."
     },
     "endpoint": {
-      "type": "string"
+      "type": "string",
+      "description": "The relay ingest URL: https, or http for localhost only."
     },
     "projects": {
       "default": [],
+      "description": "Folders and whether they are public. Any other folder is private.",
       "maxItems": 500,
       "type": "array",
       "items": {
@@ -22,12 +26,15 @@
           "path": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 1024
+            "maxLength": 1024,
+            "description": "An absolute folder, or one starting with ~. The longest matching path wins."
           },
           "public": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether sessions here show the project name and goals to visitors."
           },
           "name": {
+            "description": "The project name in office.config.json. Required when public is true.",
             "type": "string",
             "minLength": 1,
             "maxLength": 40
@@ -42,6 +49,7 @@
     },
     "publicAgentTypes": {
       "default": [],
+      "description": "Subagent types sent by name. Others are sent as a generic helper.",
       "maxItems": 50,
       "type": "array",
       "items": {
@@ -66,18 +74,22 @@
         ],
         "privatePrefix": "[private]"
       },
+      "description": "Which goals are sent for public projects.",
       "type": "object",
       "properties": {
         "fromTaskList": {
           "default": true,
+          "description": "Use the task Claude has in progress.",
           "type": "boolean"
         },
         "fromSessionTitle": {
           "default": true,
+          "description": "Use the session title when no task is in progress.",
           "type": "boolean"
         },
         "maxLength": {
           "default": 60,
+          "description": "Longest goal sent, in characters.",
           "type": "integer",
           "minimum": 10,
           "maximum": 60
@@ -93,6 +105,7 @@
             "password",
             "credential"
           ],
+          "description": "A goal containing any of these words is not sent.",
           "maxItems": 200,
           "type": "array",
           "items": {
@@ -103,6 +116,7 @@
         },
         "privatePrefix": {
           "default": "[private]",
+          "description": "A task title starting with this is never sent.",
           "type": "string",
           "minLength": 1,
           "maxLength": 20
@@ -112,6 +126,7 @@
     },
     "mcpCategories": {
       "default": {},
+      "description": "MCP server name to work category. Server names are only read locally.",
       "type": "object",
       "propertyNames": {
         "type": "string",
@@ -138,12 +153,14 @@
     },
     "timestampRoundingSec": {
       "default": 5,
+      "description": "Timestamps are rounded to this many seconds, so timing reveals less.",
       "type": "integer",
       "minimum": 1,
       "maximum": 60
     },
     "paused": {
       "default": false,
+      "description": "Send nothing. Set by hivefloor pause and resume.",
       "type": "boolean"
     }
   },

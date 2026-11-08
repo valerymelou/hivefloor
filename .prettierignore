@@ -12,3 +12,5 @@ packages/schema/*.schema.json
 apps/relay/worker-configuration.d.ts
 
 .angular
+apps/site/src/content
+docs/configuration-reference.md
