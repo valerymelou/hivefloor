@@ -52,6 +52,7 @@
     "goals": {
       "default": {
         "fromTaskList": true,
+        "fromSessionTitle": true,
         "maxLength": 60,
         "blockWords": [
           "security",
@@ -68,6 +69,10 @@
       "type": "object",
       "properties": {
         "fromTaskList": {
+          "default": true,
+          "type": "boolean"
+        },
+        "fromSessionTitle": {
           "default": true,
           "type": "boolean"
         },

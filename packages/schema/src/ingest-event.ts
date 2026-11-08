@@ -75,5 +75,8 @@ export const IngestEventSchema = z
 /** One ingest event. */
 export type IngestEvent = z.infer<typeof IngestEventSchema>;
 
+/** An ingest event as the CLI builds it, before the relay brands its ids. */
+export type IngestEventInput = z.input<typeof IngestEventSchema>;
+
 /** The names of every field an ingest event may carry: the privacy allowlist. */
 export const INGEST_EVENT_FIELDS: readonly string[] = Object.keys(IngestEventSchema.shape);
