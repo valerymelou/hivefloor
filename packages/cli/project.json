@@ -13,19 +13,48 @@
   },
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        "{projectRoot}/tsdown.config.ts",
+        "{workspaceRoot}/LICENSE"
+      ],
+      "outputs": ["{workspaceRoot}/dist/packages/cli"],
       "options": {
-        "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
-        "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md", "LICENSE"]
+        "cwd": "{projectRoot}",
+        "command": "tsdown"
       }
     },
     "typecheck": {},
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "bench": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "node scripts/bench-hook.mjs",
+        "env": {
+          "HIVEFLOOR_BENCH_BUDGET_MS": "150"
+        }
+      }
+    },
+    "compile": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "outputs": ["{workspaceRoot}/dist/packages/cli/binaries"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "node scripts/compile.mjs"
       }
     }
   }

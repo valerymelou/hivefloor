@@ -20,8 +20,14 @@
   "license": "MIT",
   "author": "Valery Melou",
   "type": "module",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "bin": {
+    "hivefloor": "./bin.mjs"
+  },
+  "files": [
+    "*.mjs",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=20"
   },

@@ -2,7 +2,17 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": ["node"]
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": false
   },
-  "include": ["vitest.config.mts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.d.ts"]
+  "include": [
+    "vitest.config.mts",
+    "tsdown.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/*.d.ts",
+    "src/test/**/*.ts",
+    "scripts/**/*.mjs"
+  ]
 }
