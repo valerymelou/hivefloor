@@ -46,6 +46,16 @@
             "fonts": false
           }
         },
+        "office-subpath": {
+          "baseHref": "/office/",
+          "outputPath": "dist/apps/web-office",
+          "outputHashing": "all",
+          "optimization": {
+            "scripts": true,
+            "styles": { "minify": true, "inlineCritical": false },
+            "fonts": false
+          }
+        },
         "development": {
           "optimization": false,
           "extractLicenses": false,

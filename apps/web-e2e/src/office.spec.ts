@@ -173,6 +173,19 @@ test.describe('fallbacks and modes (W10, W11, W12)', () => {
   });
 });
 
+test.describe('embed mode', () => {
+  test('shows only the office and a live badge linking to the full office', async ({ page }) => {
+    await openDemo(page, '#demo&embed');
+    await expect(tag(page, DEMO.seated)).toHaveCount(1);
+    const badge = page.locator('hf-live-badge a');
+    await expect(badge).toContainText('agents working');
+    await expect(badge).toHaveAttribute('target', '_top');
+    await expect(page.locator('hf-office-header')).toHaveCount(0);
+    await expect(page.locator('hf-activity-feed')).toHaveCount(0);
+    await expect(page.getByText('hover a robot for details')).toHaveCount(0);
+  });
+});
+
 test.describe('small screens (W12)', () => {
   for (const width of [320, 390]) {
     test(`nothing scrolls sideways at ${String(width)} px, and the page can still scroll`, async ({

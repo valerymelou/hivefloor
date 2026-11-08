@@ -1,4 +1,5 @@
 import { ViewerMessageSchema, type OfficeConfig } from '@hivefloor/schema';
+import { pageMode } from '../core/modes';
 import type { OfficeSource, SourceEvents } from '../core/source';
 import { seededRandom, Simulator } from './simulator';
 
@@ -13,7 +14,7 @@ export const DEMO_STEP_MS = 1500;
  * @returns The number of sessions.
  */
 export function demoSessions(hash: string): number {
-  return hash === '#demo-crowd' ? 10 : 3;
+  return pageMode(hash).crowd ? 10 : 3;
 }
 
 /**

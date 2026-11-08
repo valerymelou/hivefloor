@@ -81,6 +81,7 @@ export const STRINGS = {
     noWebGl: 'This browser cannot draw the 3D office, so the list view is shown.',
     showList: 'List view',
     panels: 'Office activity',
+    openOffice: 'Open the full office',
     arriving: 'Arriving',
     leaving: 'Leaving',
     subagentLeaving: 'Done, heading out',
