@@ -1,0 +1,43 @@
+{
+  "name": "relay",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/relay/src",
+  "projectType": "application",
+  "tags": ["scope:relay"],
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "options": { "cwd": "{projectRoot}", "command": "wrangler dev" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production", "{projectRoot}/wrangler.jsonc"],
+      "outputs": ["{workspaceRoot}/dist/apps/relay"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "wrangler deploy --dry-run --outdir ../../dist/apps/relay"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": { "cwd": "{projectRoot}", "command": "wrangler deploy" }
+    },
+    "types": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "wrangler types --include-env=false worker-configuration.d.ts"
+      }
+    },
+    "typecheck": {
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.app.json --noEmit", "tsc -p tsconfig.spec.json --noEmit"]
+      }
+    }
+  }
+}

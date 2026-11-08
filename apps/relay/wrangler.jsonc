@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // The Hivefloor relay: one Worker and one Office Durable Object.
+  // docs/self-hosting.md explains how to deploy it with "hivefloor deploy".
+  "name": "hivefloor",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    // Replaced by the built office web app in M5.
+    "directory": "./public",
+    "run_worker_first": ["/ingest", "/live", "/api/*"],
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "OFFICE", "class_name": "Office" }],
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Office"] }],
+  // No request bodies or headers in logs (docs/privacy.md).
+  "observability": { "enabled": false },
+  "upload_source_maps": false,
+  "send_metrics": false,
+  "vars": {
+    // Development default: the example office. "hivefloor deploy" replaces it
+    // with your validated office.config.json (docs/adr/0012).
+    "OFFICE_CONFIG": "{\"v\":1,\"title\":\"Hivefloor\",\"owner\":\"Valery Melou\",\"timezone\":\"Africa/Douala\",\"publicProjects\":[{\"name\":\"Builderswave\",\"color\":\"#6ea8fe\",\"group\":\"web\"},{\"name\":\"Ledgerly\",\"color\":\"#f2a65a\",\"group\":\"mobile\"},{\"name\":\"Ndop UI\",\"color\":\"#b79cf2\",\"group\":\"open-source\"}],\"privateRoom\":{\"name\":\"Private projects\",\"color\":\"#8d94ab\",\"visible\":true},\"agentTypes\":[\"Explore\",\"Plan\",\"Helper\",\"code-reviewer\"],\"presence\":{\"idleAfterSec\":180,\"awayAfterSec\":900,\"leaveAfterSec\":3600},\"layout\":{\"roomsPerFloor\":8,\"desksPerRow\":3,\"maxRowsPerRoom\":4,\"tableSeats\":6,\"roomCloseAfterSec\":1800,\"rowRemoveAfterSec\":600,\"maxRenderedRobots\":40,\"maxVisibleRooms\":12},\"viewerCap\":500}",
+  },
+  // HIVEFLOOR_SECRET is a secret: "wrangler secret put HIVEFLOOR_SECRET",
+  // or HIVEFLOOR_SECRET=... in .dev.vars for wrangler dev.
+}
