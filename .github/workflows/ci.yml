@@ -90,6 +90,16 @@ jobs:
 
       - run: pnpm nx run web:verify-ui
 
+      # Playwright scenarios in demo mode, on the same Chromium build as ndop verify.
+      - run: pnpm nx run web-e2e:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: dist/web-e2e/results
+          retention-days: 7
+
   cli-binary:
     name: CLI binaries and hook benchmark
     runs-on: ubuntu-latest
