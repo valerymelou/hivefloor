@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { homedir } from 'node:os';
 import { createInterface } from 'node:readline/promises';
-import { selfCommand } from './edge/sender.js';
+import { realScriptPath, selfCommand } from './edge/sender.js';
 import { main } from './main.js';
 
 /** The hook gives up after this long, whatever it is doing. */
@@ -12,6 +12,7 @@ const HOOK_DEADLINE_MS = 2500;
 const MAX_STDIN = 8 * 1024 * 1024;
 
 const args = process.argv.slice(2);
+const script = realScriptPath(process.argv[1]);
 
 if (args[0] === 'hook' || args[0] === '__send') {
   // Exit 0 no matter what: never break or block Claude Code.
@@ -44,7 +45,7 @@ async function ask(question: string): Promise<string> {
 
 function launchSender(body: string): void {
   try {
-    const self = selfCommand(process.execPath, process.argv);
+    const self = selfCommand(process.execPath, script);
     spawn(self.file, [...self.args, '__send', body], {
       detached: true,
       stdio: 'ignore',
@@ -76,7 +77,7 @@ process.exitCode = await main(args, {
   cwd: process.cwd(),
   windows: process.platform === 'win32',
   execPath: process.execPath,
-  script: process.argv[1],
+  script,
   now: () => Date.now(),
   readStdin,
   stdout: (text) => process.stdout.write(text),

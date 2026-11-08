@@ -26,19 +26,38 @@ describe('isHivefloorCommand', () => {
     "'C:\\Program Files\\hivefloor\\hivefloor.exe' hook --record",
     'npx --yes hivefloor@0.1.0 hook',
     '/usr/bin/node /lib/node_modules/hivefloor/bin.mjs hook',
+    '/usr/local/bin/node hook',
+    '"C:\\Program Files\\nodejs\\node.exe" hook',
   ])('recognises %j', (command) => {
     expect(isHivefloorCommand(command)).toBe(true);
   });
 
-  it.each(['./lint.sh', 'hivefloor doctor', 'echo hook', 'hook hivefloor'])(
-    'ignores %j',
-    (command) => {
-      expect(isHivefloorCommand(command)).toBe(false);
-    },
-  );
+  it.each([
+    './lint.sh',
+    'hivefloor doctor',
+    'echo hook',
+    'hook hivefloor',
+    'node hook',
+    '/usr/bin/nodemon hook',
+    '/usr/bin/node hook.js',
+  ])('ignores %j', (command) => {
+    expect(isHivefloorCommand(command)).toBe(false);
+  });
 });
 
 describe('addHooks (C1)', () => {
+  it('replaces the broken commands 0.1.0 wrote, however many piled up', () => {
+    const broken = { type: 'command', command: '/usr/local/bin/node hook', async: true };
+    const before = {
+      ...others,
+      hooks: { ...others.hooks, Stop: [{ hooks: [broken] }, { hooks: [broken] }] },
+    };
+    const { settings } = addHooks(before, CMD);
+    const stop = registeredHooks(settings).filter((hook) => hook.event === 'Stop');
+    expect(stop).toEqual([expect.objectContaining({ command: CMD })]);
+    expect(JSON.stringify(settings)).not.toContain(broken.command);
+  });
+
   it('adds an async hook to every event and keeps everything else', () => {
     const { settings, events } = addHooks(others, CMD);
     expect(events).toEqual([...HOOK_EVENTS]);
