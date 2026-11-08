@@ -1,0 +1,3 @@
+# Copy to .dev.vars (git-ignored) for `pnpm nx dev relay`. Use the same value as
+# ~/.config/hivefloor/secret, or run `hivefloor init --secret-stdin` with it.
+HIVEFLOOR_SECRET=change-me-to-a-long-random-string
