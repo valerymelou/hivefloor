@@ -1,0 +1,43 @@
+name: New character set
+description: Propose a new set of robots (or other characters) for the office.
+labels: [character-set]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Character set name
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Model source
+      description: Where the model comes from (link).
+    validations:
+      required: true
+  - type: dropdown
+    id: licence
+    attributes:
+      label: Licence
+      options:
+        - CC0 1.0
+        - CC BY 4.0
+        - MIT
+        - Other (explain below)
+    validations:
+      required: true
+  - type: textarea
+    id: clips
+    attributes:
+      label: Animation clips
+      description: Which clips map to Sitting, Idle, Walking and Wave?
+    validations:
+      required: true
+  - type: input
+    id: size
+    attributes:
+      label: File size after optimisation (gltf-transform, meshopt)
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else

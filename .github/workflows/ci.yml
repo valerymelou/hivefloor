@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Sets NX_BASE and NX_HEAD for nx affected. No Nx Cloud connection.
+      - uses: nrwl/nx-set-shas@v5
+
+      - run: pnpm nx format:check
+
+      - name: Affected projects (pull requests)
+        if: github.event_name == 'pull_request'
+        run: pnpm nx affected -t lint typecheck test build
+
+      - name: All projects (main)
+        if: github.event_name == 'push'
+        run: pnpm nx run-many -t lint typecheck test build
+
+      - name: Version plan for every change to a published package
+        if: github.event_name == 'pull_request'
+        run: pnpm nx release plan:check --base="$NX_BASE" --head="$NX_HEAD"
+
+  commits:
+    name: Conventional Commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Commit messages
+        run: >
+          pnpm exec commitlint --verbose
+          --from "${{ github.event.pull_request.base.sha }}"
+          --to "${{ github.event.pull_request.head.sha }}"
+
+      - name: Pull request title (used as the squash commit message)
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint --verbose
