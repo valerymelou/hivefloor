@@ -44,8 +44,10 @@ const pages = readdirSync(site, { recursive: true, withFileTypes: true })
 // those by hash, so the site's policy stays strict.
 const hashes = new Set();
 for (const page of pages) {
-  for (const [, attributes, body] of page.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
-    if (/\bsrc=/.test(attributes) || /application\/json/.test(attributes)) continue;
+  for (const [, attributes, body] of page.matchAll(
+    /<script\b([^>]*)>([\s\S]*?)<\/script[^>]*>/gi,
+  )) {
+    if (/\bsrc=/i.test(attributes) || /application\/json/i.test(attributes)) continue;
     hashes.add(`'sha256-${createHash('sha256').update(body).digest('base64')}'`);
   }
 }
