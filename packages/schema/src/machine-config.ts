@@ -54,7 +54,10 @@ export type MachineProject = z.infer<typeof MachineProjectSchema>;
 
 /** Goal extraction settings (C7, H2). */
 export const GoalSettingsSchema = z.strictObject({
+  /** Use the in-progress task's subject, when Claude Code's task tools are on. */
   fromTaskList: z.boolean().default(true),
+  /** Use the session's custom title (`--name`, `/rename`) when no task is in progress. */
+  fromSessionTitle: z.boolean().default(true),
   maxLength: z.int().min(10).max(GOAL_MAX_LENGTH).default(GOAL_MAX_LENGTH),
   blockWords: z
     .array(z.string().min(1).max(40))
@@ -75,6 +78,7 @@ export const MachineConfigSchema = z.strictObject({
   publicAgentTypes: z.array(AgentTypeSchema).max(50).default([]),
   goals: GoalSettingsSchema.default({
     fromTaskList: true,
+    fromSessionTitle: true,
     maxLength: GOAL_MAX_LENGTH,
     blockWords: [...DEFAULT_BLOCK_WORDS],
     privatePrefix: '[private]',

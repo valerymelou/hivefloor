@@ -22,6 +22,7 @@ describe('MachineConfigSchema', () => {
       publicAgentTypes: [],
       goals: {
         fromTaskList: true,
+        fromSessionTitle: true,
         maxLength: 60,
         blockWords: [...DEFAULT_BLOCK_WORDS],
         privatePrefix: '[private]',
