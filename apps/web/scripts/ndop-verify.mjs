@@ -12,6 +12,11 @@ const app = join(import.meta.dirname, '..');
 const angularJson = join(app, 'angular.json');
 const tsconfig = join(app, 'tsconfig.ndop-verify.json');
 
+// The overlay holds every component that uses Ndop UI. The root App is left
+// out: it uses no Ndop UI and opens the live connection on start, which has no
+// relay to reach in verify's render harness.
+const VERIFY_PATH = 'src/app/overlay';
+
 const workspace = {
   version: 1,
   newProjectRoot: '',
@@ -49,7 +54,7 @@ try {
   writeFileSync(tsconfig, `${JSON.stringify(verifyTsconfig, null, 2)}\n`);
   const result = spawnSync(
     'pnpm',
-    ['exec', 'ndop', 'verify', 'src/app', ...process.argv.slice(2)],
+    ['exec', 'ndop', 'verify', VERIFY_PATH, ...process.argv.slice(2)],
     {
       cwd: app,
       stdio: 'inherit',
