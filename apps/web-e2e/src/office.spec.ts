@@ -73,6 +73,32 @@ test.describe('interaction (W8, W9, W11)', () => {
     await expect(card).toHaveCount(0);
   });
 
+  test('a tag stays a small bulb until the robot is hovered', async ({ page }) => {
+    await openDemo(page);
+    const seated = tag(page, DEMO.seated);
+    await expect(seated.locator('.hf-bulb')).toBeVisible();
+    await expect(seated.locator('.hf-details')).toBeHidden();
+    const box = await seated.locator('..').boundingBox();
+    expect(box).not.toBeNull();
+    if (box === null) return;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await expect(seated.locator('.hf-name')).toBeVisible();
+    await expect(seated.locator('.hf-bulb')).toBeHidden();
+    await expect(seated.locator('..')).toHaveClass(/hf-hovered/);
+    await page.mouse.move(0, 0);
+    await expect(seated.locator('.hf-details')).toBeHidden();
+    await expect(seated.locator('.hf-bulb')).toBeVisible();
+  });
+
+  test('a new activity shows as text for a moment', async ({ page }) => {
+    await openDemo(page);
+    const visitor = tag(page, DEMO.visitor);
+    await expect(visitor.locator('.hf-badge')).toBeVisible({ timeout: 20_000 });
+    await expect(visitor.locator('.hf-badge')).toHaveText('Arriving');
+    await expect(visitor.locator('.hf-bulb')).toBeVisible({ timeout: 10_000 });
+    await expect(visitor.locator('.hf-details')).toBeHidden();
+  });
+
   test('the arrow keys orbit the camera', async ({ page }) => {
     await openDemo(page);
     const anchor = tag(page, DEMO.seated).locator('..');
@@ -135,6 +161,11 @@ test.describe('fallbacks and modes (W10, W11, W12)', () => {
     const canvas = await page.locator('hf-office-canvas').boundingBox();
     const feed = await page.locator('hf-activity-feed').boundingBox();
     expect(canvas !== null && feed !== null && canvas.y < feed.y).toBe(true);
+    // Phones have no hover: a tap goes straight to the card.
+    const box = await tag(page, DEMO.seated).locator('..').boundingBox();
+    expect(box).not.toBeNull();
+    if (box !== null) await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    await expect(page.getByTestId('robot-card')).toBeVisible();
     await context.close();
   });
 });
