@@ -1,6 +1,6 @@
 # 0004. Take public goals from Claude's task list
 
-- Status: accepted
+- Status: superseded by [0010](0010-goals-from-task-or-session-title.md)
 - Date: 2026-11-08
 - Deciders: Valery Melou
 

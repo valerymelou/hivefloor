@@ -60,22 +60,23 @@ Both files are validated by the Zod schemas in `packages/schema` and have genera
 }
 ```
 
-| Field                  | Type                     | Default            | Notes                                                                                                                                     |
-| ---------------------- | ------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `v`                    | `1`                      | required           | Contract version.                                                                                                                         |
-| `endpoint`             | URL                      | required           | Your relay's `/ingest`. Must be `https`, except `http://localhost` for development.                                                       |
-| `projects[]`           | list                     | `[]`               | Folders and whether they are public. Any folder not listed is private.                                                                    |
-| `projects[].path`      | path                     | required           | Absolute or starting with `~`. The longest matching prefix wins.                                                                          |
-| `projects[].public`    | boolean                  | required           |                                                                                                                                           |
-| `projects[].name`      | text, 1–40               | required if public | Must match a `publicProjects[].name` in `office.config.json`.                                                                             |
-| `publicAgentTypes`     | list of type names       | `[]`               | Subagent types shown by name; others appear as `Helper`.                                                                                  |
-| `goals.fromTaskList`   | boolean                  | `true`             | Send the in-progress task title as the goal, for public projects only.                                                                    |
-| `goals.maxLength`      | 10–60                    | `60`               |                                                                                                                                           |
-| `goals.blockWords`     | list of words            | 8 defaults         | A task title containing one of these is never sent. Defaults: security, vulnerability, CVE, exploit, token, secret, password, credential. |
-| `goals.privatePrefix`  | text                     | `"[private]"`      | A task title starting with this is never sent.                                                                                            |
-| `mcpCategories`        | map of server → category | `{}`               | Category for each local MCP server. Server names never leave your machine.                                                                |
-| `timestampRoundingSec` | 1–60                     | `5`                | Event times are rounded to this many seconds.                                                                                             |
-| `paused`               | boolean                  | `false`            | `true` stops sending without uninstalling (`hivefloor pause`).                                                                            |
+| Field                    | Type                     | Default            | Notes                                                                                                                                     |
+| ------------------------ | ------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `v`                      | `1`                      | required           | Contract version.                                                                                                                         |
+| `endpoint`               | URL                      | required           | Your relay's `/ingest`. Must be `https`, except `http://localhost` for development.                                                       |
+| `projects[]`             | list                     | `[]`               | Folders and whether they are public. Any folder not listed is private.                                                                    |
+| `projects[].path`        | path                     | required           | Absolute or starting with `~`. The longest matching prefix wins.                                                                          |
+| `projects[].public`      | boolean                  | required           |                                                                                                                                           |
+| `projects[].name`        | text, 1–40               | required if public | Must match a `publicProjects[].name` in `office.config.json`.                                                                             |
+| `publicAgentTypes`       | list of type names       | `[]`               | Subagent types shown by name; others appear as `Helper`.                                                                                  |
+| `goals.fromTaskList`     | boolean                  | `true`             | Use the in-progress task (when Claude Code's task tools are on) as the goal, for public projects only.                                    |
+| `goals.fromSessionTitle` | boolean                  | `true`             | Otherwise use the session's custom title (`claude --name`, `/rename`) as the goal, for public projects only.                              |
+| `goals.maxLength`        | 10–60                    | `60`               |                                                                                                                                           |
+| `goals.blockWords`       | list of words            | 8 defaults         | A task title containing one of these is never sent. Defaults: security, vulnerability, CVE, exploit, token, secret, password, credential. |
+| `goals.privatePrefix`    | text                     | `"[private]"`      | A task title starting with this is never sent.                                                                                            |
+| `mcpCategories`          | map of server → category | `{}`               | Category for each local MCP server. Server names never leave your machine.                                                                |
+| `timestampRoundingSec`   | 1–60                     | `5`                | Event times are rounded to this many seconds.                                                                                             |
+| `paused`                 | boolean                  | `false`            | `true` stops sending without uninstalling (`hivefloor pause`).                                                                            |
 
 ## Categories
 
