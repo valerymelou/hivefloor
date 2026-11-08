@@ -96,6 +96,9 @@ jobs:
       # Playwright scenarios in demo mode, on the same Chromium build as ndop verify.
       - run: pnpm nx run web-e2e:e2e
 
+      # The landing page, docs and the office under /office, assembled as deployed.
+      - run: pnpm nx run web-e2e:site
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

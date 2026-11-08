@@ -1,0 +1,75 @@
+name: Release
+
+# Started by hand from the Actions tab. See CONTRIBUTING.md.
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Preview the release without changing anything
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Release the CLI
+    runs-on: ubuntu-latest
+    permissions:
+      # Commit the version, push the tag and create the GitHub release.
+      contents: write
+      # npm trusted publishing and provenance.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Bun is a build tool for the standalone binaries only (ADR 0011).
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm nx run-many -t lint typecheck test build
+
+      - name: Preview
+        if: inputs.dry-run
+        run: pnpm nx release --skip-publish --dry-run
+
+      - name: Set the Git author
+        if: ${{ !inputs.dry-run }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Version, changelog, tag and GitHub release
+        if: ${{ !inputs.dry-run }}
+        run: pnpm nx release --skip-publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Rebuild with the new version
+        if: ${{ !inputs.dry-run }}
+        run: pnpm nx run cli:compile --skip-nx-cache
+
+      - name: Attach the standalone binaries
+        if: ${{ !inputs.dry-run }}
+        run: gh release upload "v$(node -p "require('./packages/cli/package.json').version")" dist/packages/cli/binaries/*
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Uses npm directly: trusted publishing needs npm 11.5 or later.
+      - name: Publish to npm with provenance
+        if: ${{ !inputs.dry-run }}
+        run: npm publish dist/packages/cli --provenance --access public

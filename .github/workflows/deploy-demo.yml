@@ -1,0 +1,48 @@
+name: Deploy the site
+
+# Deploys hivefloor.valerymelou.com: the site, the docs and the live office.
+# Forks don't run this unless they set the repository variable DEPLOY_DEMO.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-demo
+
+jobs:
+  deploy:
+    name: Deploy
+    if: vars.DEPLOY_DEMO == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm nx run site:assemble
+
+      - run: pnpm nx build cli
+
+      - name: Write the office config
+        run: printf '%s' "$OFFICE_CONFIG" > office.config.json
+        env:
+          OFFICE_CONFIG: ${{ secrets.OFFICE_CONFIG }}
+
+      # With no secret on this machine and nobody to answer, the deploy leaves
+      # the relay's secret alone (ADR 0016).
+      - name: Deploy
+        run: node dist/packages/cli/bin.mjs deploy --wrangler-config apps/site/wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
