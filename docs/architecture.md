@@ -37,4 +37,23 @@ flowchart TD
 
 The `@nx/enforce-module-boundaries` ESLint rule fails the build if a project imports across these lines. Run `pnpm nx graph` to see the current graph.
 
-Detailed sections on the relay, the office state and the scene are added in M4 to M6. Background: [the PRD](PRD.md#architecture) and the [decision records](adr/README.md).
+## The relay
+
+The Worker verifies every `POST /ingest` (size, time, signature, schema, allowlists) and forwards the event over RPC to one `Office` Durable Object, which also checks replays. The object applies the event with a pure reducer, writes only the SQLite rows that changed, broadcasts the resulting messages to every open WebSocket, and sets an alarm for the next presence change. With nobody in the office there is no alarm and the object hibernates. See [ADR 0013](adr/0013-relay-office-state.md).
+
+```mermaid
+sequenceDiagram
+  participant H as hivefloor sender
+  participant W as Worker
+  participant O as Office (Durable Object)
+  participant V as Visitors
+  H->>W: POST /ingest (signed)
+  W->>W: size, time, signature, schema, allowlists
+  W->>O: ingest(event) over RPC
+  O->>O: replay check, reducer, diff write
+  O-->>V: room / delta / leave over WebSockets
+  W-->>H: 204
+  O->>O: alarm: idle, away, leave, rows, rooms
+```
+
+Detailed sections on the scene are added in M5 and M6. Background: [the PRD](PRD.md#architecture) and the [decision records](adr/README.md).

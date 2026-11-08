@@ -23,6 +23,16 @@ hivefloor init --url https://your-office.example.com
 
 `init` writes `~/.config/hivefloor/config.json`, creates a secret (shown once: use it for `wrangler secret put` above, or paste the relay's secret instead), and registers the Claude Code hooks. To show a project by name, run `hivefloor init --public "Ledgerly"` from its folder; every other folder stays private.
 
+## Try it locally
+
+You don't need a Cloudflare account to try the relay:
+
+```bash
+cp apps/relay/.dev.vars.example apps/relay/.dev.vars   # then set HIVEFLOOR_SECRET
+pnpm nx dev relay
+hivefloor init --url http://localhost:8787 --secret-stdin < your-secret-file
+```
+
 ## 3. Check
 
 ```bash

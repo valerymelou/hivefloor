@@ -37,6 +37,7 @@ Both files are validated by the Zod schemas in `packages/schema` and have genera
 | `agentTypes`               | list of type names | `["Helper"]`         | Subagent roles the relay accepts. `claude` is reserved.                              |
 | `presence.idleAfterSec`    | 30–3600            | `180`                | No event for this long: the robot goes to the coffee corner.                         |
 | `presence.awayAfterSec`    | 60–86400           | `900`                | No event for this long: the robot is away. Must be more than `idleAfterSec`.         |
+| `presence.leaveAfterSec`   | 120–604800         | `3600`               | No event for this long: the robot leaves. Must be more than `awayAfterSec`.          |
 | `layout.roomsPerFloor`     | even, 2–16         | `8`                  | Rooms sit in pairs across the corridor.                                              |
 | `layout.desksPerRow`       | 1–6                | `3`                  |                                                                                      |
 | `layout.maxRowsPerRoom`    | 1–8                | `4`                  | Beyond the last desk, robots stand.                                                  |

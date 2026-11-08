@@ -276,7 +276,7 @@ All contracts are versioned with a `v` field and defined as Zod schemas in `pack
     "visible": true
   },
   "agentTypes": ["Explore", "Plan", "Helper", "code-reviewer"],
-  "presence": { "idleAfterSec": 180, "awayAfterSec": 900 },
+  "presence": { "idleAfterSec": 180, "awayAfterSec": 900, "leaveAfterSec": 3600 },
   "layout": {
     "roomsPerFloor": 8,
     "desksPerRow": 3,
@@ -376,7 +376,7 @@ The category set is fixed in v1: `reading`, `coding`, `testing`, `vcs`, `termina
 
 Event kinds: `start` and `end` open and close a main session; `spawn` and `done` open and close a subagent; `thinking` is work without a tool; `tool` is work with a tool of category `cat`; `idle` means Claude finished its turn and waits for the owner.
 
-Robot statuses: `working` (using a tool), `thinking` (working without one), `idle` (waiting for the owner, or no event for `idleAfterSec`; the robot goes to the coffee corner) and `away` (no event for `awayAfterSec`). A robot that leaves is removed with a `leave` message. Office states in `status` messages: `open`, `busy` (viewer cap reached) and `limited` (paused until `until`).
+Robot statuses: `working` (using a tool), `thinking` (working without one), `waiting` (the session just started or Claude finished its turn and waits for the owner; the robot stays seated), `idle` (no event for `idleAfterSec`; the robot goes to the coffee corner) and `away` (no event for `awayAfterSec`). After `leaveAfterSec` without events the robot leaves. A robot that leaves is removed with a `leave` message. Office states in `status` messages: `open`, `busy` (viewer cap reached) and `limited` (paused until `until`).
 
 Room ids are the slug of the project name (lowercase letters, digits and hyphens). `private` and `other` are reserved for the Private projects room and the "Other projects" room of E8.
 
@@ -511,5 +511,12 @@ Tip: once M2 and M4 work, install the hook on this repo itself. Claude Code buil
 - [x] **Office config delivery:** `hivefloor deploy` passes the validated config as the `OFFICE_CONFIG` variable (M4 reads it).
 - [x] **Hook command:** absolute paths to the binary, or to Node and the script; `npx` only as a fallback with a warning.
 - [x] **init** can also mark the current folder as a public project (`--public NAME`, or a question when interactive).
+
+**Decided in M4 (8 November 2026)** — see [ADR 0013](adr/0013-relay-office-state.md)
+
+- [x] **Status `waiting`:** seated after `start` and `Stop`; `idle` (coffee corner) only after `idleAfterSec`, as in use case 5.
+- [x] **`presence.leaveAfterSec`** (default 3,600 s): robots without events leave, so sessions that never sent `SessionEnd` don't stay forever.
+- [x] **Ingest answers:** 413 too large, 401 timestamp or signature, 400 schema, 422 not in the allowlists, 409 replay, 503 not configured, 204 success. The event's `t` may lag relay time by up to 120 s because of rounding; the header timestamp has the strict 60 s window.
+- [x] **Viewer cap:** visitors beyond it get a `busy` status message and the socket closes.
 
 **Still open:** nothing right now. Revisit this list at the start of each milestone.
