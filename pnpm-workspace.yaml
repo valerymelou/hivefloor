@@ -5,3 +5,6 @@ allowBuilds:
   esbuild: true
   nx: true
   workerd: true
+  lmdb: false
+  msgpackr-extract: false
+  '@parcel/watcher': false
