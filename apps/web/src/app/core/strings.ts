@@ -5,6 +5,7 @@ import type { Category, RobotStatus } from '@hivefloor/schema';
  * (docs/PRD.md, "Internationalization"). English ships in v1.
  */
 export const STRINGS = {
+  appName: 'Hivefloor',
   claude: 'Claude',
   privateProject: 'Private project',
   agentsWorking: (n: number): string =>

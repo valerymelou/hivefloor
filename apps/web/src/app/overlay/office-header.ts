@@ -32,7 +32,7 @@ export class OfficeHeader {
   private readonly store = inject(OfficeStore);
   private readonly configStore = inject(ConfigStore);
 
-  protected readonly title = computed(() => this.configStore.config()?.title ?? 'Hivefloor');
+  protected readonly title = computed(() => this.configStore.config()?.title ?? STRINGS.appName);
   protected readonly owner = computed(() => this.configStore.config()?.owner);
   protected readonly working = computed(() => STRINGS.agentsWorking(this.store.activeCount()));
   protected readonly total = computed(() => STRINGS.agentsTotal(this.store.view().robots.length));

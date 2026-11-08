@@ -63,9 +63,11 @@ export class LiveSource implements OfficeSource {
         const response = await deps.fetch(url('api/snapshot'));
         if (!response.ok && isDailyLimit(response.status, await response.text())) {
           events.state('closed', nextResetLabel(deps.now(), deps.timeZone()));
-        } else {
-          events.state('reconnecting');
+          // The office stays closed until the daily reset: check rarely (H11, H12).
+          later(open, busyPollDelay(deps.random()));
+          return;
         }
+        events.state('reconnecting');
       } catch {
         events.state('reconnecting');
       }

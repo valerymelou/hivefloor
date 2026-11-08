@@ -56,7 +56,7 @@ const DESK_LIGHTS = 6;
 const EASE_SECONDS = 0.6;
 const SCREEN_REFRESH_SECONDS = 0.25;
 /** The longest step a frame may take, so walking keeps real time at low frame rates. */
-const MAX_FRAME_SECONDS = 0.25;
+const MAX_FRAME_SECONDS = 0.5;
 
 function toLayoutRobot(robot: Robot): LayoutRobot[] {
   const base = { key: robot.key, room: robot.room, lastActiveAt: robot.since };
@@ -415,6 +415,8 @@ export class OfficeScene {
     const width = Math.max(1, this.options.stage.clientWidth);
     const height = Math.max(1, this.options.stage.clientHeight);
     this.renderer.setSize(width, height);
+    // On phones a vertical swipe scrolls the page, so the office can't trap it.
+    this.renderer.domElement.style.touchAction = this.narrow() ? 'pan-y' : 'none';
     this.labelRenderer.setSize(width, height);
     const aspect = width / height;
     const changed = Math.abs(aspect - this.camera.aspect) > 0.01;
