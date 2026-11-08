@@ -7,6 +7,8 @@ declare namespace Cloudflare {
     readonly OFFICE: DurableObjectNamespace<import('./office').Office>;
     /** The validated office.config.json as JSON, set by `hivefloor deploy` (ADR 0012). */
     readonly OFFICE_CONFIG?: string;
+    /** Where the office is served, such as `/office`. Absent at the root. */
+    readonly BASE_PATH?: string;
     /** The shared secret, set with `wrangler secret put HIVEFLOOR_SECRET`. */
     readonly HIVEFLOOR_SECRET?: string;
   }

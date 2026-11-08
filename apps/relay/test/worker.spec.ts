@@ -7,6 +7,7 @@ import {
 } from '@hivefloor/schema';
 import { afterEach, describe, expect, it } from 'vitest';
 import { OFFICE_NAME } from '../src/env.js';
+import worker from '../src/index.js';
 import type { Office } from '../src/office.js';
 import { load, persist } from '../src/state/store.js';
 import { event, ingestRequest } from './helpers.js';
@@ -114,6 +115,23 @@ describe('GET /api', () => {
     expect(response.headers.get('cache-control')).toBe('public, max-age=5');
     const snapshot: unknown = await response.json();
     expect(SnapshotMessageSchema.safeParse(snapshot).success).toBe(true);
+  });
+
+  it('serves the same routes under a base path', async () => {
+    const context = {
+      waitUntil: () => undefined,
+      passThroughOnException: () => undefined,
+      props: {},
+    };
+    const at = (path: string, basePath?: string) =>
+      worker.fetch(
+        new Request(`https://office.example.com${path}`),
+        basePath === undefined ? env : { ...env, BASE_PATH: basePath },
+        context as unknown as ExecutionContext,
+      );
+    expect((await at('/office/api/config', '/office')).status).toBe(200);
+    expect((await at('/api/config')).status).toBe(200);
+    expect((await at('/office/api/config')).status).toBe(404);
   });
 
   it('answers unknown routes and plain GETs of /live with bare status codes', async () => {
