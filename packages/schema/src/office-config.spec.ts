@@ -27,7 +27,7 @@ describe('OfficeConfigSchema', () => {
       publicProjects: [],
       privateRoom: { name: 'Private projects', color: '#8d94ab', visible: true },
       agentTypes: ['Helper'],
-      presence: { idleAfterSec: 180, awayAfterSec: 900 },
+      presence: { idleAfterSec: 180, awayAfterSec: 900, leaveAfterSec: 3600 },
       layout: DEFAULT_LAYOUT_LIMITS,
       viewerCap: 500,
     });
@@ -75,6 +75,11 @@ describe('OfficeConfigSchema', () => {
       'idle after away',
       { ...minimal, presence: { idleAfterSec: 900, awayAfterSec: 600 } },
       'presence.awayAfterSec',
+    ],
+    [
+      'away after leave',
+      { ...minimal, presence: { awayAfterSec: 900, leaveAfterSec: 600 } },
+      'presence.leaveAfterSec',
     ],
     ['odd rooms per floor', { ...minimal, layout: { roomsPerFloor: 7 } }, 'layout.roomsPerFloor'],
     ['zero viewer cap', { ...minimal, viewerCap: 0 }, 'viewerCap'],

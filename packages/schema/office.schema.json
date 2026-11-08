@@ -91,7 +91,8 @@
     "presence": {
       "default": {
         "idleAfterSec": 180,
-        "awayAfterSec": 900
+        "awayAfterSec": 900,
+        "leaveAfterSec": 3600
       },
       "type": "object",
       "properties": {
@@ -106,6 +107,12 @@
           "type": "integer",
           "minimum": 60,
           "maximum": 86400
+        },
+        "leaveAfterSec": {
+          "default": 3600,
+          "type": "integer",
+          "minimum": 120,
+          "maximum": 604800
         }
       },
       "additionalProperties": false
