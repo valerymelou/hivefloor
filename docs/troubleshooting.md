@@ -10,17 +10,17 @@ It checks your config, secret, Claude Code hooks and relay, compares your public
 
 ## Common problems
 
-| Doctor says                                     | What it means and what to do                                                                                                                                     |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `✗ Config: No config`                           | Run `hivefloor init`.                                                                                                                                            |
-| `✗ Config: … is invalid`                        | The message names the field. Fix it in `~/.config/hivefloor/config.json`; see [configuration](configuration.md).                                                 |
-| `! Secret: … readable by other users`           | `chmod 600 ~/.config/hivefloor/secret`.                                                                                                                          |
-| `✗ Claude Code hooks: Not registered`           | Run `hivefloor init`. If you edited `~/.claude/settings.json` by hand, run it again: it repairs Hivefloor's hooks and leaves yours alone.                        |
-| `✗ Relay: Could not reach …`                    | Check the office URL (`hivefloor init --url …`) and that the relay is deployed.                                                                                  |
-| `✗ Public projects: Not in the relay's …`       | The name in your machine config must match a `publicProjects[].name` in the relay's `office.config.json` exactly. Fix one of them, then redeploy the relay (H4). |
-| `! Clock: Your clock is … s ahead/behind`       | Sync your system clock. Beyond 60 s the relay rejects every event (H8).                                                                                          |
-| `✗ Signed test event: … rejected the signature` | The secrets differ. Run `hivefloor init --rotate`, then set the printed value with `npx wrangler secret put HIVEFLOOR_SECRET`.                                   |
-| `! Signed test event: … daily limit`            | Cloudflare's free plan limit is reached; the office resumes after the daily reset.                                                                               |
+| Doctor says                                     | What it means and what to do                                                                                                                                                                                                                |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `✗ Config: No config`                           | Run `hivefloor init`.                                                                                                                                                                                                                       |
+| `✗ Config: … is invalid`                        | The message names the field. Fix it in `~/.config/hivefloor/config.json`; see [configuration](configuration.md).                                                                                                                            |
+| `! Secret: … readable by other users`           | `chmod 600 ~/.config/hivefloor/secret`.                                                                                                                                                                                                     |
+| `✗ Claude Code hooks: Not registered`           | Run `hivefloor init`. If you edited `~/.claude/settings.json` by hand, run it again: it repairs Hivefloor's hooks and leaves yours alone.                                                                                                   |
+| `✗ Relay: Could not reach …`                    | Check the office URL (`hivefloor init --url …`) and that the relay is deployed.                                                                                                                                                             |
+| `✗ Public projects: Not in the relay's …`       | The name in your machine config must match a `publicProjects[].name` in the relay's `office.config.json` exactly. Run `hivefloor add-project "Name" --office-config PATH --deploy` to add it and redeploy, or fix one of them by hand (H4). |
+| `! Clock: Your clock is … s ahead/behind`       | Sync your system clock. Beyond 60 s the relay rejects every event (H8).                                                                                                                                                                     |
+| `✗ Signed test event: … rejected the signature` | The secrets differ. Run `hivefloor init --rotate`, then set the printed value with `npx wrangler secret put HIVEFLOOR_SECRET`.                                                                                                              |
+| `! Signed test event: … daily limit`            | Cloudflare's free plan limit is reached; the office resumes after the daily reset.                                                                                                                                                          |
 
 ## The robot never appears
 
@@ -36,7 +36,7 @@ It checks your config, secret, Claude Code hooks and relay, compares your public
 
 ## A public project shows up as private
 
-The folder Claude Code runs in must be inside a `projects[].path` marked `"public": true`; the longest matching path wins. Run `hivefloor init --public "Name"` from the project folder to add it.
+The folder Claude Code runs in must be inside a `projects[].path` marked `"public": true`; the longest matching path wins. Run `hivefloor add-project "Name"` from the project folder to add it.
 
 ## Not supported in v1
 

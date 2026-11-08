@@ -21,7 +21,22 @@ npm install -g hivefloor      # or download the standalone binary
 hivefloor init --url https://your-office.example.com
 ```
 
-`init` writes `~/.config/hivefloor/config.json`, creates a secret (shown once: use it for `wrangler secret put` above, or paste the relay's secret instead), and registers the Claude Code hooks. To show a project by name, run `hivefloor init --public "Ledgerly"` from its folder; every other folder stays private.
+`init` writes `~/.config/hivefloor/config.json`, creates a secret (shown once: use it for `wrangler secret put` above, or paste the relay's secret instead), and registers the Claude Code hooks. Every folder stays private until you make it public.
+
+## 3. Make a project public
+
+A public project's name has to be in two places that match exactly: your machine config, and the relay's allowlist in `office.config.json`. The relay rejects any name it doesn't know. `add-project` updates both:
+
+```bash
+cd ~/code/ledgerly
+hivefloor add-project "Ledgerly" --office-config ~/code/hivefloor/office.config.json --color "#f2a65a"
+```
+
+Then run `hivefloor deploy` from your Hivefloor checkout, or add `--deploy` to do it in the same step. Running from the checkout instead? Use `--path ~/code/ledgerly` and the `office.config.json` in the current folder is found for you.
+
+If it can't find `office.config.json`, it still updates your machine config and prints the exact entry to add to `publicProjects` on the relay. It changes nothing when run again with the same arguments.
+
+**Anyone viewing the office can see a public project's name and its task titles.** Keep a project private if either would give away something you don't want to share. See [privacy](privacy.md).
 
 ## Try it locally
 

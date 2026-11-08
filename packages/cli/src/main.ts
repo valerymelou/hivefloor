@@ -1,4 +1,5 @@
 import { appendFile } from 'node:fs/promises';
+import { addProject } from './commands/add-project.js';
 import { deploy } from './commands/deploy.js';
 import { doctor } from './commands/doctor.js';
 import { init } from './commands/init.js';
@@ -22,7 +23,9 @@ const HELP = `hivefloor ${VERSION}: show your Claude Code sessions in a Hivefloo
 Usage:
   hivefloor init [--url URL] [--public NAME] [--rotate] [--secret-stdin]
                               Connect this machine to your office and register the hooks
-  hivefloor doctor            Check the setup and show exactly what leaves this machine
+  hivefloor add-project NAME [--path DIR] [--office-config FILE] [--color #RRGGBB] [--deploy]
+                              Make a project public, here and in office.config.json
+  hivefloor doctor           Check the setup and show exactly what leaves this machine
   hivefloor preview           Print the event a hook payload on stdin would send
   hivefloor pause | resume    Stop or restart sending
   hivefloor uninstall [--purge]
@@ -39,6 +42,7 @@ type Command = (args: readonly string[], io: CommandIo) => Promise<number>;
 
 const COMMANDS: ReadonlyMap<string, Command> = new Map<string, Command>([
   ['init', init],
+  ['add-project', addProject],
   ['doctor', doctor],
   ['preview', preview],
   ['pause', (args, io) => setPaused(true, args, io)],
