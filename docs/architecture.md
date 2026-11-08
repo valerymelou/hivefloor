@@ -56,4 +56,8 @@ sequenceDiagram
   O->>O: alarm: idle, away, leave, rows, rooms
 ```
 
-Detailed sections on the scene are added in M5 and M6. Background: [the PRD](PRD.md#architecture) and the [decision records](adr/README.md).
+## The web app
+
+The relay serves the built Angular app. One `OfficeStore` holds the page's state as signals; a pure reducer applies each message (`snapshot`, `room`, `delta`, `leave`, `roomClosed`, `today`, `status`) and feeds the activity list. The store reads from a source: the relay's WebSocket (with reconnection, the "Office closed" state and busy polling) or, with `#demo`, a simulator that sends the same messages. The overlay components only read the store. See [ADR 0014](adr/0014-web-foundation.md).
+
+Detailed sections on the 3D scene are added in M6. Background: [the PRD](PRD.md#architecture) and the [decision records](adr/README.md).

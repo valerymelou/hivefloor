@@ -14,8 +14,8 @@ Your machine decides what the office sees. Private projects send three facts per
 | ----------------- | --------------------------------------------------------------------- |
 | `packages/schema` | The contract: schemas, types, constants and the room layout function. |
 | `packages/cli`    | The `hivefloor` CLI and the Claude Code hook (published to npm).      |
-| `apps/relay`      | Cloudflare Worker and Office Durable Object (from M4).                |
-| `apps/web`        | The Angular office app (from M5).                                     |
+| `apps/relay`      | Cloudflare Worker and Office Durable Object.                          |
+| `apps/web`        | The Angular office app: overlay and list view; the 3D scene in M6.    |
 | `apps/site`       | Landing page and docs for hivefloor.valerymelou.com (M8).             |
 | `docs/`           | Guides, the product requirements and architecture decision records.   |
 
