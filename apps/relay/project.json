@@ -8,12 +8,27 @@
     "dev": {
       "executor": "nx:run-commands",
       "continuous": true,
-      "options": { "cwd": "{projectRoot}", "command": "wrangler dev" }
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "wrangler dev"
+      },
+      "dependsOn": [
+        {
+          "projects": ["web"],
+          "target": "build"
+        }
+      ]
     },
     "build": {
       "executor": "nx:run-commands",
       "cache": true,
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build",
+        {
+          "projects": ["web"],
+          "target": "build"
+        }
+      ],
       "inputs": ["production", "^production", "{projectRoot}/wrangler.jsonc"],
       "outputs": ["{workspaceRoot}/dist/apps/relay"],
       "options": {
@@ -24,7 +39,10 @@
     "deploy": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
-      "options": { "cwd": "{projectRoot}", "command": "wrangler deploy" }
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "wrangler deploy"
+      }
     },
     "types": {
       "executor": "nx:run-commands",
@@ -38,6 +56,14 @@
         "cwd": "{projectRoot}",
         "commands": ["tsc -p tsconfig.app.json --noEmit", "tsc -p tsconfig.spec.json --noEmit"]
       }
+    },
+    "test": {
+      "dependsOn": [
+        {
+          "projects": ["web"],
+          "target": "build"
+        }
+      ]
     }
   }
 }
