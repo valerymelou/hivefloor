@@ -42,3 +42,10 @@ Thumbs.db
 *.log
 vitest.config.*.timestamp*
 .vitest
+
+.angular
+
+# Ndop verify output and its temporary files
+.ndop
+apps/web/angular.json
+apps/web/tsconfig.ndop-verify.json

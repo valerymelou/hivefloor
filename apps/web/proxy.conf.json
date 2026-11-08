@@ -1,0 +1,15 @@
+{
+  "/api": {
+    "target": "http://localhost:8787",
+    "secure": false
+  },
+  "/live": {
+    "target": "http://localhost:8787",
+    "ws": true,
+    "secure": false
+  },
+  "/ingest": {
+    "target": "http://localhost:8787",
+    "secure": false
+  }
+}

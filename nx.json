@@ -44,6 +44,11 @@
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
+    },
+    "@angular/build:application": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "release": {
@@ -67,5 +72,13 @@
       "commitMessage": "chore(release): publish {version}"
     }
   },
-  "analytics": false
+  "analytics": false,
+  "generators": {
+    "@nx/angular:application": {
+      "e2eTestRunner": "none",
+      "linter": "eslint",
+      "style": "css",
+      "unitTestRunner": "none"
+    }
+  }
 }

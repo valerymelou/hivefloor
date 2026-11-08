@@ -1,0 +1,132 @@
+{
+  "name": "web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "hf",
+  "sourceRoot": "apps/web/src",
+  "tags": ["scope:web"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/web",
+        "browser": "apps/web/src/main.ts",
+        "tsConfig": "apps/web/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/web/public"
+          }
+        ],
+        "styles": ["apps/web/src/styles.css"]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "700kb",
+              "maximumError": "1.2mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            },
+            "fonts": false
+          }
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "readyWhen": {
+        "signal": true
+      },
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "web:build:production"
+        },
+        "development": {
+          "buildTarget": "web:build:development"
+        }
+      },
+      "options": {
+        "proxyConfig": "apps/web/proxy.conf.json"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "readyWhen": {
+        "signal": true
+      },
+      "dependsOn": ["build"],
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "web:build",
+        "staticFilePath": "dist/apps/web/browser",
+        "spa": true
+      }
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "buildTarget": "web:build:development",
+        "tsConfig": "apps/web/tsconfig.spec.json",
+        "runner": "vitest",
+        "watch": false,
+        "coverage": true,
+        "coverageInclude": [
+          "apps/web/src/app/core/**/*.ts",
+          "apps/web/src/app/overlay/**/*.ts",
+          "apps/web/src/app/demo/**/*.ts"
+        ],
+        "coverageExclude": ["**/*.spec.ts"],
+        "coverageReporters": ["text-summary", "lcov"],
+        "coverageThresholds": {
+          "statements": 80,
+          "branches": 80,
+          "functions": 80,
+          "lines": 80
+        }
+      }
+    },
+    "typecheck": {
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.app.json --noEmit", "tsc -p tsconfig.spec.json --noEmit"]
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "options": {
+        "command": "nx run web:serve"
+      }
+    },
+    "verify-ui": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "{workspaceRoot}/ndop.json"],
+      "options": {
+        "command": "node apps/web/scripts/ndop-verify.mjs"
+      }
+    }
+  }
+}

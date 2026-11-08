@@ -1,0 +1,100 @@
+{
+  "$schema": "https://ndop.dev/schema/lock.json",
+  "lockfileVersion": 1,
+  "items": {
+    "@ndop/alert": {
+      "name": "alert",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/ui/alert/alert.ts",
+          "sha256": "101370e8558386ffa467263338f07991ffac47fced1a0af6e7c3821c2bf75b35"
+        }
+      ]
+    },
+    "@ndop/badge": {
+      "name": "badge",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/ui/badge/badge.ts",
+          "sha256": "3c5467727411a2cda6db71333bcac6feb8112451180b51a77b948efce0430ab1"
+        }
+      ]
+    },
+    "@ndop/button": {
+      "name": "button",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/ui/button/button.ts",
+          "sha256": "2ecf95b0663cc408a3e354976b7db8eedc8f84e89e85f719d96883f90c9bb13e"
+        }
+      ]
+    },
+    "@ndop/card": {
+      "name": "card",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/ui/card/card.ts",
+          "sha256": "974d2dc179819a7bd57ff006357a4b8bee2c9a16fdbc9b48974ae2f008140f39"
+        }
+      ]
+    },
+    "@ndop/default": {
+      "name": "default",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": []
+    },
+    "@ndop/icons": {
+      "name": "icons",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/lib/icons.ts",
+          "sha256": "4cdc274c96220c42c09a47a708519c064636e87001fdc4a475c1eec04c99d7b5"
+        }
+      ]
+    },
+    "@ndop/separator": {
+      "name": "separator",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/ui/separator/separator.ts",
+          "sha256": "c35bb3101fc6c43d44ca6388f4178ff2532e6cfda186b4b72e6723f1e6e33c03"
+        }
+      ]
+    },
+    "@ndop/table": {
+      "name": "table",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/ui/table/table.ts",
+          "sha256": "cfefc182f98b84cda8a42e76db33c3eda21cdb8fcef4447f046cb7a07dcee9ec"
+        }
+      ]
+    },
+    "@ndop/utils": {
+      "name": "utils",
+      "registry": "@ndop",
+      "version": "1.0.0",
+      "files": [
+        {
+          "path": "apps/web/src/app/lib/utils.ts",
+          "sha256": "cce7a4c0003b6d9d1775cb302d79661be40e48d24fbe976f5b1e0b61072c0c82"
+        }
+      ]
+    }
+  }
+}
