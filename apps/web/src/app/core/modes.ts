@@ -6,6 +6,8 @@ export interface PageMode {
   readonly crowd: boolean;
   /** Show only the 3D office and a small live badge, for embedding. */
   readonly embed: boolean;
+  /** Show the office for the landing page, with the simulator while it is empty. */
+  readonly showcase: boolean;
 }
 
 /**
@@ -18,5 +20,10 @@ export interface PageMode {
 export function pageMode(hash: string): PageMode {
   const flags = new Set(hash.replace(/^#/, '').split('&'));
   const crowd = flags.has('demo-crowd');
-  return { demo: crowd || flags.has('demo'), crowd, embed: flags.has('embed') };
+  return {
+    demo: crowd || flags.has('demo'),
+    crowd,
+    embed: flags.has('embed'),
+    showcase: flags.has('showcase'),
+  };
 }

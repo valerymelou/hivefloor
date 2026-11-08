@@ -14,6 +14,8 @@ export default [
         'error',
         { type: 'element', prefix: 'hf', style: 'kebab-case' },
       ],
+      // A component that is only a template is still a component.
+      '@typescript-eslint/no-extraneous-class': ['error', { allowWithDecorator: true }],
     },
   },
   {

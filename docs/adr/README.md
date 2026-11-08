@@ -19,4 +19,5 @@ We record significant decisions here in [MADR](https://adr.github.io/madr/) form
 | [0013](0013-relay-office-state.md)               | Keep the office in one Durable Object, with a pure reducer and diff writes | accepted           |
 | [0014](0014-web-foundation.md)                   | Build the office web app on Angular, Ndop UI and one signal store          | accepted           |
 | [0016](0016-site-and-release.md)                 | One Worker for the site and office, and a CI release                       | accepted           |
+| [0017](0017-landing-office.md)                   | Make the office the landing page, with a labelled demo while empty         | accepted           |
 | [0015](0015-3d-office.md)                        | Draw the office from pure geometry, with one Three.js edge                 | accepted           |

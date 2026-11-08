@@ -20,9 +20,14 @@ export const COLLAPSED_ENTRIES = 2;
         @if (store.feed().length === 0) {
           <p class="text-sm text-muted-foreground">{{ strings.empty }}</p>
         }
-        <ol class="flex flex-col gap-1 text-sm" aria-live="polite" aria-relevant="additions">
+        <ol
+          class="hf-capped flex flex-col gap-1.5 text-sm"
+          aria-live="polite"
+          aria-relevant="additions"
+        >
           @for (entry of store.feed(); track entry.id; let i = $index) {
             <li [class.hidden]="!expanded() && i >= collapsed" class="md:block">
+              <span class="hf-dot me-2.5" [style.background]="entry.color"></span>
               <span class="font-medium">{{ entry.who }}</span>
               <span class="text-muted-foreground"> · {{ entry.where }}</span>
               {{ entry.what }}

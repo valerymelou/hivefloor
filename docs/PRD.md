@@ -120,7 +120,7 @@ Three deliverables: a CLI that runs on the owner's machine, a relay on Cloudflar
 | W12 | Phone layout: the feed collapses to two rows with a "Show more" button, and the camera uses a wider default angle.                                                                                                                                                                                                | Must     |
 | W13 | Character sets are pluggable: a model file plus a map of clip names. The default is the CC0 RobotExpressive model.                                                                                                                                                                                                | Should   |
 
-**Also required in the web app:** a configurable base path (`/` by default, `/office/` on the maintainer's site) and an embed mode (`#embed`) that hides the overlay except a small live badge, used as the landing page hero.
+**Also required in the web app:** a configurable base path (`/` by default, `/office/` on the maintainer's site) an embed mode (`#embed`) that hides the overlay except a small live badge, and a showcase mode (`#showcase`) for the landing page: the office with its panels and no header, showing the simulator, clearly labelled, while the real office is empty ([ADR 0017](adr/0017-landing-office.md)).
 
 **Elastic office: one room per project**
 
@@ -207,7 +207,7 @@ One TypeScript monorepo, strict everywhere, with the event contract defined once
 | Quality    | ESLint flat config with `typescript-eslint` strict type-checked rules and `angular-eslint`; Nx module-boundary rules; Prettier; commitlint with Conventional Commits                                                                   | Industry-standard style, enforced in CI                                                                                                                                          |
 | Releases   | Nx Release with version plans for versions and changelogs; npm publishing with provenance                                                                                                                                              | Clear history for users and contributors                                                                                                                                         |
 
-**Project site (`apps/site`).** Analog, Angular's meta-framework, pre-renders the landing page and the docs, rendering the Markdown files in `docs/` so they have one source. It uses Ndop UI and Tailwind CSS like the office app. On the maintainer's deployment, one Worker serves everything at hivefloor.valerymelou.com: the landing page at `/` (with the live office embedded as its hero), the docs at `/docs` and the full live office at `/office`. Self-hosters don't need `apps/site`; their office is served at `/`.
+**Project site (`apps/site`).** Analog, Angular's meta-framework, pre-renders the landing page and the docs, rendering the Markdown files in `docs/` so they have one source. It uses Ndop UI and Tailwind CSS like the office app. On the maintainer's deployment, one Worker serves everything at hivefloor.valerymelou.com: the landing page at `/` (the office itself, full screen, with the project's name, links and credits over it), the docs at `/docs` and the full live office at `/office`. Self-hosters don't need `apps/site`; their office is served at `/`.
 
 **Two config files, on purpose**
 

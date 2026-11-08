@@ -22,6 +22,9 @@ export interface RobotChange {
   readonly after?: Robot;
 }
 
+/** The marker colour of a room the viewer has no details for. */
+export const NEUTRAL_ROOM_COLOR = '#8d94ab';
+
 /** The empty office shown before the first snapshot. */
 export const EMPTY_OFFICE: OfficeView = { at: 0, rooms: [], robots: [], today: [] };
 
@@ -92,6 +95,20 @@ export function applyMessage(
 }
 
 /**
+ * Adds up today's tool use per room, across every kind of work.
+ *
+ * @param today - Today's counts per room and category.
+ * @returns One total per room, largest first.
+ */
+export function totalsByRoom(today: readonly TodayCount[]): { room: string; n: number }[] {
+  const totals = new Map<string, number>();
+  for (const count of today) totals.set(count.room, (totals.get(count.room) ?? 0) + count.n);
+  return [...totals]
+    .map(([room, n]) => ({ room, n }))
+    .sort((a, b) => b.n - a.n || a.room.localeCompare(b.room));
+}
+
+/**
  * A robot's display name: "Claude" for main sessions, its type for subagents.
  *
  * @param robot - The robot.
@@ -111,6 +128,17 @@ export function robotName(robot: Robot): string {
 export function roomName(robot: Robot, rooms: readonly Room[]): string {
   if (robot.room === PRIVATE_ROOM_ID) return STRINGS.privateProject;
   return rooms.find((room) => room.id === robot.room)?.name ?? robot.room;
+}
+
+/**
+ * The colour of the room a robot is in, for small markers in the overlay.
+ *
+ * @param robot - The robot.
+ * @param rooms - The open rooms.
+ * @returns A `#rrggbb` colour; a neutral grey when the room isn't known.
+ */
+export function roomColor(robot: Robot, rooms: readonly Room[]): string {
+  return rooms.find((room) => room.id === robot.room)?.color ?? NEUTRAL_ROOM_COLOR;
 }
 
 /**

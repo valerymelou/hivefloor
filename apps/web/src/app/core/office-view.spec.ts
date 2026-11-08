@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { msg, robot, ROOMS, SNAPSHOT } from '../../test/fixtures';
-import { activity, applyMessage, EMPTY_OFFICE, roomName, robotName } from './office-view';
+import {
+  activity,
+  applyMessage,
+  EMPTY_OFFICE,
+  NEUTRAL_ROOM_COLOR,
+  roomColor,
+  roomName,
+  robotName,
+  totalsByRoom,
+} from './office-view';
 
 describe('applyMessage', () => {
   const start = applyMessage(EMPTY_OFFICE, msg(SNAPSHOT)).view;
@@ -117,5 +126,29 @@ describe('labels', () => {
     expect(activity(robot({ cat: 'testing' }))).toBe('running tests');
     expect(activity(robot({ status: 'idle', cat: undefined }))).toBe('on a coffee break');
     expect(activity(robot({ status: 'working', cat: undefined }))).toBe('working');
+  });
+});
+
+describe('totalsByRoom', () => {
+  it('adds up each room and puts the busiest first', () => {
+    expect(
+      totalsByRoom([
+        { room: 'a', cat: 'coding', n: 2 },
+        { room: 'b', cat: 'coding', n: 5 },
+        { room: 'a', cat: 'vcs', n: 1 },
+        { room: 'c', cat: 'vcs', n: 3 },
+      ] as unknown as Parameters<typeof totalsByRoom>[0]),
+    ).toEqual([
+      { room: 'b', n: 5 },
+      { room: 'a', n: 3 },
+      { room: 'c', n: 3 },
+    ]);
+  });
+});
+
+describe('roomColor', () => {
+  it('uses the room colour, or a neutral one for an unknown room', () => {
+    expect(roomColor(robot(), ROOMS)).toBe('#f2a65a');
+    expect(roomColor(robot(), [])).toBe(NEUTRAL_ROOM_COLOR);
   });
 });

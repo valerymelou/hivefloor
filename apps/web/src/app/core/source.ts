@@ -8,6 +8,8 @@ export interface SourceEvents {
   message(message: ViewerMessage): void;
   /** `closedUntil` is the local time of the next daily reset, for `closed`. */
   state(state: ConnectionState, closedUntil?: string): void;
+  /** Forget everything shown so far: a different office is about to start. */
+  reset(): void;
 }
 
 /** Where office messages come from: the relay, or the demo simulator. */

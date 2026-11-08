@@ -40,13 +40,16 @@ export type SceneState = 'loading' | 'ready' | 'failed';
     }
     @if (showHint()) {
       <p
-        class="pointer-events-none absolute bottom-3 start-3 hidden rounded-md bg-black/50 px-2 py-1 font-mono text-xs text-white/80 sm:block"
+        class="pointer-events-none hf-glass absolute end-6 bottom-6 hidden px-3 py-1.5 font-mono text-xs text-foreground sm:block"
       >
         {{ strings.hint }}
       </p>
     }
   `,
-  host: { class: 'hf-stage relative block overflow-hidden', '[attr.data-state]': 'state()' },
+  host: {
+    class: 'hf-stage relative isolate block overflow-hidden',
+    '[attr.data-state]': 'state()',
+  },
 })
 export class OfficeCanvas {
   /** Whether to show the camera hint. */

@@ -1,55 +1,55 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { COPY } from '../content';
-import { buttonVariants } from '../ui/button/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card/card';
+import { COPY, REPOSITORY } from '../content';
+import { Logo } from '../logo';
 
-/** The landing page, with the live office as its hero. */
+/**
+ * The landing page: the office itself, filling the screen, with the project's
+ * name, links and credits floating over it.
+ */
 @Component({
   selector: 'hf-landing',
-  imports: [Card, CardContent, CardHeader, CardTitle, RouterLink],
+  imports: [Logo, RouterLink],
   template: `
-    <section class="mx-auto max-w-5xl px-4 pt-12 pb-8">
-      <h1 class="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-        {{ copy.hero.title }}
-      </h1>
-      <p class="mt-4 max-w-2xl text-lg text-muted-foreground">{{ copy.hero.body }}</p>
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a routerLink="/docs/self-hosting" [class]="primary">{{ copy.hero.start }}</a>
-        <a href="/office/" [class]="outline">{{ copy.hero.live }}</a>
-      </div>
-    </section>
-    <section class="mx-auto max-w-5xl px-4">
+    <div
+      class="hf-night flex min-h-dvh flex-col gap-3 bg-background p-4 text-foreground lg:relative lg:block lg:h-dvh lg:overflow-hidden lg:p-0"
+    >
       <iframe
-        src="/office/#embed"
-        [title]="copy.hero.frame"
-        loading="lazy"
-        class="aspect-video w-full rounded-xl border bg-[#0c0f1d]"
+        src="/office/#showcase"
+        [title]="copy.frame"
+        class="hf-poster order-2 h-[100vw] max-h-[70dvh] min-h-72 w-full rounded-xl border-0 lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:rounded-none"
       ></iframe>
-    </section>
-    <section class="mx-auto grid max-w-5xl gap-4 px-4 py-12 md:grid-cols-3">
-      @for (feature of copy.features; track feature.title) {
-        <div ndCard>
-          <div ndCardHeader>
-            <h2 ndCardTitle>{{ feature.title }}</h2>
-          </div>
-          <p ndCardContent class="text-sm text-muted-foreground">{{ feature.body }}</p>
+      <header class="hf-glass order-1 p-4 lg:absolute lg:start-6 lg:top-5 lg:w-96 lg:px-5">
+        <div class="flex items-center gap-2.5">
+          <hf-logo />
+          <h1 class="text-2xl font-bold tracking-tight">{{ copy.brand }}</h1>
         </div>
-      }
-    </section>
-    <section class="mx-auto max-w-5xl px-4 pb-16">
-      <h2 class="text-2xl font-semibold">{{ copy.steps.title }}</h2>
-      <p class="mt-2 text-muted-foreground">{{ copy.steps.body }}</p>
-      <pre
-        class="mt-4 overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"
-        tabindex="0"
-      ><code>{{ copy.steps.code }}</code></pre>
-      <a routerLink="/docs/self-hosting" [class]="outline + ' mt-4'">{{ copy.steps.guide }}</a>
-    </section>
+        <p class="mt-2 leading-snug text-foreground/90">{{ copy.pitch }}</p>
+      </header>
+      <nav
+        class="hf-glass order-3 flex flex-wrap items-center gap-1 p-1.5 lg:absolute lg:end-6 lg:top-5"
+        aria-label="Main"
+      >
+        <a routerLink="/docs" class="hf-navlink">{{ copy.nav.docs }}</a>
+        <a href="/office/" class="hf-navlink">{{ copy.nav.office }}</a>
+        <a [href]="repository" class="hf-navlink">{{ copy.nav.source }}</a>
+        <a routerLink="/docs/self-hosting" class="hf-navlink hf-cta">{{ copy.nav.start }}</a>
+      </nav>
+      <footer
+        class="hf-glass order-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2.5 text-[0.8125rem] text-muted-foreground lg:absolute lg:inset-x-6 lg:bottom-4"
+      >
+        <span>{{ copy.credits.line }}</span>
+        <span>
+          {{ copy.credits.legal }} ·
+          <a [href]="copy.credits.url" class="underline underline-offset-2">{{
+            copy.credits.all
+          }}</a>
+        </span>
+      </footer>
+    </div>
   `,
 })
 export default class LandingPage {
   protected readonly copy = COPY;
-  protected readonly primary = buttonVariants({ variant: 'default' });
-  protected readonly outline = buttonVariants({ variant: 'outline' });
+  protected readonly repository = REPOSITORY;
 }
