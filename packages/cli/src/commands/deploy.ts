@@ -1,7 +1,7 @@
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { isRecord } from '../core/payload.js';
 import { say, type CommandIo } from './context.js';
@@ -10,8 +10,9 @@ import { say, type CommandIo } from './context.js';
 export const MAX_VAR_BYTES = 5 * 1024;
 
 /**
- * Finds Wrangler's JavaScript entry point from a Hivefloor checkout, so it can be
- * run with Node directly: no shell, so no quoting trouble on Windows.
+ * Finds the Wrangler installed in a Hivefloor checkout and returns its JavaScript
+ * entry point, so it can be run with Node directly: no shell, so no quoting
+ * trouble on Windows.
  *
  * @param cwd - The checkout's root.
  * @returns The path to Wrangler's bin script, or `undefined` when not installed.
@@ -19,6 +20,9 @@ export const MAX_VAR_BYTES = 5 * 1024;
 export async function findWrangler(cwd: string): Promise<string | undefined> {
   try {
     const manifestPath = createRequire(join(cwd, 'package.json')).resolve('wrangler/package.json');
+    // Only the checkout's own Wrangler: never one found further up or globally.
+    const inside = relative(realpathSync(cwd), realpathSync(manifestPath));
+    if (inside.startsWith('..') || resolve(inside) === inside) return undefined;
     const manifest: unknown = JSON.parse(await readFile(manifestPath, 'utf8'));
     const bin = isRecord(manifest) ? manifest['bin'] : undefined;
     const entry =
