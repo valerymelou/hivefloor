@@ -47,6 +47,46 @@ jobs:
         if: github.event_name == 'pull_request'
         run: pnpm nx release plan:check --base="$NX_BASE" --head="$NX_HEAD"
 
+  cli-binary:
+    name: CLI binaries and hook benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # Bun is a build tool for the standalone binaries only (ADR 0011).
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Compile binaries for every platform
+        run: pnpm nx run cli:compile
+
+      - name: Smoke-test the Linux binary
+        run: |
+          bin=dist/packages/cli/binaries/hivefloor-linux-x64
+          $bin --version
+          out=$(printf 'not json' | $bin hook)
+          test -z "$out"
+
+      # docs/PRD.md: hook overhead p95 under 50 ms, for the recommended binary.
+      - name: Benchmark the hook (binary)
+        run: node packages/cli/scripts/bench-hook.mjs dist/packages/cli/binaries/hivefloor-linux-x64
+
+      # The npm bundle pays Node's own start-up; this guards against regressions.
+      - name: Benchmark the hook (Node bundle)
+        env:
+          HIVEFLOOR_BENCH_BUDGET_MS: 150
+        run: node packages/cli/scripts/bench-hook.mjs
+
   commits:
     name: Conventional Commits
     if: github.event_name == 'pull_request'
