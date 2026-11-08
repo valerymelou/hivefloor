@@ -47,10 +47,16 @@ export const PresenceSchema = z
   .strictObject({
     idleAfterSec: z.int().min(30).max(3600).default(180),
     awayAfterSec: z.int().min(60).max(86_400).default(900),
+    /** A robot with no event for this long leaves, so crashed sessions don't stay forever (H9). */
+    leaveAfterSec: z.int().min(120).max(604_800).default(3600),
   })
   .refine((p) => p.idleAfterSec < p.awayAfterSec, {
     message: 'idleAfterSec must be less than awayAfterSec',
     path: ['awayAfterSec'],
+  })
+  .refine((p) => p.awayAfterSec < p.leaveAfterSec, {
+    message: 'awayAfterSec must be less than leaveAfterSec',
+    path: ['leaveAfterSec'],
   });
 
 /** Presence timings. */
@@ -92,7 +98,7 @@ export const OfficeConfigSchema = z
       visible: true,
     }),
     agentTypes: z.array(AgentTypeSchema).max(50).default([FALLBACK_AGENT_TYPE]),
-    presence: PresenceSchema.default({ idleAfterSec: 180, awayAfterSec: 900 }),
+    presence: PresenceSchema.default({ idleAfterSec: 180, awayAfterSec: 900, leaveAfterSec: 3600 }),
     layout: LayoutLimitsSchema.default(DEFAULT_LAYOUT_LIMITS),
     viewerCap: z.int().min(1).max(10_000).default(500),
   })

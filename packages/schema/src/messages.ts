@@ -156,3 +156,15 @@ export type ViewerMessage = z.infer<typeof ViewerMessageSchema>;
 
 /** The full office state. */
 export type SnapshotMessage = z.infer<typeof SnapshotMessageSchema>;
+
+/** A viewer message as the relay builds it, before ids are branded. */
+export type ViewerMessageInput = z.input<typeof ViewerMessageSchema>;
+
+/** A room as the relay builds it. */
+export type RoomInput = z.input<typeof RoomSchema>;
+
+/** A robot as the relay builds it. */
+export type RobotInput = z.input<typeof RobotSchema>;
+
+/** The full office state as the relay builds it. */
+export type SnapshotMessageInput = z.input<typeof SnapshotMessageSchema>;

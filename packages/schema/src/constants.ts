@@ -45,10 +45,12 @@ export type EventKind = (typeof EVENT_KINDS)[number];
  *
  * - `working`: using a tool (sitting, with a tool badge).
  * - `thinking`: working without a tool (sitting).
- * - `idle`: waiting for the owner, or no event for `presence.idleAfterSec` (coffee corner).
- * - `away`: no event for `presence.awayAfterSec` (still listed, dimmed).
+ * - `waiting`: Claude finished its turn or the session just started; waiting for the owner (sitting).
+ * - `idle`: no event for `presence.idleAfterSec` (coffee corner).
+ * - `away`: no event for `presence.awayAfterSec` (still listed, dimmed). After
+ *   `presence.leaveAfterSec` the robot leaves.
  */
-export const ROBOT_STATUSES = ['working', 'thinking', 'idle', 'away'] as const;
+export const ROBOT_STATUSES = ['working', 'thinking', 'waiting', 'idle', 'away'] as const;
 
 /** One of the {@link ROBOT_STATUSES}. */
 export type RobotStatus = (typeof ROBOT_STATUSES)[number];

@@ -19,7 +19,7 @@ export const exampleOfficeConfig = {
   ],
   privateRoom: { name: 'Private projects', color: '#8d94ab', visible: true },
   agentTypes: ['Explore', 'Plan', 'Helper', 'code-reviewer'],
-  presence: { idleAfterSec: 180, awayAfterSec: 900 },
+  presence: { idleAfterSec: 180, awayAfterSec: 900, leaveAfterSec: 3600 },
   layout: {
     roomsPerFloor: 8,
     desksPerRow: 3,
