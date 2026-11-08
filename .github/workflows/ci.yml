@@ -47,6 +47,28 @@ jobs:
         if: github.event_name == 'pull_request'
         run: pnpm nx release plan:check --base="$NX_BASE" --head="$NX_HEAD"
 
+  cli-platforms:
+    name: CLI tests on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Paths, permissions, process spawning and settings files differ by OS (C14).
+      - run: pnpm nx test cli
+
   cli-binary:
     name: CLI binaries and hook benchmark
     runs-on: ubuntu-latest
