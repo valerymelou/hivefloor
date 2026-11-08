@@ -165,9 +165,34 @@ test.describe('fallbacks and modes (W10, W11, W12)', () => {
     const box = await tag(page, DEMO.seated).locator('..').boundingBox();
     expect(box).not.toBeNull();
     if (box !== null) await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
-    await expect(page.getByTestId('robot-card')).toBeVisible();
+    const card = page.getByTestId('robot-card');
+    await expect(card).toBeVisible();
+    const cardBox = await card.boundingBox();
+    expect(cardBox !== null && cardBox.x >= 0 && cardBox.x + cardBox.width <= 390).toBe(true);
     await context.close();
   });
+});
+
+test.describe('small screens (W12)', () => {
+  for (const width of [320, 390]) {
+    test(`nothing scrolls sideways at ${String(width)} px, and the page can still scroll`, async ({
+      browser,
+    }) => {
+      const context = await browser.newContext({
+        viewport: { width, height: 700 },
+        isMobile: true,
+        hasTouch: true,
+      });
+      const page = await context.newPage();
+      await openDemo(page);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+      await expect(page.locator('hf-office-canvas canvas')).toHaveCSS('touch-action', 'pan-y');
+      await context.close();
+    });
+  }
 });
 
 test.describe('a big office from the relay (E4, E8)', () => {
