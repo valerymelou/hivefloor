@@ -23,7 +23,7 @@ export interface CommandIo {
   readonly randomSecret: () => string;
   readonly fetch: typeof fetch;
   /** Runs a program with inherited stdio and resolves with its exit code. */
-  readonly runProcess: (file: string, args: readonly string[]) => Promise<number>;
+  readonly runProcess: (file: string, args: readonly string[], input?: string) => Promise<number>;
   readonly launchSender: (body: string) => void;
 }
 
