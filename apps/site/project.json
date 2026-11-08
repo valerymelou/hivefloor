@@ -1,0 +1,45 @@
+{
+  "name": "site",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/site/src",
+  "projectType": "application",
+  "tags": ["scope:site"],
+  "targets": {
+    "sync-docs": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["{workspaceRoot}/docs/*.md", "{projectRoot}/scripts/sync-docs.mjs"],
+      "outputs": ["{projectRoot}/src/content/docs"],
+      "options": { "command": "node apps/site/scripts/sync-docs.mjs" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["sync-docs"],
+      "inputs": ["production", "{workspaceRoot}/docs/*.md"],
+      "outputs": ["{projectRoot}/dist"],
+      "options": { "cwd": "{projectRoot}", "command": "vite build" }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "dependsOn": ["sync-docs"],
+      "options": { "cwd": "{projectRoot}", "command": "vite" }
+    },
+    "assemble": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": ["pnpm nx run web:build:office-subpath", "node apps/site/scripts/assemble.mjs"],
+        "parallel": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["sync-docs"],
+      "inputs": ["production"],
+      "options": { "cwd": "{projectRoot}", "command": "ngc -p tsconfig.app.json --noEmit" }
+    }
+  }
+}

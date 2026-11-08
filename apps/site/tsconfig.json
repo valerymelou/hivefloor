@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "types": ["vite/client", "node"]
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "include": ["src/**/*.ts", "vite.config.ts"],
+  "exclude": ["src/content/**"]
+}

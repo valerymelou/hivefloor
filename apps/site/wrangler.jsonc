@@ -1,0 +1,21 @@
+{
+  "$schema": "../relay/node_modules/wrangler/config-schema.json",
+  // The maintainer's deployment: one Worker for the landing page and docs at /,
+  // and the office at /office. Self-hosters use apps/relay/wrangler.jsonc.
+  "name": "hivefloor-site",
+  "main": "../relay/src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    // Built by "pnpm nx run site:assemble".
+    "directory": "../../dist/site-deploy",
+    "run_worker_first": ["/office/ingest", "/office/live", "/office/api/*"],
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "OFFICE", "class_name": "Office" }],
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Office"] }],
+  "observability": { "enabled": false },
+  "upload_source_maps": false,
+  "send_metrics": false,
+  "vars": { "BASE_PATH": "/office" },
+}
