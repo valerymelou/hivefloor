@@ -6,6 +6,11 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
+    ignore:
+      # The CLI supports Node 20 and later, so its types must not move past the
+      # oldest Node line the tooling needs. Bump the major by hand.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     commit-message:
       prefix: chore
       include: scope
@@ -26,3 +31,4 @@ updates:
       day: monday
     commit-message:
       prefix: ci
+      include: scope
