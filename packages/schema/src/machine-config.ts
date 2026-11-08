@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { GOAL_MAX_LENGTH } from './constants.js';
 import { AgentTypeSchema, CategorySchema, NameSchema, VersionSchema } from './primitives.js';
+import { isEndpointUrl } from './urls.js';
 
 /** The default words that keep a task title from being sent as a goal (H2). */
 export const DEFAULT_BLOCK_WORDS: readonly string[] = [
@@ -13,27 +14,6 @@ export const DEFAULT_BLOCK_WORDS: readonly string[] = [
   'password',
   'credential',
 ];
-
-/**
- * Tells whether a string is an ingest endpoint URL: `https`, or `http` on a local
- * development host.
- *
- * @param value - The URL to check.
- * @returns `true` for `https://…` URLs and `http://localhost…` style URLs.
- */
-export function isEndpointUrl(value: string): boolean {
-  let url: URL;
-  try {
-    url = new URL(value);
-  } catch {
-    return false;
-  }
-  if (url.protocol === 'https:') {
-    return true;
-  }
-  const localHosts = ['localhost', '127.0.0.1', '[::1]'];
-  return url.protocol === 'http:' && localHosts.includes(url.hostname);
-}
 
 /** A local folder and whether its sessions are public (C4). */
 export const MachineProjectSchema = z

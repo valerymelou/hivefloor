@@ -21,4 +21,5 @@ export {
   projectColor,
   slugify,
 } from './text.js';
+export { isEndpointUrl } from './urls.js';
 export { CONTRACT_VERSION, type ContractVersion } from './version.js';
