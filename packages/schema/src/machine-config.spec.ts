@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { exampleMachineConfig } from './fixtures/index.js';
-import { DEFAULT_BLOCK_WORDS, isEndpointUrl, MachineConfigSchema } from './machine-config.js';
+import { DEFAULT_BLOCK_WORDS, MachineConfigSchema } from './machine-config.js';
+import { isEndpointUrl } from './urls.js';
 
 const minimal = { v: 1, endpoint: 'https://office.example.com/ingest' };
 
