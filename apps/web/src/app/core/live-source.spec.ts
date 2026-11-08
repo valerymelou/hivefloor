@@ -84,13 +84,17 @@ describe('LiveSource (W6)', () => {
   });
 
   it('reports the office closed until the daily reset on a daily-limit answer (H11)', async () => {
-    const { sockets, states, flush } = setup([
+    const { sockets, states, timers, flush } = setup([
       () => new Response('error code: 1027', { status: 503 }),
     ]);
     sockets[0]?.drop();
     await flush();
     await flush();
     expect(states.at(-1)).toEqual(['closed', '01:00']);
+    // Closed until the reset, so it checks every few minutes, not every 30 s (H12).
+    expect(timers[0]?.ms).toBe(210_000);
+    timers[0]?.fn();
+    expect(sockets).toHaveLength(2);
   });
 
   it('treats a network error while checking as reconnecting', async () => {
