@@ -1,0 +1,31 @@
+{
+  "name": "hivefloor",
+  "version": "0.0.0",
+  "description": "Connect Claude Code to your Hivefloor office: a live 3D view of your sessions as robots.",
+  "keywords": [
+    "claude-code",
+    "hooks",
+    "cloudflare",
+    "building-in-public",
+    "3d",
+    "office"
+  ],
+  "homepage": "https://hivefloor.valerymelou.com",
+  "bugs": "https://github.com/valerymelou/hivefloor/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valerymelou/hivefloor.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "author": "Valery Melou",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
