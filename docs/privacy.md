@@ -22,6 +22,10 @@ File paths, commands, prompts, file contents, tool inputs and outputs, MCP serve
 
 The hook keeps small state files (the next sequence number, the last event sent, recent task subjects and the session title) in your Hivefloor folder, and deletes them when the session ends. It never stores prompts, transcripts or tool inputs. See [hooks](hooks.md#local-files) for the full list.
 
+## What the relay keeps
+
+The relay stores only the current office (rooms, robots with their hashed keys, roles, rooms, desks, statuses, categories and public goals), today's counts per room and category, the last sequence number of robots that left in the last 10 minutes, and the signatures of the last 60 seconds of requests (to reject replays). It never stores request bodies, and logging is turned off in `wrangler.jsonc`: nothing about a request is written to Cloudflare's logs.
+
 ## How it is enforced
 
 - **Allowlist by construction.** The CLI builds each event field by field from the allowlist in `packages/schema`. It never copies or spreads a hook payload, so a new Claude Code field can't leak. A property-based test feeds hundreds of random payloads full of private text through the hook logic and checks that every event matches the schema and contains none of it (`packages/cli/src/core/decide.spec.ts`).

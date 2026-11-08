@@ -13,7 +13,7 @@ corepack enable
 pnpm install
 ```
 
-`pnpm dev` (relay, web app and demo simulator together) arrives with the relay and the web app in M4 and M5.
+`pnpm dev` starts the relay locally with `wrangler dev` (copy `apps/relay/.dev.vars.example` to `.dev.vars` first). The web app and demo simulator join it in M5.
 
 ## Everyday commands
 
