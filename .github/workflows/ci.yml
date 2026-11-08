@@ -69,6 +69,27 @@ jobs:
       # Paths, permissions, process spawning and settings files differ by OS (C14).
       - run: pnpm nx test cli
 
+  web-ui:
+    name: Ndop verify (office UI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # ndop verify renders the components in Chromium (usage, build, lint, render),
+      # with the playwright-core version @ndop/verify 1.1.1 depends on.
+      - run: pnpm dlx playwright-core@1.63.0 install --with-deps chromium
+
+      - run: pnpm nx run web:verify-ui
+
   cli-binary:
     name: CLI binaries and hook benchmark
     runs-on: ubuntu-latest
