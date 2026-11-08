@@ -96,11 +96,12 @@ export default [
     },
   },
 
-  // Tests may use non-null assertions to keep fixtures short.
+  // Tests and test helpers may use non-null assertions and inferred return types.
   {
     files: testFiles,
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
   },
 ];
