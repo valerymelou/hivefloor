@@ -1,0 +1,36 @@
+{
+  "name": "web-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/web-e2e/src",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "implicitDependencies": ["web"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "dependsOn": [{ "projects": ["web"], "target": "build" }],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "playwright test"
+      }
+    },
+    "fps": {
+      "executor": "nx:run-commands",
+      "dependsOn": [{ "projects": ["web"], "target": "build" }],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "playwright test --grep @fps",
+        "env": { "HIVEFLOOR_FPS": "1" }
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "tsc -p tsconfig.json --noEmit"
+      }
+    }
+  }
+}
