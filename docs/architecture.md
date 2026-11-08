@@ -60,4 +60,6 @@ sequenceDiagram
 
 The relay serves the built Angular app. One `OfficeStore` holds the page's state as signals; a pure reducer applies each message (`snapshot`, `room`, `delta`, `leave`, `roomClosed`, `today`, `status`) and feeds the activity list. The store reads from a source: the relay's WebSocket (with reconnection, the "Office closed" state and busy polling) or, with `#demo`, a simulator that sends the same messages. The overlay components only read the store. See [ADR 0014](adr/0014-web-foundation.md).
 
+The 3D office lives in `scene/`. Its pure modules turn the shared `layout` result into geometry (`plan`), walks (`navigation`), what each robot does and says (`behaviour`), and camera framing and picking (`camera`). `scene/render/` is the only code that touches Three.js. It loads on demand, so the overlay appears first, and it receives the store's view on every change. See [ADR 0015](adr/0015-3d-office.md).
+
 Detailed sections on the 3D scene are added in M6. Background: [the PRD](PRD.md#architecture) and the [decision records](adr/README.md).

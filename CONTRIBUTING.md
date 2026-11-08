@@ -15,6 +15,8 @@ pnpm install
 
 `pnpm dev` starts the relay locally with `wrangler dev`, serving the built office on http://localhost:8787 (copy `apps/relay/.dev.vars.example` to `.dev.vars` first), and the web app's dev server on http://localhost:4200, proxied to the relay. Open http://localhost:4200/#demo to see the office with simulated sessions, no relay or Claude Code needed.
 
+`pnpm nx e2e web-e2e` runs the Playwright scenarios against a production build in demo mode. Run `pnpm exec playwright install chromium` once first. `pnpm nx run web-e2e:fps` measures the frame rate on your own GPU; CI doesn't run it because results depend on the machine.
+
 ## Everyday commands
 
 | Command                                         | What it does                                           |
