@@ -17,3 +17,4 @@ We record significant decisions here in [MADR](https://adr.github.io/madr/) form
 | [0011](0011-compiled-binary-with-bun.md)         | Compile the standalone CLI binary with Bun                                 | accepted           |
 | [0012](0012-cli-setup-and-relay-handshake.md)    | CLI setup commands and their contract with the relay                       | accepted           |
 | [0013](0013-relay-office-state.md)               | Keep the office in one Durable Object, with a pure reducer and diff writes | accepted           |
+| [0014](0014-web-foundation.md)                   | Build the office web app on Angular, Ndop UI and one signal store          | accepted           |

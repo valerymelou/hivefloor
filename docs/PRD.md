@@ -368,9 +368,10 @@ Headers: `X-Office-Timestamp` and `X-Office-Signature` = hex HMAC-SHA256(secret,
 { "type": "leave", "v": 1, "key": "a9f3c2:4be1d0" }
 { "type": "roomClosed", "v": 1, "id": "ndop-ui" }
 { "type": "status", "v": 1, "state": "limited", "until": 1794096000 }
+{ "type": "today", "v": 1, "count": { "room": "ledgerly", "cat": "testing", "n": 43 } }
 ```
 
-Main sessions carry a `desk` number and subagents a `seat` number at the team table. A `room` message is sent when a room opens, grows or shrinks a row, or changes its lights.
+Main sessions carry a `desk` number and subagents a `seat` number at the team table. A `room` message is sent when a room opens, grows or shrinks a row, or changes its lights. A `today` message is sent whenever one of today's counts changes, so visitors never poll for them.
 
 The category set is fixed in v1: `reading`, `coding`, `testing`, `vcs`, `terminal`, `research`, `delegating`, `planning`, `designing`, `monitoring`, `integration`, `working`.
 
@@ -518,5 +519,11 @@ Tip: once M2 and M4 work, install the hook on this repo itself. Claude Code buil
 - [x] **`presence.leaveAfterSec`** (default 3,600 s): robots without events leave, so sessions that never sent `SessionEnd` don't stay forever.
 - [x] **Ingest answers:** 413 too large, 401 timestamp or signature, 400 schema, 422 not in the allowlists, 409 replay, 503 not configured, 204 success. The event's `t` may lag relay time by up to 120 s because of rounding; the header timestamp has the strict 60 s window.
 - [x] **Viewer cap:** visitors beyond it get a `busy` status message and the socket closes.
+
+**Decided in M5 (8 November 2026)** — see [ADR 0014](adr/0014-web-foundation.md)
+
+- [x] **`today` viewer message:** the relay pushes count changes; the snapshot still carries all counts.
+- [x] **Ndop UI in Nx:** manual setup per Ndop's Nx guide; `pnpm nx run web:verify-ui` wraps `ndop verify`; `@angular/cdk` and `@angular/forms` added for Ndop's primitives.
+- [x] **The relay serves the built web app**, with the security headers in `apps/web/public/_headers`.
 
 **Still open:** nothing right now. Revisit this list at the start of each milestone.

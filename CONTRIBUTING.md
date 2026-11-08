@@ -13,7 +13,7 @@ corepack enable
 pnpm install
 ```
 
-`pnpm dev` starts the relay locally with `wrangler dev` (copy `apps/relay/.dev.vars.example` to `.dev.vars` first). The web app and demo simulator join it in M5.
+`pnpm dev` starts the relay locally with `wrangler dev`, serving the built office on http://localhost:8787 (copy `apps/relay/.dev.vars.example` to `.dev.vars` first), and the web app's dev server on http://localhost:4200, proxied to the relay. Open http://localhost:4200/#demo to see the office with simulated sessions, no relay or Claude Code needed.
 
 ## Everyday commands
 

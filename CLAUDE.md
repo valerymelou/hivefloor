@@ -6,7 +6,7 @@ Full requirements: docs/PRD.md. Decisions: docs/adr/.
 ## Commands (Nx on pnpm workspaces)
 
 - pnpm install
-- pnpm dev relay (wrangler dev) + web app + demo simulator, via nx run-many
+- pnpm dev relay (wrangler dev, serving the built web app on :8787) + web app dev server (:4200, proxied to the relay); open /#demo for the simulator
 - pnpm nx affected -t lint typecheck test build
 - pnpm nx run-many -t lint typecheck test build everything, as CI does on main
 - pnpm nx e2e web-e2e Playwright against demo mode
@@ -29,7 +29,7 @@ Full requirements: docs/PRD.md. Decisions: docs/adr/.
 - Pure core, thin edges: logic in pure functions with unit tests; I/O, storage and rendering at the edges.
 - Module boundaries: apps and the CLI import only from packages/schema, never from each other.
 - TypeScript strict. No any, no non-null assertions outside tests, exhaustive switches.
-- Overlay UI uses Ndop UI (https://ndop.dev), a copy-in registry: add and update components with npx @ndop/cli, and run npx @ndop/cli verify on apps/web before a PR.
+- Overlay UI uses Ndop UI (https://ndop.dev), a copy-in registry: add and update components with pnpm exec ndop add / update (ndop.json at the root), and run pnpm nx run web:verify-ui (ndop verify for this Nx workspace) before a PR. Don't edit files in apps/web/src/app/ui or lib by hand.
 - Angular: standalone components, signals, zoneless, inject(); Three.js code stays framework-agnostic in scene/ and disposes what it creates.
 - Every exported symbol has TSDoc. Behaviour changes update docs/. Significant decisions get an ADR.
 - Conventional Commits. A version plan for every change to a published package. No Nx Cloud.
