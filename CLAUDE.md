@@ -10,6 +10,7 @@ Full requirements: docs/PRD.md. Decisions: docs/adr/.
 - pnpm nx affected -t lint typecheck test build
 - pnpm nx run-many -t lint typecheck test build everything, as CI does on main
 - pnpm nx e2e web-e2e Playwright against demo mode
+- pnpm nx run site:assemble build the site with the office under /office; pnpm nx run web-e2e:site tests it
 - pnpm nx graph see how projects depend on each other
 - pnpm nx release plan describe a change to a published package
 
