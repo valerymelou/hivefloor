@@ -14,6 +14,14 @@
         "command": "playwright test"
       }
     },
+    "site": {
+      "executor": "nx:run-commands",
+      "dependsOn": [{ "projects": ["site"], "target": "assemble" }],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "playwright test -c playwright.site.config.ts"
+      }
+    },
     "fps": {
       "executor": "nx:run-commands",
       "dependsOn": [{ "projects": ["web"], "target": "build" }],
