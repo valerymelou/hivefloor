@@ -22,6 +22,8 @@ pnpm install
 | `pnpm nx affected -t lint typecheck test build` | Checks only the projects your change touches.          |
 | `pnpm nx run-many -t lint typecheck test build` | Checks everything, as CI does on `main`.               |
 | `pnpm nx graph`                                 | Shows how projects depend on each other.               |
+| `pnpm nx bench cli`                             | Benchmarks the hook; CI gates the binary at p95 50 ms. |
+| `pnpm nx compile cli`                           | Builds the standalone CLI binaries (needs Bun 1.4).    |
 | `pnpm format`                                   | Formats the repository with Prettier.                  |
 | `pnpm nx release plan`                          | Describes a change to a published package (see below). |
 
