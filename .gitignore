@@ -1,0 +1,44 @@
+# compiled output
+dist
+tmp
+out-tsc
+*.tsbuildinfo
+
+# dependencies
+node_modules
+
+# test output
+coverage
+
+# Nx
+.nx/cache
+.nx/workspace-data
+.nx/polygraph
+.nx/self-healing
+.nx/migrate-runs
+
+# Cloudflare
+.wrangler
+.dev.vars
+
+# Hivefloor: the real office config is per deployment (H16)
+office.config.json
+
+# IDEs and editors
+/.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Claude Code local files
+.claude/settings.local.json
+.claude/worktrees
+
+# System files
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+vitest.config.*.timestamp*
+.vitest
