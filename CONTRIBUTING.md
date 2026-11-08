@@ -61,6 +61,8 @@ Pick the bump (patch, minor, major) and write one or two sentences for the chang
 
 Releases are cut from `main` by the **Release** workflow (`.github/workflows/release.yml`), started by hand from the Actions tab. It reads the version plans, bumps the version, writes `CHANGELOG.md`, tags `v<version>`, creates the GitHub release with the standalone binaries, and publishes `hivefloor` to npm with provenance, using npm trusted publishing. Run it with **dry run** first.
 
+The workflow tags the release before it publishes, so a failed npm step leaves the tag and the GitHub release in place, and running it again can't finish the job. Fix the cause, then start it with **publish only**, which skips versioning and publishes the version on `main`. It refuses if `packages/cli` or `packages/schema` have changed since the tag. With **dry run** also ticked, it stops short of publishing.
+
 The maintainer's site deploys from `main` through `.github/workflows/deploy-demo.yml`. It only runs when the repository variable `DEPLOY_DEMO` is `true`, so forks aren't affected.
 
 ## Reporting bugs and security issues
