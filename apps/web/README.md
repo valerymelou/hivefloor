@@ -1,6 +1,6 @@
 # Hivefloor office (web app)
 
-The Angular app visitors open: a live view of the office built from the relay's messages. M5 delivers the overlay and the list view; the 3D scene arrives in M6. Design: [ADR 0014](../../docs/adr/0014-web-foundation.md).
+The Angular app visitors open: a live view of the office built from the relay's messages. It has the 3D office, the overlay and a list view of everyone.
 
 ## Code
 
@@ -31,3 +31,7 @@ pnpm nx run web:size            # fails above 1.5 MB gzipped (first visit, inclu
 pnpm nx run web:verify-ui       # ndop verify on src/app/overlay (usage, build, lint; render needs Chromium for Playwright)
 pnpm exec ndop add <component>  # add an Ndop UI component (ndop.json is at the repository root)
 ```
+
+## Modes
+
+The URL hash picks a mode, and flags combine with `&`: `#demo` runs the simulator, `#demo-crowd` starts it with ten sessions, and `#embed` shows only the office and a small live badge. `pnpm nx run web:build:office-subpath` builds the app for serving under `/office/`.

@@ -5,6 +5,7 @@ import {
   effect,
   type ElementRef,
   inject,
+  input,
   output,
   signal,
   viewChild,
@@ -37,15 +38,20 @@ export type SceneState = 'loading' | 'ready' | 'failed';
         {{ strings.loading }}
       </p>
     }
-    <p
-      class="pointer-events-none absolute bottom-3 start-3 hidden rounded-md bg-black/50 px-2 py-1 font-mono text-xs text-white/80 sm:block"
-    >
-      {{ strings.hint }}
-    </p>
+    @if (showHint()) {
+      <p
+        class="pointer-events-none absolute bottom-3 start-3 hidden rounded-md bg-black/50 px-2 py-1 font-mono text-xs text-white/80 sm:block"
+      >
+        {{ strings.hint }}
+      </p>
+    }
   `,
   host: { class: 'hf-stage relative block overflow-hidden', '[attr.data-state]': 'state()' },
 })
 export class OfficeCanvas {
+  /** Whether to show the camera hint. */
+  readonly showHint = input(true);
+
   /** Emitted when the 3D office can't be drawn. */
   readonly failed = output();
 

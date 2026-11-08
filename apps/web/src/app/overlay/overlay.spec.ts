@@ -6,6 +6,7 @@ import { axeViolations } from '../../test/axe';
 import { DEMO_MODE } from '../app.config';
 import { OfficeStore } from '../core/office-store';
 import { ActivityFeed } from './activity-feed';
+import { LiveBadge } from './live-badge';
 import { OfficeHeader } from './office-header';
 import { PrivacyNote } from './privacy-note';
 import { PublicWork } from './public-work';
@@ -181,6 +182,21 @@ describe('overlay components', () => {
     ]);
     expect(rows.map((r) => r[0])).toEqual(['Claude', 'Claude', 'Explore']);
     expect(element.querySelector('caption')?.textContent).toContain('Every agent');
+  });
+
+  it('live badge counts working agents and links to the full office', async () => {
+    const { element, store, fixture } = await render(LiveBadge);
+    const link = element.querySelector('a');
+    expect(link?.getAttribute('target')).toBe('_top');
+    expect(link?.textContent).toContain('Connecting');
+    store.connection.set('live');
+    await fixture.whenStable();
+    expect(link?.textContent).toContain('agents working');
+    expect(link?.getAttribute('aria-label')).toContain('Open the full office');
+    store.closedUntil.set('01:00');
+    store.connection.set('closed');
+    await fixture.whenStable();
+    expect(link?.textContent).toContain('Office closed until 01:00');
   });
 
   it('privacy note states the promise', async () => {
