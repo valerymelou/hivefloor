@@ -18,7 +18,7 @@ export function testIo(options: {
   const out: string[] = [];
   const err: string[] = [];
   const asked: string[] = [];
-  const ran: { file: string; args: readonly string[] }[] = [];
+  const ran: { file: string; args: readonly string[]; input?: string }[] = [];
   const sent: string[] = [];
   const answers = [...(options.answers ?? [])];
   let clock = 1794096003_000;
@@ -41,8 +41,8 @@ export function testIo(options: {
     },
     randomSecret: () => 'generated-secret-0123456789abcdef',
     fetch: options.fetch ?? (() => Promise.reject(new Error('no network in tests'))),
-    runProcess: (file, args) => {
-      ran.push({ file, args });
+    runProcess: (file, args, input) => {
+      ran.push(input === undefined ? { file, args } : { file, args, input });
       return Promise.resolve(options.exitCode ?? 0);
     },
     launchSender: (body) => sent.push(body),

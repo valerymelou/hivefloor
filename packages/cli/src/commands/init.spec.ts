@@ -37,7 +37,7 @@ describe('hivefloor init (C1)', () => {
     if (process.platform !== 'win32')
       expect((await stat(join(dirs.hivefloor, 'secret'))).mode & 0o777).toBe(0o600);
     expect(first.out()).toContain('generated-secret-0123456789abcdef');
-    expect(first.out()).toContain('wrangler secret put HIVEFLOOR_SECRET');
+    expect(first.out()).toContain('hivefloor deploy --push-secret');
     const hooks = registeredHooks(await readJson(settingsPath));
     expect(hooks.map((h) => h.event).sort()).toEqual([...HOOK_EVENTS].sort());
     expect(hooks[0]?.command).toBe(

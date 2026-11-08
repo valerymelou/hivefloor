@@ -185,7 +185,7 @@ export async function init(args: readonly string[], io: CommandIo): Promise<numb
       '',
       'New secret created. Set the same value on your relay (it is shown only now):',
       `  ${secret.secret}`,
-      '  npx wrangler secret put HIVEFLOOR_SECRET --config apps/relay/wrangler.jsonc',
+      '  hivefloor deploy --push-secret   (from your Hivefloor checkout)',
     );
   }
   say(

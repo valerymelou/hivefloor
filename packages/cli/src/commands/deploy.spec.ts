@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { exampleOfficeConfig } from '@hivefloor/schema/fixtures';
@@ -31,7 +31,8 @@ describe('hivefloor deploy (H16)', () => {
     const run = box.io({ cwd: root });
     expect(await deploy(['--dry-run'], run.io)).toBe(0);
     expect(run.out()).toContain('is valid (3 public projects)');
-    expect(run.out()).toContain('wrangler secret put HIVEFLOOR_SECRET');
+    expect(run.out()).toContain('no secret was set');
+    expect(run.ran).toHaveLength(1);
     const [call] = run.ran;
     expect(call?.file).toBe('/usr/local/bin/node');
     expect(call?.args[0]).toMatch(/node_modules[\\/]wrangler[\\/]bin[\\/]wrangler\.js$/);
@@ -57,6 +58,62 @@ describe('hivefloor deploy (H16)', () => {
     expect(run.out()).not.toContain('Deployed');
   });
 
+  it('offers to create a secret and sets it on the relay through stdin, once', async () => {
+    const { box, root } = await checkout();
+    const first = box.io({ cwd: root, interactive: true, answers: [''] });
+    expect(await deploy([], first.io)).toBe(0);
+    expect(first.asked[0]).toContain('replaces any secret');
+    const put = first.ran[1];
+    expect(put?.args.slice(1, 4)).toEqual(['secret', 'put', 'HIVEFLOOR_SECRET']);
+    const saved = (await readFile(box.paths.secret, 'utf8')).trim();
+    expect(saved.length).toBeGreaterThanOrEqual(16);
+    expect(put?.input).toBe(saved);
+    expect(put?.args.join(' ')).not.toContain(saved);
+    expect(first.out()).not.toContain(saved);
+    expect(first.out()).toContain('hivefloor init --url');
+
+    const second = box.io({ cwd: root, interactive: true });
+    expect(await deploy([], second.io)).toBe(0);
+    expect(second.ran).toHaveLength(1);
+    expect(second.asked).toEqual([]);
+    expect(second.out()).toContain('hivefloor init --url');
+  });
+
+  it('leaves the relay alone when you say no, and when nobody can answer', async () => {
+    const { box, root } = await checkout();
+    const declined = box.io({ cwd: root, interactive: true, answers: ['n'] });
+    expect(await deploy([], declined.io)).toBe(0);
+    expect(declined.ran).toHaveLength(1);
+    expect(declined.out()).toContain('--push-secret');
+    const unattended = box.io({ cwd: root, interactive: false });
+    expect(await deploy([], unattended.io)).toBe(0);
+    expect(unattended.ran).toHaveLength(1);
+    expect(unattended.asked).toEqual([]);
+  });
+
+  it('sets a secret with --push-secret, without asking', async () => {
+    const { box, root } = await checkout();
+    const created = box.io({ cwd: root, interactive: false });
+    expect(await deploy(['--push-secret'], created.io)).toBe(0);
+    const saved = (await readFile(box.paths.secret, 'utf8')).trim();
+    expect(created.ran[1]?.input).toBe(saved);
+    const again = box.io({ cwd: root, interactive: false });
+    expect(await deploy(['--push-secret'], again.io)).toBe(0);
+    expect(again.ran[1]?.input).toBe(saved);
+  });
+
+  it('says how to recover when setting the secret fails', async () => {
+    const { box, root } = await checkout();
+    let calls = 0;
+    const run = box.io({ cwd: root, interactive: false });
+    const io = {
+      ...run.io,
+      runProcess: () => Promise.resolve(++calls === 1 ? 0 : 7),
+    };
+    expect(await deploy(['--push-secret'], io)).toBe(7);
+    expect(run.err()).toContain('--push-secret');
+  });
+
   it('refuses an invalid, missing or oversized config', async () => {
     const { box, root } = await checkout();
     await writeFile(
@@ -80,6 +137,22 @@ describe('hivefloor deploy (H16)', () => {
     const big = box.io({ cwd: root });
     expect(await deploy([], big.io)).toBe(1);
     expect(big.err()).toContain('too large');
+  });
+
+  it('finds the Wrangler pnpm installs for the relay', async () => {
+    const box = await commandSandbox();
+    cleanup = box.cleanup;
+    const root = join(box.dirs.root, 'hivefloor');
+    const wrangler = join(root, 'apps', 'relay', 'node_modules', 'wrangler');
+    await mkdir(join(wrangler, 'bin'), { recursive: true });
+    await writeFile(join(root, 'package.json'), '{}');
+    await writeFile(join(root, 'apps', 'relay', 'package.json'), '{}');
+    await writeFile(
+      join(wrangler, 'package.json'),
+      JSON.stringify({ name: 'wrangler', bin: { wrangler: './bin/wrangler.js' } }),
+    );
+    await writeFile(join(wrangler, 'bin', 'wrangler.js'), '');
+    expect(await findWrangler(root)).toMatch(/apps[\\/]relay[\\/]node_modules[\\/]wrangler/);
   });
 
   it('needs a checkout with Wrangler installed', async () => {

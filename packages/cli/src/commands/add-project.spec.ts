@@ -209,7 +209,7 @@ describe('hivefloor add-project', () => {
       0,
     );
     expect(await projects()).toHaveLength(1);
-    expect(run.out()).not.toContain('Next:');
+    expect(run.out()).not.toContain('Next: hivefloor deploy');
     expect(run.out().indexOf(WARNING)).toBeLessThan(run.out().indexOf('is valid'));
     const args = run.ran[0]?.args ?? [];
     expect(args.slice(1, 4)).toEqual([

@@ -4,6 +4,9 @@ import { createRequire } from 'node:module';
 import { dirname, join, relative, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { isRecord } from '../core/payload.js';
+import { loadSecret } from '../edge/config.js';
+import { writeAtomic } from '../edge/files.js';
+import { hivefloorFiles } from '../edge/home.js';
 import { say, type CommandIo } from './context.js';
 
 /** Cloudflare's size limit for one Worker variable. */
@@ -18,8 +21,17 @@ export const MAX_VAR_BYTES = 5 * 1024;
  * @returns The path to Wrangler's bin script, or `undefined` when not installed.
  */
 export async function findWrangler(cwd: string): Promise<string | undefined> {
+  // pnpm installs Wrangler for the relay, not at the root of the checkout.
+  for (const base of [cwd, join(cwd, 'apps', 'relay')]) {
+    const found = await wranglerEntry(cwd, base);
+    if (found !== undefined) return found;
+  }
+  return undefined;
+}
+
+async function wranglerEntry(cwd: string, base: string): Promise<string | undefined> {
   try {
-    const manifestPath = createRequire(join(cwd, 'package.json')).resolve('wrangler/package.json');
+    const manifestPath = createRequire(join(base, 'package.json')).resolve('wrangler/package.json');
     // Only the checkout's own Wrangler: never one found further up or globally.
     const inside = relative(realpathSync(cwd), realpathSync(manifestPath));
     if (inside.startsWith('..') || resolve(inside) === inside) return undefined;
@@ -41,12 +53,41 @@ const options = {
   config: { type: 'string', default: 'office.config.json' },
   'wrangler-config': { type: 'string', default: join('apps', 'relay', 'wrangler.jsonc') },
   'dry-run': { type: 'boolean' },
+  'push-secret': { type: 'boolean' },
 } as const;
+
+const NO_SECRET_HINT =
+  'This machine has no secret, so the relay was left as it is. To create one and set it: hivefloor deploy --push-secret';
+
+/**
+ * Decides which secret, if any, to set on the relay. A machine with no secret
+ * only creates one when told to, because that replaces whatever the relay has
+ * and would disconnect any other machine; unattended runs (CI) never do.
+ */
+async function secretToPush(io: CommandIo, push: boolean): Promise<string | undefined> {
+  const files = hivefloorFiles(io.env, io.home, io.windows);
+  const existing = await loadSecret(files);
+  if (existing !== undefined) return push ? existing : undefined;
+  if (!push) {
+    if (!io.interactive) return undefined;
+    const answer = await io.ask(
+      'Create a secret and set it on the relay? This replaces any secret it already has. [Y/n] ',
+    );
+    if (/^n/i.test(answer.trim())) return undefined;
+  }
+  const secret = io.randomSecret();
+  await writeAtomic(files.secret, `${secret}\n`, 0o600);
+  return secret;
+}
 
 /**
  * `hivefloor deploy`: validates `office.config.json` and deploys the relay with
  * Wrangler, passing the validated config as the `OFFICE_CONFIG` variable (H16).
- * Run it from a Hivefloor checkout; the real config file stays out of git.
+ * On a machine with no secret it offers to create one and set it on the relay,
+ * so `hivefloor init` afterwards just connects; `--push-secret` does so without
+ * asking, and sets an existing secret too. The secret goes through stdin, never
+ * the command line. Run it from a
+ * Hivefloor checkout; the real config file stays out of git.
  *
  * @param args - Arguments after `deploy`.
  * @param io - Process facilities.
@@ -99,13 +140,28 @@ export async function deploy(args: readonly string[], io: CommandIo): Promise<nu
     `OFFICE_CONFIG:${json}`,
     ...(values['dry-run'] === true ? ['--dry-run'] : []),
   ]);
-  if (code === 0) {
-    say(
-      io,
-      '',
-      'Deployed. If the relay has no secret yet, set it once:',
-      `  npx wrangler secret put HIVEFLOOR_SECRET --config ${wranglerConfig}`,
-    );
+  if (code !== 0) return code;
+  if (values['dry-run'] === true) {
+    say(io, '', 'Dry run: nothing was deployed and no secret was set.');
+    return 0;
   }
-  return code;
+  const secret = await secretToPush(io, values['push-secret'] === true);
+  if (secret === undefined) {
+    const known = (await loadSecret(hivefloorFiles(io.env, io.home, io.windows))) !== undefined;
+    say(io, '', known ? 'Deployed. Next: hivefloor init --url <your office URL>' : NO_SECRET_HINT);
+    return 0;
+  }
+  const secretCode = await io.runProcess(
+    node,
+    [wrangler, 'secret', 'put', 'HIVEFLOOR_SECRET', '--config', wranglerConfig],
+    secret,
+  );
+  if (secretCode !== 0) {
+    io.stderr(
+      `hivefloor: deployed, but setting the secret failed. Run: hivefloor deploy --push-secret\n`,
+    );
+    return secretCode;
+  }
+  say(io, '', '✓ Secret set on the relay.', 'Next: hivefloor init --url <your office URL>');
+  return 0;
 }

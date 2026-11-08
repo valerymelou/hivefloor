@@ -55,9 +55,12 @@ function launchSender(body: string): void {
   }
 }
 
-function runProcess(file: string, argv: readonly string[]): Promise<number> {
+function runProcess(file: string, argv: readonly string[], input?: string): Promise<number> {
   return new Promise((resolve) => {
-    const child = spawn(file, [...argv], { stdio: 'inherit' });
+    const child = spawn(file, [...argv], {
+      stdio: [input === undefined ? 'inherit' : 'pipe', 'inherit', 'inherit'],
+    });
+    child.stdin?.end(input);
     child.on('error', () => {
       resolve(1);
     });
