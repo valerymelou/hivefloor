@@ -15,6 +15,17 @@
         "assets": ["packages/schema/*.md"]
       }
     },
-    "typecheck": {}
+    "typecheck": {},
+    "json-schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "vitest run src/json-schema.spec.ts --update --coverage.enabled=false"
+      },
+      "outputs": ["{projectRoot}/office.schema.json", "{projectRoot}/machine.schema.json"]
+    },
+    "test": {
+      "inputs": ["default", "^production", "{workspaceRoot}/office.config.example.json"]
+    }
   }
 }

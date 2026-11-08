@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/@hivefloor/schema/office.schema.json",
+  "v": 1,
+  "title": "Hivefloor",
+  "owner": "Valery Melou",
+  "timezone": "Africa/Douala",
+  "publicProjects": [
+    { "name": "Builderswave", "color": "#6ea8fe", "group": "web" },
+    { "name": "Ledgerly", "color": "#f2a65a", "group": "mobile" },
+    { "name": "Ndop UI", "color": "#b79cf2", "group": "open-source" }
+  ],
+  "privateRoom": {
+    "name": "Private projects",
+    "color": "#8d94ab",
+    "visible": true
+  },
+  "agentTypes": ["Explore", "Plan", "Helper", "code-reviewer"],
+  "presence": { "idleAfterSec": 180, "awayAfterSec": 900 },
+  "layout": {
+    "roomsPerFloor": 8,
+    "desksPerRow": 3,
+    "maxRowsPerRoom": 4,
+    "tableSeats": 6,
+    "roomCloseAfterSec": 1800,
+    "rowRemoveAfterSec": 600,
+    "maxRenderedRobots": 40,
+    "maxVisibleRooms": 12
+  },
+  "viewerCap": 500
+}

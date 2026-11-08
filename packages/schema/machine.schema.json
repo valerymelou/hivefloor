@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "v": {
+      "type": "number",
+      "const": 1
+    },
+    "endpoint": {
+      "type": "string"
+    },
+    "projects": {
+      "default": [],
+      "maxItems": 500,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "public": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "path",
+          "public"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "publicAgentTypes": {
+      "default": [],
+      "maxItems": 50,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+      }
+    },
+    "goals": {
+      "default": {
+        "fromTaskList": true,
+        "maxLength": 60,
+        "blockWords": [
+          "security",
+          "vulnerability",
+          "CVE",
+          "exploit",
+          "token",
+          "secret",
+          "password",
+          "credential"
+        ],
+        "privatePrefix": "[private]"
+      },
+      "type": "object",
+      "properties": {
+        "fromTaskList": {
+          "default": true,
+          "type": "boolean"
+        },
+        "maxLength": {
+          "default": 60,
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 60
+        },
+        "blockWords": {
+          "default": [
+            "security",
+            "vulnerability",
+            "CVE",
+            "exploit",
+            "token",
+            "secret",
+            "password",
+            "credential"
+          ],
+          "maxItems": 200,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        },
+        "privatePrefix": {
+          "default": "[private]",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        }
+      },
+      "additionalProperties": false
+    },
+    "mcpCategories": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "reading",
+          "coding",
+          "testing",
+          "vcs",
+          "terminal",
+          "research",
+          "delegating",
+          "planning",
+          "designing",
+          "monitoring",
+          "integration",
+          "working"
+        ]
+      }
+    },
+    "timestampRoundingSec": {
+      "default": 5,
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60
+    },
+    "paused": {
+      "default": false,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "v",
+    "endpoint"
+  ],
+  "additionalProperties": false,
+  "title": "Hivefloor machine config"
+}
