@@ -29,21 +29,23 @@ export interface HivefloorFiles {
  * @returns The folder and the files in it.
  */
 export function hivefloorFiles(env: HomeEnv, home: string, windows: boolean): HivefloorFiles {
+  // The default folder follows the conventions of the owner's OS.
   const path = windows ? win32 : posix;
   const dir =
     env.HIVEFLOOR_HOME ??
     (windows
       ? path.join(env.APPDATA ?? path.join(home, 'AppData', 'Roaming'), 'hivefloor')
       : path.join(env.XDG_CONFIG_HOME ?? path.join(home, '.config'), 'hivefloor'));
-  const stateDir = path.join(dir, 'state');
+  // File names are joined with the running platform's rules.
+  const stateDir = join(dir, 'state');
   return {
     dir,
-    config: path.join(dir, 'config.json'),
-    secret: path.join(dir, 'secret'),
+    config: join(dir, 'config.json'),
+    secret: join(dir, 'secret'),
     stateDir,
-    configCache: path.join(stateDir, 'config.cache.json'),
-    debugLog: path.join(dir, 'debug.log'),
-    recordings: path.join(dir, 'recordings'),
+    configCache: join(stateDir, 'config.cache.json'),
+    debugLog: join(dir, 'debug.log'),
+    recordings: join(dir, 'recordings'),
   };
 }
 
@@ -60,4 +62,15 @@ export function stateFile(stateDir: string, sessionKey: string, agentKey?: strin
     stateDir,
     agentKey === undefined ? `${sessionKey}.json` : `${sessionKey}.${agentKey}.json`,
   );
+}
+
+/**
+ * Where doctor saves the relay's public office config, so preview can warn about
+ * unknown project names offline (H4).
+ *
+ * @param files - The CLI's files.
+ * @returns The file path.
+ */
+export function officeCacheFile(files: HivefloorFiles): string {
+  return join(files.stateDir, 'office.cache.json');
 }

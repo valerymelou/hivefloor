@@ -16,5 +16,11 @@ export default defineConfig({
   sourcemap: false,
   fixedExtension: true,
   deps: { alwaysBundle: [/./] },
-  copy: ['package.json', 'README.md', { from: '../../LICENSE', to: '../../dist/packages/cli' }],
+  copy: [
+    'package.json',
+    'README.md',
+    { from: '../../LICENSE', to: '../../dist/packages/cli' },
+    // The machine config's $schema points at https://unpkg.com/hivefloor/machine.schema.json.
+    { from: '../schema/machine.schema.json', to: '../../dist/packages/cli' },
+  ],
 });

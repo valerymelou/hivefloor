@@ -20,7 +20,8 @@
         "production",
         "^production",
         "{projectRoot}/tsdown.config.ts",
-        "{workspaceRoot}/LICENSE"
+        "{workspaceRoot}/LICENSE",
+        "{workspaceRoot}/packages/schema/machine.schema.json"
       ],
       "outputs": ["{workspaceRoot}/dist/packages/cli"],
       "options": {

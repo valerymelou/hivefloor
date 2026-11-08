@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { homedir } from 'node:os';
+import { createInterface } from 'node:readline/promises';
 import { selfCommand } from './edge/sender.js';
 import { main } from './main.js';
 
@@ -31,6 +33,15 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString('utf8');
 }
 
+async function ask(question: string): Promise<string> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return await rl.question(question);
+  } finally {
+    rl.close();
+  }
+}
+
 function launchSender(body: string): void {
   try {
     const self = selfCommand(process.execPath, process.argv);
@@ -44,14 +55,33 @@ function launchSender(body: string): void {
   }
 }
 
+function runProcess(file: string, argv: readonly string[]): Promise<number> {
+  return new Promise((resolve) => {
+    const child = spawn(file, [...argv], { stdio: 'inherit' });
+    child.on('error', () => {
+      resolve(1);
+    });
+    child.on('close', (code) => {
+      resolve(code ?? 1);
+    });
+  });
+}
+
 process.exitCode = await main(args, {
   env: process.env,
   home: homedir(),
+  cwd: process.cwd(),
   windows: process.platform === 'win32',
+  execPath: process.execPath,
+  script: process.argv[1],
   now: () => Date.now(),
   readStdin,
   stdout: (text) => process.stdout.write(text),
   stderr: (text) => process.stderr.write(text),
-  launchSender,
+  interactive: process.stdin.isTTY && process.stdout.isTTY,
+  ask,
+  randomSecret: () => randomBytes(32).toString('base64url'),
   fetch,
+  runProcess,
+  launchSender,
 });
