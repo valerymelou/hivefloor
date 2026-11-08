@@ -122,6 +122,13 @@
         "command": "nx run web:serve"
       }
     },
+    "size": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node apps/web/scripts/check-bundle-size.mjs"
+      }
+    },
     "verify-ui": {
       "executor": "nx:run-commands",
       "inputs": ["default", "{workspaceRoot}/ndop.json"],

@@ -90,6 +90,9 @@ jobs:
 
       - run: pnpm nx run web:verify-ui
 
+      # The web build must stay under 1.5 MB compressed.
+      - run: pnpm nx run web:size
+
       # Playwright scenarios in demo mode, on the same Chromium build as ndop verify.
       - run: pnpm nx run web-e2e:e2e
 

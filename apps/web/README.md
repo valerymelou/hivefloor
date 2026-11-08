@@ -27,6 +27,7 @@ pnpm nx serve web               # just this app; open http://localhost:4200/#dem
 ```bash
 pnpm nx test web                # Vitest with jsdom, 80% coverage on core, overlay and demo; axe on every overlay component
 pnpm nx build web               # production build into dist/apps/web
+pnpm nx run web:size            # fails above 1.5 MB gzipped (first visit, including Three.js and the model)
 pnpm nx run web:verify-ui       # ndop verify on src/app/overlay (usage, build, lint; render needs Chromium for Playwright)
 pnpm exec ndop add <component>  # add an Ndop UI component (ndop.json is at the repository root)
 ```
