@@ -40,19 +40,28 @@ describe('text checks', () => {
     expect(hasControlChars('c1\u0085')).toBe(true);
   });
 
-  it.each(['see https://example.com', 'go to www.example.com', 'example.com/path', 'mailto://x'])(
-    'treats %j as a link',
-    (value) => {
-      expect(looksLikeLink(value)).toBe(true);
-    },
-  );
+  it.each([
+    'see https://example.com',
+    'go to WWW.example.com',
+    'example.com/path',
+    'mailto://x',
+    'read (docs.example.co.uk/guide)',
+    'a.b.example.io/x',
+  ])('treats %j as a link', (value) => {
+    expect(looksLikeLink(value)).toBe(true);
+  });
 
-  it.each(['Building the paywall screen', 'Fix v2.0 release notes', 'Use Node.js 22'])(
-    'does not treat %j as a link',
-    (value) => {
-      expect(looksLikeLink(value)).toBe(false);
-    },
-  );
+  it.each([
+    'Building the paywall screen',
+    'Fix v2.0 release notes',
+    'Use Node.js 22',
+    'Split a/b testing',
+    '/etc path notes',
+    'v2.0/beta',
+    'x..com/y',
+  ])('does not treat %j as a link', (value) => {
+    expect(looksLikeLink(value)).toBe(false);
+  });
 });
 
 describe('projectColor', () => {
@@ -82,4 +91,25 @@ describe('compareText', () => {
     expect(['b', 'B', 'a', 'é'].sort(compareText)).toEqual(['B', 'a', 'b', 'é']);
     expect(compareText('x', 'x')).toBe(0);
   });
+});
+
+describe('linear time on untrusted input', () => {
+  // Inputs that made the earlier regular expressions backtrack polynomially.
+  const adversarial = [
+    'a'.repeat(100_000),
+    '-'.repeat(100_000),
+    `${'a'.repeat(50_000)}.`.repeat(2),
+    `${'a-'.repeat(50_000)}!`,
+    `${'a.'.repeat(50_000)}/`,
+  ];
+
+  it.each(adversarial.map((input) => [input.slice(0, 6), input] as const))(
+    'handles %j… quickly',
+    (_label, input) => {
+      const started = performance.now();
+      looksLikeLink(input);
+      slugify(input);
+      expect(performance.now() - started).toBeLessThan(250);
+    },
+  );
 });

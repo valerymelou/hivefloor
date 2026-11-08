@@ -4,8 +4,30 @@ import { ROOM_PALETTE } from './constants.js';
 // eslint-disable-next-line no-control-regex
 const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/;
 
-// Anything that looks like a link: a scheme, "www." or a bare domain with a path.
-const LINK_LIKE = /([a-z][a-z0-9+.-]*:\/\/|www\.|\b[a-z0-9-]+\.[a-z]{2,}\/)/i;
+const LABEL = /^[a-z0-9-]+$/i;
+const TOP_LEVEL_DOMAIN = /^[a-z]{2,}$/i;
+
+// Splits text into word-like tokens; characters that can't be part of a link separate them.
+const TOKEN_SEPARATORS = /[^a-z0-9./:-]+/i;
+
+/**
+ * Tells whether a token starts with a host name followed by a path, such as
+ * `example.com/pricing`.
+ */
+function startsWithHostAndPath(token: string): boolean {
+  const slash = token.indexOf('/');
+  if (slash <= 0) {
+    return false;
+  }
+  const host = token.slice(0, slash);
+  const topLevel = host.slice(host.lastIndexOf('.') + 1);
+  const labels = host.split('.');
+  return (
+    labels.length >= 2 &&
+    labels.every((label) => LABEL.test(label)) &&
+    TOP_LEVEL_DOMAIN.test(topLevel)
+  );
+}
 
 /**
  * Tells whether a string contains control characters.
@@ -18,10 +40,14 @@ export function hasControlChars(value: string): boolean {
 }
 
 /**
- * Tells whether a string contains something that looks like a link.
+ * Tells whether a string contains something that looks like a link: a URL scheme
+ * (`://`), `www.`, or a host name followed by a path (`example.com/…`).
+ *
+ * It runs in linear time, because the relay calls it on untrusted input. Every
+ * regular expression it uses is anchored or a single character class.
  *
  * @param value - The text to check.
- * @returns `true` for text with a URL scheme, `www.` or a `domain.tld/` path.
+ * @returns `true` when the text looks like it contains a link.
  *
  * @example
  * ```ts
@@ -30,12 +56,17 @@ export function hasControlChars(value: string): boolean {
  * ```
  */
 export function looksLikeLink(value: string): boolean {
-  return LINK_LIKE.test(value);
+  const lower = value.toLowerCase();
+  if (lower.includes('://') || lower.includes('www.')) {
+    return true;
+  }
+  return value.split(TOKEN_SEPARATORS).some(startsWithHostAndPath);
 }
 
 /**
  * Turns a project name into a room id: lowercase ASCII letters, digits and single
- * hyphens. Accents are removed; other characters become hyphens.
+ * hyphens. Accents are removed; other characters become hyphens. Runs in linear
+ * time.
  *
  * @param name - A project name such as `"Ndop UI"`.
  * @returns The slug, such as `"ndop-ui"`. Empty when the name has no letters or digits.
@@ -47,12 +78,15 @@ export function looksLikeLink(value: string): boolean {
  * ```
  */
 export function slugify(name: string): string {
-  return name
+  const hyphenated = name
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/\p{M}/gu, '')
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-z0-9]+/g, '-');
+  // Runs of separators are now single hyphens, so at most one sits at each end.
+  const start = hyphenated.startsWith('-') ? 1 : 0;
+  const end = hyphenated.endsWith('-') ? hyphenated.length - 1 : hyphenated.length;
+  return hyphenated.slice(start, Math.max(start, end));
 }
 
 /**
