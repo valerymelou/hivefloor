@@ -25,6 +25,7 @@
   },
   "files": [
     "*.mjs",
+    "machine.schema.json",
     "README.md",
     "LICENSE"
   ],

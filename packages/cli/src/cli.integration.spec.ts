@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { signBody } from './core/sign.js';
@@ -17,7 +18,7 @@ afterEach(async () => {
 function hook(home: string, input: string) {
   return spawnSync(process.execPath, [BIN, 'hook'], {
     input,
-    env: { ...process.env, HIVEFLOOR_HOME: home, HOME: '/Users/ada' },
+    env: { ...process.env, HIVEFLOOR_HOME: home, HOME: '/Users/ada', USERPROFILE: '/Users/ada' },
     encoding: 'utf8',
     timeout: 10_000,
   });
@@ -72,5 +73,26 @@ describe.skipIf(!existsSync(BIN))('hivefloor hook (built bundle)', () => {
     cleanups.push(broken.cleanup);
     const result = hook(broken.files.dir, JSON.stringify(payloads.bash('ls')));
     expect([result.status, result.stdout, result.stderr]).toEqual([0, '', '']);
+  });
+});
+
+describe.skipIf(!existsSync(BIN))('bundle layout', () => {
+  it('keeps Zod out of everything the hook loads at start-up', () => {
+    // bin.mjs and its static imports run on every hook call; Zod (~20 ms) must
+    // only be in a chunk loaded with import() when the config changes.
+    const seen = new Set<string>();
+    const visit = (file: string): void => {
+      if (seen.has(file)) return;
+      seen.add(file);
+      const code = readFileSync(file, 'utf8');
+      expect(code, file).not.toContain('ZodError');
+      for (const [, chunk] of code.matchAll(
+        /(?:^|[;\n])import[^;]*?from\s*["'](\.\/[^"']+)["']/g,
+      )) {
+        if (chunk !== undefined) visit(join(dirname(file), chunk));
+      }
+    };
+    visit(BIN);
+    expect(seen.size).toBeGreaterThan(1);
   });
 });

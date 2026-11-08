@@ -1,36 +1,51 @@
 import { appendFile } from 'node:fs/promises';
-import packageJson from '../package.json' with { type: 'json' };
+import { deploy } from './commands/deploy.js';
+import { doctor } from './commands/doctor.js';
+import { init } from './commands/init.js';
+import { setPaused } from './commands/pause.js';
+import { preview } from './commands/preview.js';
+import type { CommandIo } from './commands/context.js';
+import { uninstall } from './commands/uninstall.js';
 import { loadConfig, loadSecret } from './edge/config.js';
 import { runHook } from './edge/hook.js';
-import { hivefloorFiles, type HomeEnv } from './edge/home.js';
+import { hivefloorFiles } from './edge/home.js';
 import { sendEvent } from './edge/sender.js';
+import { VERSION } from './version.js';
 
-/** The CLI's version, from its package.json. */
-export const VERSION: string = packageJson.version;
+export { VERSION } from './version.js';
+
+/** The process facilities `main` uses. */
+export type MainIo = CommandIo;
 
 const HELP = `hivefloor ${VERSION}: show your Claude Code sessions in a Hivefloor office
 
 Usage:
-  hivefloor hook [--record]   Read one Claude Code hook payload from stdin (used by hooks)
+  hivefloor init [--url URL] [--public NAME] [--rotate] [--secret-stdin]
+                              Connect this machine to your office and register the hooks
+  hivefloor doctor            Check the setup and show exactly what leaves this machine
+  hivefloor preview           Print the event a hook payload on stdin would send
+  hivefloor pause | resume    Stop or restart sending
+  hivefloor uninstall [--purge]
+                              Remove the hooks (and with --purge, the config and secret)
+  hivefloor deploy [--config FILE] [--dry-run]
+                              Validate office.config.json and deploy the relay (from a checkout)
+  hivefloor hook [--record]   Read one Claude Code hook payload from stdin (used by the hooks)
   hivefloor --version         Print the version
 
-More commands (init, doctor, preview, pause, resume, uninstall) are coming.
 Docs: https://github.com/valerymelou/hivefloor
 `;
 
-/** The process facilities `main` uses, injected for tests. */
-export interface MainIo {
-  readonly env: HomeEnv & { readonly HIVEFLOOR_DEBUG?: string | undefined };
-  readonly home: string;
-  readonly windows: boolean;
-  /** Unix milliseconds. */
-  readonly now: () => number;
-  readonly readStdin: () => Promise<string>;
-  readonly stdout: (text: string) => void;
-  readonly stderr: (text: string) => void;
-  readonly launchSender: (body: string) => void;
-  readonly fetch: typeof fetch;
-}
+type Command = (args: readonly string[], io: CommandIo) => Promise<number>;
+
+const COMMANDS: ReadonlyMap<string, Command> = new Map<string, Command>([
+  ['init', init],
+  ['doctor', doctor],
+  ['preview', preview],
+  ['pause', (args, io) => setPaused(true, args, io)],
+  ['resume', (args, io) => setPaused(false, args, io)],
+  ['uninstall', uninstall],
+  ['deploy', deploy],
+]);
 
 async function send(body: string | undefined, io: MainIo): Promise<void> {
   const files = hivefloorFiles(io.env, io.home, io.windows);
@@ -51,11 +66,28 @@ async function send(body: string | undefined, io: MainIo): Promise<void> {
   }
 }
 
+async function hook(rest: readonly string[], io: MainIo): Promise<number> {
+  try {
+    await runHook(await io.readStdin(), {
+      files: hivefloorFiles(io.env, io.home, io.windows),
+      paths: { home: io.home, windows: io.windows },
+      now: io.now,
+      launchSender: io.launchSender,
+      record: rest.includes('--record'),
+      debug: io.env.HIVEFLOOR_DEBUG === '1',
+    });
+  } catch {
+    // The hook never fails: a broken hook must not affect Claude Code.
+  }
+  return 0;
+}
+
 /**
  * Runs the CLI.
  *
- * `hook` always returns 0 and writes nothing to stdout, because Claude Code adds
- * the stdout of some hooks to Claude's context (C2).
+ * `hook` and `__send` always return 0 and write nothing to stdout, because
+ * Claude Code adds the stdout of some hooks to Claude's context (C2). Other
+ * commands report usage errors on stderr with exit code 2.
  *
  * @param args - Command-line arguments after the executable and script.
  * @param io - Process facilities.
@@ -63,40 +95,33 @@ async function send(body: string | undefined, io: MainIo): Promise<void> {
  */
 export async function main(args: readonly string[], io: MainIo): Promise<number> {
   const [command, ...rest] = args;
-  switch (command) {
-    case 'hook':
-      try {
-        await runHook(await io.readStdin(), {
-          files: hivefloorFiles(io.env, io.home, io.windows),
-          paths: { home: io.home, windows: io.windows },
-          now: io.now,
-          launchSender: io.launchSender,
-          record: rest.includes('--record'),
-          debug: io.env.HIVEFLOOR_DEBUG === '1',
-        });
-      } catch {
-        // The hook never fails: a broken hook must not affect Claude Code.
-      }
-      return 0;
-    case '__send':
-      try {
-        await send(rest[0], io);
-      } catch {
-        // Every sending failure is silent (C9).
-      }
-      return 0;
-    case '--version':
-    case '-v':
-      io.stdout(`${VERSION}\n`);
-      return 0;
-    case undefined:
-    case 'help':
-    case '--help':
-    case '-h':
-      io.stdout(HELP);
-      return 0;
-    default:
-      io.stderr(`hivefloor: unknown command "${command}"\n\n${HELP}`);
-      return 1;
+  if (command === 'hook') return hook(rest, io);
+  if (command === '__send') {
+    try {
+      await send(rest[0], io);
+    } catch {
+      // Every sending failure is silent (C9).
+    }
+    return 0;
+  }
+  if (command === '--version' || command === '-v') {
+    io.stdout(`${VERSION}\n`);
+    return 0;
+  }
+  if (command === undefined || command === 'help' || command === '--help' || command === '-h') {
+    io.stdout(HELP);
+    return 0;
+  }
+  const run = COMMANDS.get(command);
+  if (run === undefined) {
+    io.stderr(`hivefloor: unknown command "${command}"\n\n${HELP}`);
+    return 2;
+  }
+  try {
+    return await run(rest, io);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    io.stderr(`hivefloor ${command}: ${message}\n`);
+    return 2;
   }
 }

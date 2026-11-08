@@ -10,6 +10,8 @@ export interface SendOptions {
   /** Unix milliseconds. */
   readonly now: () => number;
   readonly fetch: typeof fetch;
+  /** Ask the relay to verify the event without changing the office (`hivefloor doctor`). */
+  readonly dryRun?: boolean;
 }
 
 /**
@@ -29,6 +31,7 @@ export async function sendEvent(body: string, options: SendOptions): Promise<num
         'content-type': 'application/json',
         'x-office-timestamp': String(timestamp),
         'x-office-signature': signBody(options.secret, timestamp, body),
+        ...(options.dryRun === true ? { 'x-office-dry-run': '1' } : {}),
       },
       body,
       redirect: 'error',
