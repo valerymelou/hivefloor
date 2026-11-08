@@ -50,7 +50,7 @@ const runOnce = (i) => {
 };
 
 try {
-  for (let i = 0; i < 5; i++) runOnce(i); // warm the file cache and the config cache
+  for (let i = 0; i < 15; i++) runOnce(i); // warm the OS file cache and the config cache
   const times = Array.from({ length: runs }, (_, i) => runOnce(i)).sort((a, b) => a - b);
   const at = (p) => times[Math.min(times.length - 1, Math.ceil((p / 100) * times.length) - 1)];
   const summary = `hook over ${runs} runs: p50 ${at(50).toFixed(1)} ms, p95 ${at(95).toFixed(1)} ms, max ${at(100).toFixed(1)} ms (budget p95 < ${budget} ms)`;
