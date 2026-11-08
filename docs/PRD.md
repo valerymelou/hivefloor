@@ -333,11 +333,11 @@ The secret is stored next to it in a `secret` file with mode 600, never inside t
 **Ingest event (CLI to relay)**
 
 ```json
-{ "v": 1, "t": 1794091200, "sid": "a9f3c2", "role": "claude", "project": "Ledgerly", "goal": "Building the paywall screen", "kind": "tool", "cat": "testing" }
-{ "v": 1, "t": 1794091260, "sid": "7d01aa", "role": "claude", "kind": "tool", "cat": "terminal" }
+{ "v": 1, "t": 1794091200, "seq": 12, "sid": "a9f3c2", "role": "claude", "project": "Ledgerly", "goal": "Building the paywall screen", "kind": "tool", "cat": "testing" }
+{ "v": 1, "t": 1794091260, "seq": 3, "sid": "7d01aa", "role": "claude", "kind": "tool", "cat": "terminal" }
 ```
 
-The second event has no `project`, so it belongs to the Private projects room.
+The second event has no `project`, so it belongs to the Private projects room. The event object is strict: any field not in this table is rejected.
 
 | Field     | Type                       | Rule                                                                               |
 | --------- | -------------------------- | ---------------------------------------------------------------------------------- |
@@ -345,12 +345,12 @@ The second event has no `project`, so it belongs to the Private projects room.
 | `t`       | integer, Unix seconds      | Required; rounded; within 60 s of relay time                                       |
 | `seq`     | integer                    | Required; per-robot counter that only goes up; older values are ignored (H5)       |
 | `sid`     | 6 lowercase hex characters | Required; hash of the session ID with a salt fixed for the session's lifetime (H7) |
-| `aid`     | 6 lowercase hex characters | Subagents only                                                                     |
-| `role`    | string                     | Required; `claude` or an allowed agent type                                        |
+| `aid`     | 6 lowercase hex characters | Subagents only; required for `spawn` and `done`, never on `start` or `end`         |
+| `role`    | string                     | Required; `claude` without `aid`, an allowed agent type with it                    |
 | `kind`    | enum                       | `start`, `thinking`, `tool`, `idle`, `end`, `spawn`, `done`                        |
 | `cat`     | enum                       | Required when `kind` is `tool`; one of the 12 categories                           |
-| `project` | string                     | Optional; must be in `publicProjects`. Absent means the Private projects room      |
-| `goal`    | string, max 60 characters  | Optional; only with `project`; already passed the local word filter (H2)           |
+| `project` | string, max 40 characters  | Optional; must be in `publicProjects`. Absent means the Private projects room      |
+| `goal`    | string, max 60 characters  | Optional; only with `project`; no control characters or links; passed H2 locally   |
 
 Headers: `X-Office-Timestamp` and `X-Office-Signature` = hex HMAC-SHA256(secret, timestamp + "." + body).
 
@@ -372,6 +372,12 @@ Headers: `X-Office-Timestamp` and `X-Office-Signature` = hex HMAC-SHA256(secret,
 Main sessions carry a `desk` number and subagents a `seat` number at the team table. A `room` message is sent when a room opens, grows or shrinks a row, or changes its lights.
 
 The category set is fixed in v1: `reading`, `coding`, `testing`, `vcs`, `terminal`, `research`, `delegating`, `planning`, `designing`, `monitoring`, `integration`, `working`.
+
+Event kinds: `start` and `end` open and close a main session; `spawn` and `done` open and close a subagent; `thinking` is work without a tool; `tool` is work with a tool of category `cat`; `idle` means Claude finished its turn and waits for the owner.
+
+Robot statuses: `working` (using a tool), `thinking` (working without one), `idle` (waiting for the owner, or no event for `idleAfterSec`; the robot goes to the coffee corner) and `away` (no event for `awayAfterSec`). A robot that leaves is removed with a `leave` message. Office states in `status` messages: `open`, `busy` (viewer cap reached) and `limited` (paused until `until`).
+
+Room ids are the slug of the project name (lowercase letters, digits and hyphens). `private` and `other` are reserved for the Private projects room and the "Other projects" room of E8.
 
 ## Engineering standards
 
@@ -485,5 +491,11 @@ Tip: once M2 and M4 work, install the hook on this repo itself. Claude Code buil
 - [x] **Hook latency:** hooks are registered with `"async": true`, so Claude Code runs them in the background ([hooks reference](https://code.claude.com/docs/en/hooks)).
 - [x] **Public demo:** hivefloor.valerymelou.com is the project's only home: landing page and docs (apps/site) plus the maintainer's live office as the demo. No separate domain.
 - [x] **Grouping rooms:** not in v1, but `group` is accepted in the config and passed to the layout function so it can arrive in v1.1 without a breaking change.
+
+**Decided in M1 (8 November 2026)** — see [ADR 0007](adr/0007-elastic-office-layout.md) and [ADR 0009](adr/0009-v1-contract-details.md)
+
+- [x] **Robot statuses and office states:** `working`, `thinking`, `idle`, `away`; `open`, `busy`, `limited`.
+- [x] **Event rules:** strict objects; `seq` in every event; `aid` and role rules per kind.
+- [x] **Layout split:** pure assignment helpers for the relay (slots, desks, seats, rows, closing) and a pure `layout()` for drawing; the "Other projects" room takes the lowest folded slot.
 
 **Still open:** nothing right now. Revisit this list at the start of each milestone.

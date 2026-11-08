@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "v": {
+      "type": "number",
+      "const": 1
+    },
+    "title": {
+      "default": "Hivefloor",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "publicProjects": {
+      "default": [],
+      "maxItems": 100,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "group": {
+            "type": "string",
+            "maxLength": 40,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "privateRoom": {
+      "default": {
+        "name": "Private projects",
+        "color": "#8d94ab",
+        "visible": true
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "default": "Private projects",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "color": {
+          "default": "#8d94ab",
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "visible": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "agentTypes": {
+      "default": [
+        "Helper"
+      ],
+      "maxItems": 50,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+      }
+    },
+    "presence": {
+      "default": {
+        "idleAfterSec": 180,
+        "awayAfterSec": 900
+      },
+      "type": "object",
+      "properties": {
+        "idleAfterSec": {
+          "default": 180,
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 3600
+        },
+        "awayAfterSec": {
+          "default": 900,
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        }
+      },
+      "additionalProperties": false
+    },
+    "layout": {
+      "default": {
+        "roomsPerFloor": 8,
+        "desksPerRow": 3,
+        "maxRowsPerRoom": 4,
+        "tableSeats": 6,
+        "roomCloseAfterSec": 1800,
+        "rowRemoveAfterSec": 600,
+        "maxRenderedRobots": 40,
+        "maxVisibleRooms": 12
+      },
+      "type": "object",
+      "properties": {
+        "roomsPerFloor": {
+          "default": 8,
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 16,
+          "multipleOf": 2
+        },
+        "desksPerRow": {
+          "default": 3,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "maxRowsPerRoom": {
+          "default": 4,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "tableSeats": {
+          "default": 6,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "roomCloseAfterSec": {
+          "default": 1800,
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "rowRemoveAfterSec": {
+          "default": 600,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "maxRenderedRobots": {
+          "default": 40,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "maxVisibleRooms": {
+          "default": 12,
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 64
+        }
+      },
+      "additionalProperties": false
+    },
+    "viewerCap": {
+      "default": 500,
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    }
+  },
+  "required": [
+    "v",
+    "owner",
+    "timezone"
+  ],
+  "additionalProperties": false,
+  "title": "Hivefloor office config"
+}

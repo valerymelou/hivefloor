@@ -25,7 +25,8 @@
     "forceConsistentCasingInFileNames": true,
     "useUnknownInCatchVariables": true,
     "paths": {
-      "@hivefloor/schema": ["./packages/schema/src/index.ts"]
+      "@hivefloor/schema": ["./packages/schema/src/index.ts"],
+      "@hivefloor/schema/fixtures": ["./packages/schema/src/fixtures/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp", "dist"]
