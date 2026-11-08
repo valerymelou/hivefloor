@@ -1,0 +1,47 @@
+{
+  "name": "@hivefloor/source",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A self-hostable 3D office that shows Claude Code sessions live as robots.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": "^22.13.0 || >=24"
+  },
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "lint": "nx run-many -t lint",
+    "typecheck": "nx run-many -t typecheck",
+    "test": "nx run-many -t test",
+    "build": "nx run-many -t build",
+    "format": "nx format:write",
+    "format:check": "nx format:check",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/js": "^10.0.1",
+    "@nx/eslint": "24.0.5",
+    "@nx/eslint-plugin": "24.0.5",
+    "@nx/js": "24.0.5",
+    "@nx/vitest": "24.0.5",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "~5.0.5",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-jsdoc": "^65.4.5",
+    "husky": "^9.1.7",
+    "jsonc-eslint-parser": "^3.3.0",
+    "nx": "24.0.5",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.58.0",
+    "vite": "^8.0.0",
+    "vitest": "~5.0.1"
+  },
+  "dependencies": {},
+  "nx": {
+    "includedScripts": []
+  }
+}
