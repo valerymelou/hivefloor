@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import { MachineConfigSchema } from './machine-config.js';
 import { OfficeConfigSchema } from './office-config.js';
 

@@ -176,4 +176,5 @@ export const exampleViewerMessages = [
   { type: 'leave', v: 1, key: 'a9f3c2:4be1d0' },
   { type: 'roomClosed', v: 1, id: 'ndop-ui' },
   { type: 'status', v: 1, state: 'limited', until: 1794096000 },
+  { type: 'today', v: 1, count: { room: 'ledgerly', cat: 'testing', n: 43 } },
 ] as const;

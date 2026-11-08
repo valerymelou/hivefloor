@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import { GOAL_MAX_LENGTH } from './constants.js';
 import { AgentTypeSchema, CategorySchema, NameSchema, VersionSchema } from './primitives.js';
 import { isEndpointUrl } from './urls.js';

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import { MAIN_ROLE } from './constants.js';
 import {
   AgentHashSchema,
