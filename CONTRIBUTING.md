@@ -26,6 +26,8 @@ pnpm install
 | `pnpm nx graph`                                 | Shows how projects depend on each other.               |
 | `pnpm nx bench cli`                             | Benchmarks the hook; CI gates the binary at p95 50 ms. |
 | `pnpm nx compile cli`                           | Builds the standalone CLI binaries (needs Bun 1.4).    |
+| `pnpm nx run web:size`                          | Fails if the web build is over its 1.5 MB budget.      |
+| `pnpm nx run web-e2e:site`                      | Tests the landing page, docs and `/office` together.   |
 | `pnpm format`                                   | Formats the repository with Prettier.                  |
 | `pnpm nx release plan`                          | Describes a change to a published package (see below). |
 
@@ -57,14 +59,9 @@ Pick the bump (patch, minor, major) and write one or two sentences for the chang
 
 ## Releasing (maintainers)
 
-Releases are cut from `main` with Nx Release, which reads the version plans, bumps versions, writes `CHANGELOG.md` and tags `v<version>`:
+Releases are cut from `main` by the **Release** workflow (`.github/workflows/release.yml`), started by hand from the Actions tab. It reads the version plans, bumps the version, writes `CHANGELOG.md`, tags `v<version>`, creates the GitHub release with the standalone binaries, and publishes `hivefloor` to npm with provenance, using npm trusted publishing. Run it with **dry run** first.
 
-```bash
-pnpm nx release --skip-publish
-pnpm nx release publish
-```
-
-The very first release needs `--first-release`. A `release.yml` workflow that publishes from CI with npm provenance arrives in M8.
+The maintainer's site deploys from `main` through `.github/workflows/deploy-demo.yml`. It only runs when the repository variable `DEPLOY_DEMO` is `true`, so forks aren't affected.
 
 ## Reporting bugs and security issues
 

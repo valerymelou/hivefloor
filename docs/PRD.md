@@ -414,7 +414,7 @@ The bar is a codebase a stranger can understand in an hour and contribute to in 
 **Continuous integration (GitHub Actions)**
 
 - `ci.yml` on every PR and on `main`: install with a frozen lockfile, then nx affected runs lint, typecheck, unit tests and build for changed projects only; main runs everything.
-- `e2e.yml`: Playwright against the built web app in demo mode, with WebGL through SwiftShader.
+- A Playwright job in `ci.yml`: against the built web app in demo mode, with WebGL through SwiftShader.
 - `release.yml`: Nx Release reads the version plans, bumps versions and writes changelogs; the workflow then publishes the CLI to npm with provenance and tags the office release.
 - `deploy-demo.yml`: deploys hivefloor.valerymelou.com (landing page, docs and the maintainer's live office) from `main` using repository secrets. It doubles as the public demo the README links to.
 - CodeQL analysis and Dependabot for npm and GitHub Actions.
@@ -543,5 +543,11 @@ Tip: once M2 and M4 work, install the hook on this repo itself. Claude Code buil
 - [x] **The closed office checks every 2–5 minutes** rather than every 30 s, because it stays closed until the daily reset (H11, H12).
 - [x] **Bundle budget:** `pnpm nx run web:size` fails CI above 1.5 MB gzipped, counting the scripts, styles, page, robot model and two Latin fonts.
 - [x] **On phones, a vertical swipe on the office scrolls the page;** a horizontal swipe orbits.
+
+**Decided in M8 (8 November 2026)** — see [ADR 0016](adr/0016-site-and-release.md)
+
+- [x] **Deploying sets the secret:** `hivefloor deploy` offers to create it and set it on the relay, so setup runs in order. It never replaces a secret unattended.
+- [x] **`BASE_PATH`:** the relay serves its routes under a base path, so one Worker can host the site at `/` and the office at `/office`.
+- [x] **Homebrew is deferred:** the standalone binaries on GitHub Releases cover machines without Node (H1); a tap needs its own repository.
 
 **Still open:** nothing right now. Revisit this list at the start of each milestone.

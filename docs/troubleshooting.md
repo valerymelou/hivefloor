@@ -19,7 +19,7 @@ It checks your config, secret, Claude Code hooks and relay, compares your public
 | `✗ Relay: Could not reach …`                    | Check the office URL (`hivefloor init --url …`) and that the relay is deployed.                                                                                                                                                             |
 | `✗ Public projects: Not in the relay's …`       | The name in your machine config must match a `publicProjects[].name` in the relay's `office.config.json` exactly. Run `hivefloor add-project "Name" --office-config PATH --deploy` to add it and redeploy, or fix one of them by hand (H4). |
 | `! Clock: Your clock is … s ahead/behind`       | Sync your system clock. Beyond 60 s the relay rejects every event (H8).                                                                                                                                                                     |
-| `✗ Signed test event: … rejected the signature` | The secrets differ. Run `hivefloor init --rotate`, then set the printed value with `npx wrangler secret put HIVEFLOOR_SECRET`.                                                                                                              |
+| `✗ Signed test event: … rejected the signature` | The secrets differ. Run `hivefloor init --rotate`, then `hivefloor deploy --push-secret` from your Hivefloor checkout.                                                                                                                      |
 | `! Signed test event: … daily limit`            | Cloudflare's free plan limit is reached; the office resumes after the daily reset.                                                                                                                                                          |
 
 ## The robot never appears
@@ -37,6 +37,14 @@ It checks your config, secret, Claude Code hooks and relay, compares your public
 ## A public project shows up as private
 
 The folder Claude Code runs in must be inside a `projects[].path` marked `"public": true`; the longest matching path wins. Run `hivefloor add-project "Name"` from the project folder to add it.
+
+## The office says "Office closed"
+
+Cloudflare's free daily limit is used up, so the Worker can't run until the reset at 00:00 UTC. Claude Code isn't affected. The page checks every few minutes and comes back by itself. If it happens often, see [rate limiting](self-hosting.md#protect-ingest-from-floods).
+
+## The office is blank or shows only the list
+
+The list view is the default when the browser can't draw WebGL. Turn on hardware acceleration, or try another browser. Without a GPU the office draws with fewer effects to stay usable.
 
 ## Not supported in v1
 
