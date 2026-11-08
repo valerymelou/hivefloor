@@ -37,7 +37,7 @@ pnpm install
 
 ## Commits and pull requests
 
-- Use [Conventional Commits](https://www.conventionalcommits.org/), for example `feat(cli): add doctor command`. Allowed scopes: `schema`, `cli`, `relay`, `web`, `web-e2e`, `site`, `docs`, `repo`, `ci`, `deps`, `release`. A Git hook checks your messages locally, and CI checks them, and the pull request title too (it becomes the squash commit message, so keep the subject lower case: `feat(cli): add doctor command`).
+- Use [Conventional Commits](https://www.conventionalcommits.org/), for example `feat(cli): add doctor command`. Allowed scopes: `schema`, `cli`, `relay`, `web`, `web-e2e`, `site`, `docs`, `repo`, `ci`, `deps`, `deps-dev`, `release`. Dependabot's own `chore(deps…): Bump …` messages are exempt. A Git hook checks your messages locally, and CI checks them, and the pull request title too (it becomes the squash commit message, so keep the subject lower case: `feat(cli): add doctor command`).
 - Fill in the pull request template, including the privacy impact section.
 - CI runs lint, typecheck, test and build on the affected projects. Coverage targets: schema 95%, cli 90%, relay 85%, web core 80%.
 
