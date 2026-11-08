@@ -32,6 +32,8 @@ M6 draws the office: an elastic building, robots that walk and sit, floating tag
 
 **Status mapping.** Working robots sit. Thinking and waiting robots stand by their desk, while subagents keep their seat when thinking. Idle robots go for coffee. Away robots leave the building and walk back in on their next event (H9).
 
+**Compact tags.** Desks are 2 m apart, so a three-line tag collides with its neighbour's. A tag is a small bulb with the icon for the kind of work, and opens to the full text on hover. It also opens for about 3 s when a robot's activity changes, one robot per room at a time, so a visitor who isn't touching anything still sees what is happening. Phones have no hover, so a tap opens the robot card. The project name is on the room label and goals are in Building in public, so nothing is lost from the default view.
+
 **Picking.** A click counts for the nearest robot within 24 pixels of the line from its feet to its tag, because small far-away robots are hard to hit exactly.
 
 **Testing.** Playwright runs against the production build with the production headers, so a policy violation fails a test. `#demo-crowd` starts ten sessions for the frame-rate script. WebGL needs software rendering on CI, so walking scenarios use generous timeouts and two workers.
@@ -42,7 +44,7 @@ M6 draws the office: an elastic building, robots that walk and sit, floating tag
 - Good: the overlay doesn't wait for Three.js, and the list view still works if the scene fails to load.
 - Good: the Content Security Policy didn't change.
 - Bad: with several floors, an upper slab hides part of the floor below from steep angles; visitors can orbit, and the list view shows everyone.
-- Bad: tags can overlap in a crowded room.
+- Bad: an icon alone says less than text; a visitor learns the icons from the moments they open.
 - Bad: when a room grows, its walls rise over 600 ms, but its furniture appears at once.
 
 ## Alternatives considered
