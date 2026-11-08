@@ -32,17 +32,32 @@ function unquote(token: string): string {
 }
 
 /**
+ * Version 0.1.0 registered `<absolute path to node> hook`, with no script, after
+ * a global npm install. Nothing else has a reason to run that, so it counts as
+ * ours: `init` can replace it and `uninstall` can remove it.
+ */
+function isBrokenGlobalInstallCommand(command: string): boolean {
+  const suffix = ' hook';
+  const trimmed = command.trim();
+  if (!trimmed.endsWith(suffix)) return false;
+  const parts = unquote(trimmed.slice(0, -suffix.length)).split(/[\\/]/);
+  const program = parts.at(-1)?.toLowerCase();
+  return parts.length > 1 && (program === 'node' || program === 'node.exe');
+}
+
+/**
  * Tells whether a hook command is one of ours: a word mentioning `hivefloor`
  * followed by `hook`, such as `hivefloor hook`, `"/opt/hivefloor/bin.mjs" hook`
- * or `npx --yes hivefloor@0.1 hook --record`.
+ * or `npx --yes hivefloor@0.1 hook --record`, or the broken command 0.1.0 wrote.
  *
  * @param command - The `command` of a Claude Code command hook.
  * @returns `true` when Hivefloor added it.
  */
 export function isHivefloorCommand(command: string): boolean {
   const tokens = command.trim().split(/\s+/).map(unquote);
-  return tokens.some(
-    (token, i) => token.toLowerCase().includes('hivefloor') && tokens[i + 1] === 'hook',
+  return (
+    isBrokenGlobalInstallCommand(command) ||
+    tokens.some((token, i) => token.toLowerCase().includes('hivefloor') && tokens[i + 1] === 'hook')
   );
 }
 
