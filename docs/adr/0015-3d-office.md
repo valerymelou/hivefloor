@@ -28,7 +28,7 @@ M6 draws the office: an elastic building, robots that walk and sit, floating tag
 
 **Bounded GPU work.** Desks, chairs, monitors and stools are instanced (E9). Monitors use per-instance colour. Rooms show their lights through floor colour, and a fixed pool of six desk lights goes to robots at work, so the shader doesn't recompile as robots come and go. Distant robots update their animation less often.
 
-**Low power.** Phones and browsers without a GPU get no shadows, no desk lights and at most 1.5× resolution. A frame may advance time by at most 0.25 s, so robots keep real time at low frame rates.
+**Low power.** Phones and browsers without a GPU get no shadows, no desk lights and at most 1.5× resolution. A frame may advance time by at most 0.5 s, so robots keep real time at low frame rates.
 
 **Status mapping.** Working robots sit. Thinking and waiting robots stand by their desk, while subagents keep their seat when thinking. Idle robots go for coffee. Away robots leave the building and walk back in on their next event (H9).
 

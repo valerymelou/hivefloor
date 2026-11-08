@@ -26,6 +26,21 @@ The hook keeps small state files (the next sequence number, the last event sent,
 
 The relay stores only the current office (rooms, robots with their hashed keys, roles, rooms, desks, statuses, categories and public goals), today's counts per room and category, the last sequence number of robots that left in the last 10 minutes, and the signatures of the last 60 seconds of requests (to reject replays). It never stores request bodies, and logging is turned off in `wrangler.jsonc`: nothing about a request is written to Cloudflare's logs.
 
+## Threat model
+
+Each threat in the [PRD](PRD.md) and the check that covers it:
+
+| Threat                                     | Verified by                                                                                                               |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| A new Claude Code field leaks private data | Property tests in `packages/cli/src/core/event.spec.ts` and `decide.spec.ts`                                              |
+| The shared secret leaks                    | Unknown names rejected in `apps/relay/test/worker.spec.ts`; `hivefloor init --rotate`                                     |
+| Script injection through goal text         | `apps/web/src/app/overlay/overlay.spec.ts`; Content Security Policy and injection in `apps/web-e2e/src/hardening.spec.ts` |
+| Replayed requests                          | `apps/relay/test/worker.spec.ts`                                                                                          |
+| Request floods use up the free plan        | [Rate limiting guide](self-hosting.md#protect-ingest-from-floods); viewer cap tested in `apps/relay/test`                 |
+| Activity timing reveals too much           | `packages/cli/src/core/event.spec.ts`                                                                                     |
+| Supply chain compromise                    | Zero CLI runtime dependencies, lockfile, Dependabot and CodeQL in CI                                                      |
+| The hook breaks Claude Code                | `packages/cli/src/cli.integration.spec.ts`                                                                                |
+
 ## How it is enforced
 
 - **Allowlist by construction.** The CLI builds each event field by field from the allowlist in `packages/schema`. It never copies or spreads a hook payload, so a new Claude Code field can't leak. A property-based test feeds hundreds of random payloads full of private text through the hook logic and checks that every event matches the schema and contains none of it (`packages/cli/src/core/decide.spec.ts`).

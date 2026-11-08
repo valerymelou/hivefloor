@@ -54,9 +54,24 @@ hivefloor init --url http://localhost:8787 --secret-stdin < your-secret-file
 hivefloor doctor
 ```
 
+## Protect `/ingest` from floods
+
+The 2 KB body cap, signatures and viewer cap are built in. Cloudflare's free plan also includes one [rate limiting rule](https://developers.cloudflare.com/waf/rate-limiting-rules/). Rules belong to a zone, so this needs your office on a custom domain. Create one with these settings:
+
+| Setting  | Value                      |
+| -------- | -------------------------- |
+| Match    | URI Path equals `/ingest`  |
+| Requests | 100 per 10 seconds, per IP |
+| Action   | Block                      |
+| Duration | 10 seconds                 |
+
+Apply it to `/ingest` only. A rate limit on `/api/*` or `/live` answers visitors with a 429, which the page reads as the daily limit and shows "Office closed".
+
+## When the daily free-plan limit is reached
+
+Once the Workers daily limit is used up, Cloudflare answers with a 429 or error 1027 and the Worker can't run. Claude Code isn't affected: the hook drops its events. Visitors see "Office closed until" the next 00:00 UTC, in your time zone, and the page checks every few minutes until the office is back. Above the viewer cap (`viewerCap`, 500 by default), visitors get a "Busy" view that updates every few minutes.
+
 ## Planned sections
 
-- Protect `/ingest` with Cloudflare's free rate-limiting rule
-- What happens when the daily free-plan limit is reached
 - Rotate the shared secret (`hivefloor init --rotate`)
 - Uninstall (`hivefloor uninstall`, `--purge`)
