@@ -26,6 +26,7 @@ import {
   type PickTarget,
 } from '../camera';
 import { ROBOT_EXPRESSIVE, type CharacterSet } from '../character';
+import { isFlashing, NO_FLASHES, requestFlash } from '../flash';
 import { laneFor } from '../navigation';
 import { buildPlan, DIMENSIONS, type Plan } from '../plan';
 import { Building, type RoomLook } from './building';
@@ -120,6 +121,10 @@ export class OfficeScene {
   private reducedMotion: boolean;
   private frameHandle = 0;
   private screenClock = 0;
+  private seconds = 0;
+  private flashes = NO_FLASHES;
+  private hovered: string | undefined;
+  private hoverPoint: { x: number; y: number } | undefined;
   private firstUpdate = true;
   private disposed = false;
 
@@ -192,6 +197,8 @@ export class OfficeScene {
     this.listen(canvas, 'keydown', this.onKey);
     this.listen(canvas, 'pointerdown', this.onPointerDown);
     this.listen(canvas, 'pointerup', this.onPointerUp);
+    this.listen(canvas, 'pointermove', this.onPointerMove);
+    this.listen(canvas, 'pointerleave', this.onPointerLeave);
     this.listen(document, 'visibilitychange', this.onVisibility);
     this.timer.connect(document);
     this.start();
@@ -436,6 +443,8 @@ export class OfficeScene {
 
   private render(dt: number): void {
     const plan = this.plan;
+    this.seconds += dt;
+    this.updateHover();
     if (this.ease !== undefined) {
       this.ease.t = Math.min(1, this.ease.t + dt / EASE_SECONDS);
       const t = 1 - (1 - this.ease.t) ** 3;
@@ -454,7 +463,15 @@ export class OfficeScene {
         if (actor.step(dt, stride, plan, this.rooms)) {
           actor.dispose();
           this.actors.delete(key);
+          continue;
         }
+        if (actor.takeChanged()) {
+          this.flashes = requestFlash(this.flashes, actor.zone, key, this.seconds);
+        }
+        actor.setOpen(
+          isFlashing(this.flashes, actor.zone, key, this.seconds),
+          this.hovered === key,
+        );
       }
     }
     this.screenClock += dt;
@@ -504,6 +521,44 @@ export class OfficeScene {
     this.camera.position.set(t.x + next.x, t.y + next.y, t.z + next.z);
   };
 
+  private pickTargets(rect: DOMRect): PickTarget[] {
+    const toScreen = (v: THREE.Vector3): { x: number; y: number } => {
+      const ndc = v.clone().project(this.camera);
+      return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+    };
+    return [...this.actors.values()]
+      .filter((actor) => actor.visible)
+      .map((actor) => ({
+        key: actor.key,
+        from: toScreen(actor.object.position),
+        to: toScreen(actor.tagPosition),
+      }));
+  }
+
+  /** Finds the robot under the mouse, once per frame, as robots and the camera move. */
+  private updateHover(): void {
+    const point = this.hoverPoint;
+    const canvas = this.renderer.domElement;
+    if (point === undefined || this.pointer !== undefined) {
+      if (this.hovered !== undefined) canvas.style.cursor = '';
+      this.hovered = undefined;
+      return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    this.hovered = pick(this.pickTargets(rect), { x: point.x - rect.left, y: point.y - rect.top });
+    canvas.style.cursor = this.hovered === undefined ? '' : 'pointer';
+  }
+
+  private readonly onPointerMove = (event: Event): void => {
+    // Touch has no hover: a tap opens the robot's card.
+    if (!(event instanceof PointerEvent) || event.pointerType !== 'mouse') return;
+    this.hoverPoint = { x: event.clientX, y: event.clientY };
+  };
+
+  private readonly onPointerLeave = (): void => {
+    this.hoverPoint = undefined;
+  };
+
   private pointer: { x: number; y: number } | undefined;
 
   private readonly onPointerDown = (event: Event): void => {
@@ -518,17 +573,7 @@ export class OfficeScene {
     if (down === undefined || Math.hypot(event.clientX - down.x, event.clientY - down.y) > 6)
       return;
     const rect = this.renderer.domElement.getBoundingClientRect();
-    const toScreen = (v: THREE.Vector3): { x: number; y: number } => {
-      const ndc = v.clone().project(this.camera);
-      return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
-    };
-    const targets: PickTarget[] = [...this.actors.values()]
-      .filter((actor) => actor.visible)
-      .map((actor) => ({
-        key: actor.key,
-        from: toScreen(actor.object.position),
-        to: toScreen(actor.tagPosition),
-      }));
+    const targets = this.pickTargets(rect);
     this.options.onPick(
       pick(targets, { x: event.clientX - rect.left, y: event.clientY - rect.top }),
     );

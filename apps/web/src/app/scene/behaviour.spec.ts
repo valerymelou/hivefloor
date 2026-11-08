@@ -97,10 +97,10 @@ describe('tagContent (W4)', () => {
   it('labels waiting, breaks and away robots', () => {
     const at = (status: RobotStatus, extra: Partial<Robot> = {}) =>
       tagContent(robot({ status, ...extra }), ROOMS, 'resting', 'stand').badge;
-    expect(at('waiting')?.text).toBe('Waiting for input');
+    expect(at('waiting')).toMatchObject({ text: 'Waiting for input', icon: 'waiting' });
     expect(at('idle')).toMatchObject({ text: 'On a break', icon: 'coffee', quiet: true });
     expect(at('away')).toBeUndefined();
-    expect(at('working', { cat: undefined })).toBeUndefined();
+    expect(at('working', { cat: undefined })).toMatchObject({ text: 'Working', icon: 'working' });
   });
 });
 

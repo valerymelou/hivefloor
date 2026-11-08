@@ -56,7 +56,7 @@ export function restClip(
 export type Motion = 'arriving' | 'walking' | 'leaving' | 'resting';
 
 /** Icons the tags use. */
-export type IconName = Category | 'coffee' | 'walking';
+export type IconName = Category | 'coffee' | 'walking' | 'waiting';
 
 /** The pill above a robot. */
 export interface Badge {
@@ -92,18 +92,18 @@ function walkingBadge(robot: Robot, motion: Motion, pose: Pose): Badge {
 function restingBadge(robot: Robot): Badge | undefined {
   switch (robot.status) {
     case 'working':
-      return robot.cat === undefined
-        ? undefined
-        : {
-            text: capitalize(STRINGS.categories[robot.cat]),
-            icon: robot.cat,
-            quiet: false,
-            dots: false,
-          };
+      return {
+        text: capitalize(
+          robot.cat === undefined ? STRINGS.statuses.working : STRINGS.categories[robot.cat],
+        ),
+        icon: robot.cat ?? 'working',
+        quiet: false,
+        dots: false,
+      };
     case 'thinking':
       return { text: STRINGS.scene.thinking, quiet: false, dots: true };
     case 'waiting':
-      return { text: STRINGS.scene.waiting, quiet: true, dots: false };
+      return { text: STRINGS.scene.waiting, icon: 'waiting', quiet: true, dots: false };
     case 'idle':
       return { text: STRINGS.scene.onBreak, icon: 'coffee', quiet: true, dots: false };
     case 'away':
@@ -113,7 +113,7 @@ function restingBadge(robot: Robot): Badge | undefined {
 
 /**
  * What a robot's tag shows (W4): a badge with the kind of work or where it is
- * heading, "Claude · Project" (or "Claude · Private project", or the subagent
+ * heading, whose icon is all that shows until the tag opens, "Claude · Project" (or "Claude · Private project", or the subagent
  * type), and the goal for public projects while the robot is at work.
  *
  * @param robot - The robot.

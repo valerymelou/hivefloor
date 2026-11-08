@@ -49,6 +49,10 @@ export class RobotActor {
   private frames = 0;
   private pendingDt = 0;
   private tagKey = '';
+  private badgeText: string | undefined;
+  private rendered = false;
+  private changed = false;
+  private tagState = '';
 
   /**
    * @param template - The loaded character.
@@ -109,6 +113,7 @@ export class RobotActor {
     this.tagElement.className = 'hf-tag';
     this.tagElement.dataset['robot'] = robot.key;
     const wrapper = document.createElement('div');
+    wrapper.className = 'hf-tag-anchor';
     wrapper.append(this.tagElement);
     this.tag = new CSS2DObject(wrapper);
     this.position = start;
@@ -135,6 +140,43 @@ export class RobotActor {
   /** Whether it is standing at its desk, thinking or waiting. */
   get standingAtDesk(): Target['desk'] {
     return this.motion === 'resting' && this.pose === 'stand' ? this.target?.desk : undefined;
+  }
+
+  /** Where the robot is heading: one robot per zone shows text at a time. */
+  get zone(): string {
+    const destination = this.target?.destination;
+    if (destination === undefined || destination.kind === 'exit') return 'exit';
+    return destination.kind === 'room'
+      ? destination.room.id
+      : `coffee:${String(destination.coffee.floor)}`;
+  }
+
+  /**
+   * Tells whether its activity changed since the last call.
+   *
+   * @returns `true` once per change.
+   */
+  takeChanged(): boolean {
+    const changed = this.changed;
+    this.changed = false;
+    return changed;
+  }
+
+  /**
+   * Opens or closes the tag. An open tag shows the details instead of the bulb,
+   * and is drawn above the others; a hovered one above everything.
+   *
+   * @param flashing - Whether its new activity is showing for a moment.
+   * @param hovered - Whether the pointer is on the robot.
+   */
+  setOpen(flashing: boolean, hovered: boolean): void {
+    const open = flashing || hovered;
+    const state = `${String(open)}:${String(hovered)}`;
+    if (state === this.tagState) return;
+    this.tagState = state;
+    this.tagElement.dataset['open'] = String(open);
+    this.tag.element.classList.toggle('hf-raised', open);
+    this.tag.element.classList.toggle('hf-hovered', hovered);
   }
 
   /** Where it is now. */
@@ -334,6 +376,11 @@ export class RobotActor {
     if (key === this.tagKey) return;
     this.tagKey = key;
     renderTag(this.tagElement, content, this.color);
+    const text = content.badge?.text;
+    // A robot on screen from the start has nothing new to announce.
+    this.changed = this.rendered ? text !== this.badgeText : this.motion === 'arriving';
+    this.rendered = true;
+    this.badgeText = text;
     this.tagElement.dataset['motion'] = this.motion;
     this.tagElement.dataset['pose'] = this.pose;
     this.tagElement.dataset['status'] = this.robot.status;

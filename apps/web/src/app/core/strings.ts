@@ -100,7 +100,7 @@ export const STRINGS = {
       if (subagents === 0) return main;
       return `${main} + ${subagents === 1 ? '1 subagent' : `${String(subagents)} subagents`}`;
     },
-    hint: 'Drag or use the arrow keys to orbit · scroll to zoom',
+    hint: 'Drag or use the arrow keys to orbit · scroll to zoom · hover a robot for details',
   },
   card: {
     close: 'Close',

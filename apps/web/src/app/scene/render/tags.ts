@@ -1,4 +1,4 @@
-import type { IconName, TagContent } from '../behaviour';
+import type { Badge, IconName, TagContent } from '../behaviour';
 
 const SVG = 'http://www.w3.org/2000/svg';
 
@@ -21,6 +21,8 @@ const ICONS: Readonly<Record<IconName, string>> = {
   working: 'M3 7h18v13H3zM8 7V4h8v3',
   coffee: 'M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v2M10 2v2M14 2v2',
   walking: 'M13 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0M7 21l3-4M16 21l-2-4-3-3 1-6M6 12l2-3 4-1 3 3 3 1',
+  waiting:
+    'M5 22h14M5 2h14M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4a2 2 0 0 0-.6 1.4V22M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4a2 2 0 0 0 .6-1.4V2',
 };
 
 function icon(name: IconName): SVGSVGElement {
@@ -42,33 +44,45 @@ function span(className: string, text?: string): HTMLSpanElement {
   return el;
 }
 
+function badgeMark(badge: Badge): HTMLElement | SVGSVGElement | undefined {
+  if (badge.dots) {
+    const dots = span('hf-dots');
+    dots.append(span(''), span(''), span(''));
+    return dots;
+  }
+  return badge.icon === undefined ? undefined : icon(badge.icon);
+}
+
 /**
- * Fills a robot's tag (W4). Every piece of text goes in through `textContent`,
- * never as HTML.
+ * Fills a robot's tag (W4): a small bulb with just the icon, and the details
+ * that replace it while the tag is open. Every piece of text goes in through
+ * `textContent`, never as HTML.
  *
  * @param element - The tag's element.
  * @param content - What to show.
- * @param color - The room colour, for the badge outline.
+ * @param color - The room colour, for the outline.
  */
 export function renderTag(element: HTMLElement, content: TagContent, color: string): void {
   element.style.setProperty('--hf-tag-color', color);
-  const children: HTMLElement[] = [];
   const { badge } = content;
+  const bulb = span(
+    ['hf-bulb', badge?.quiet === true ? 'hf-bulb-quiet' : '', content.subagent ? 'hf-bulb-sub' : '']
+      .filter((name) => name !== '')
+      .join(' '),
+  );
+  const details = span('hf-details');
   if (badge !== undefined) {
+    const mark = badgeMark(badge);
+    if (mark !== undefined) bulb.append(mark);
     const pill = span(badge.quiet ? 'hf-badge hf-badge-quiet' : 'hf-badge');
-    if (badge.dots) {
-      const dots = span('hf-dots');
-      dots.append(span(''), span(''), span(''));
-      pill.append(dots);
-    } else if (badge.icon !== undefined) {
-      pill.append(icon(badge.icon));
-    }
+    const pillMark = badgeMark(badge);
+    if (pillMark !== undefined) pill.append(pillMark);
     pill.append(document.createTextNode(badge.text));
-    children.push(pill);
+    details.append(pill);
   }
-  children.push(span(content.subagent ? 'hf-name hf-name-sub' : 'hf-name', content.name));
-  if (content.goal !== undefined) children.push(span('hf-goal', content.goal));
-  element.replaceChildren(...children);
+  details.append(span(content.subagent ? 'hf-name hf-name-sub' : 'hf-name', content.name));
+  if (content.goal !== undefined) details.append(span('hf-goal', content.goal));
+  element.replaceChildren(bulb, details);
 }
 
 /**
