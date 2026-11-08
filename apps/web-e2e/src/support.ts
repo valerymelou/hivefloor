@@ -17,6 +17,44 @@ export const DEMO = {
   coffee: '420033',
 } as const;
 
+/** A minimal public office config for tests that mock the relay. */
+export const RELAY_CONFIG = {
+  v: 1,
+  title: 'Test office',
+  owner: 'Test',
+  timezone: 'Africa/Douala',
+  publicProjects: [{ name: 'Ledgerly', color: '#f2a65a' }],
+  privateRoom: { name: 'Private projects', color: '#8d94ab', visible: true },
+  agentTypes: ['Explore'],
+  presence: { idleAfterSec: 180, awayAfterSec: 900, leaveAfterSec: 3600 },
+  viewerCap: 500,
+};
+
+/** A snapshot with one robot working in one room; `goal` is its goal. */
+export function relaySnapshot(goal = 'Building the paywall screen'): object {
+  return {
+    type: 'snapshot',
+    v: 1,
+    at: 2000,
+    rooms: [
+      { id: 'ledgerly', name: 'Ledgerly', color: '#f2a65a', slot: 0, floor: 0, rows: 1, lit: true },
+    ],
+    robots: [
+      {
+        key: 'a9f3c2',
+        role: 'claude',
+        room: 'ledgerly',
+        desk: 0,
+        goal,
+        status: 'working',
+        cat: 'coding',
+        since: 1990,
+      },
+    ],
+    today: [],
+  };
+}
+
 /** A robot's floating tag. */
 export function tag(page: Page, key: string): Locator {
   return page.locator(`.hf-tag[data-robot="${key}"]`);
