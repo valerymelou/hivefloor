@@ -1,4 +1,4 @@
-import { chmod, mkdir, readFile, realpath, stat, symlink, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, open, readFile, realpath, stat, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { exampleOfficeConfig } from '@hivefloor/schema/fixtures';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -28,6 +28,17 @@ async function setup(machine: unknown = { v: 1, endpoint: ENDPOINT }) {
   const publicNames = async (path = officePath) =>
     ((await box.readJson(path))['publicProjects'] as { name: string }[]).map((p) => p.name);
   return { box, cwd, officePath, writeOffice, projects, publicNames };
+}
+
+/** A file's text and modification time, read through one handle. */
+async function snapshot(path: string) {
+  const handle = await open(path);
+  try {
+    const { mtimeMs } = await handle.stat();
+    return { text: await handle.readFile('utf8'), mtimeMs };
+  } finally {
+    await handle.close();
+  }
 }
 
 /** A folder that `deploy` accepts: package.json, Wrangler and its config. */
@@ -68,23 +79,13 @@ describe('hivefloor add-project', () => {
     await writeOffice();
     const args = ['Paywall', '--color', '#123456'];
     expect(await addProject(args, box.io().io)).toBe(0);
-    const before = {
-      machine: await readFile(box.paths.config, 'utf8'),
-      office: await readFile(officePath, 'utf8'),
-      machineTime: (await stat(box.paths.config)).mtimeMs,
-      officeTime: (await stat(officePath)).mtimeMs,
-    };
+    const before = [await snapshot(box.paths.config), await snapshot(officePath)];
     const again = box.io();
     expect(await addProject(args, again.io)).toBe(0);
     expect(again.out()).toContain('Nothing to change');
     expect(again.out()).toContain(WARNING);
     expect(again.out()).toContain('If the relay doesn');
-    expect({
-      machine: await readFile(box.paths.config, 'utf8'),
-      office: await readFile(officePath, 'utf8'),
-      machineTime: (await stat(box.paths.config)).mtimeMs,
-      officeTime: (await stat(officePath)).mtimeMs,
-    }).toEqual(before);
+    expect([await snapshot(box.paths.config), await snapshot(officePath)]).toEqual(before);
   });
 
   it('writes only publicProjects into the office config, not the defaults', async () => {
