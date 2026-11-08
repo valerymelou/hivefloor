@@ -12,14 +12,14 @@ import { Badge, type BadgeVariant } from '../ui/badge/badge';
   selector: 'hf-office-header',
   imports: [Badge],
   template: `
-    <header class="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
-      <div>
+    <header class="hf-top flex flex-wrap items-center justify-between gap-3 p-4">
+      <div class="hf-glass px-5 py-3">
         <h1 class="text-lg font-semibold">{{ title() }}</h1>
         @if (owner(); as owner) {
           <p class="text-sm text-muted-foreground">{{ owner }}</p>
         }
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="hf-glass flex flex-wrap items-center gap-2 p-2 ps-3">
         <span ndBadge variant="secondary">{{ working() }}</span>
         <span ndBadge variant="outline">{{ total() }}</span>
         <span ndBadge [variant]="statusVariant()" role="status">{{ status() }}</span>

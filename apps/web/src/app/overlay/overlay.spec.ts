@@ -156,17 +156,16 @@ describe('overlay components', () => {
     const { element, store, fixture } = await render(TodayCounts);
     store.apply(msg({ type: 'today', v: 1, count: { room: 'private', cat: 'vcs', n: 7 } }), 105);
     await fixture.whenStable();
-    const rows = [...element.querySelectorAll('tbody tr')].map((tr) =>
-      [...tr.children].map((c) => c.textContent.trim()).join(' '),
-    );
-    expect(rows).toEqual(['Private project using Git 7', 'Ledgerly coding 3']);
+    const names = () =>
+      [...element.querySelectorAll('li')].map(
+        (row) =>
+          `${row.querySelector('.uppercase')?.textContent ?? ''}: ${row.querySelector('.tabular-nums')?.textContent ?? ''}`,
+      );
+    expect(names()).toEqual(['Private project: 7', 'Ledgerly: 3']);
     store.apply(msg({ type: 'roomClosed', v: 1, id: 'ledgerly' }), 106);
     store.apply(msg({ type: 'today', v: 1, count: { room: 'ndop-ui', cat: 'vcs', n: 1 } }), 107);
     await fixture.whenStable();
-    const names = [...element.querySelectorAll('tbody tr td:first-child')].map((td) =>
-      td.textContent.trim(),
-    );
-    expect(names).toEqual(['Private project', 'Ledgerly', 'Ndop UI']);
+    expect(names()).toEqual(['Private project: 7', 'Ledgerly: 3', 'Ndop UI: 1']);
   });
 
   it('lists everyone with role, room, activity, goal and time (W11)', async () => {

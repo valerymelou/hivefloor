@@ -19,6 +19,7 @@ export const STRINGS = {
     busy: 'Busy: updates every few minutes',
     closed: (until: string): string => `Office closed until ${until}`,
     demo: 'Demo',
+    demoNotice: 'Demo: simulated robots',
   },
   categories: {
     reading: 'reading',
@@ -53,16 +54,11 @@ export const STRINGS = {
   },
   publicWork: {
     title: 'Building in public',
-    description: 'What Claude is working on in public projects.',
     empty: 'No public project is active right now.',
   },
   today: {
-    title: 'Today',
-    description: 'Tool use per room since 00:00 UTC.',
+    title: 'Tool use today',
     empty: 'No activity yet today.',
-    room: 'Room',
-    category: 'Activity',
-    count: 'Count',
   },
   list: {
     title: 'Everyone in the office',
@@ -112,8 +108,7 @@ export const STRINGS = {
     since: 'For',
   },
   privacy: {
-    title: 'Private by design',
-    body: 'Private projects share only which agent, what kind of work and when. File paths, commands, prompts and private project names never leave the owner’s machine.',
+    body: 'Private projects share only which agent, what kind of work and when. Paths, commands, prompts and their names never leave the owner’s machine.',
   },
   duration: (seconds: number): string => {
     if (seconds < 60) return 'under a minute';

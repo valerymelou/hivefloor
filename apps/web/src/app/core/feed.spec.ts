@@ -9,6 +9,7 @@ describe('feed', () => {
       at: 5,
       who: 'Claude',
       where: 'Ledgerly',
+      color: '#f2a65a',
       what: 'arrived',
     });
     expect(describeChange({ before: robot() }, ROOMS, 5, 2)?.what).toBe('left');
@@ -38,6 +39,7 @@ describe('feed', () => {
       at: id,
       who: 'Claude',
       where: 'Ledgerly',
+      color: '#f2a65a',
       what: 'arrived',
     });
     const feed = pushFeed([], [entry(1), entry(2)]);

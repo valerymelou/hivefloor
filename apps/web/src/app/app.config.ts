@@ -19,6 +19,12 @@ export const EMBED_MODE = new InjectionToken<boolean>('EMBED_MODE', {
   factory: () => typeof location !== 'undefined' && pageMode(location.hash).embed,
 });
 
+/** Whether the page is the landing page's office: panels, no header, demo when empty. */
+export const SHOWCASE_MODE = new InjectionToken<boolean>('SHOWCASE_MODE', {
+  providedIn: 'root',
+  factory: () => typeof location !== 'undefined' && pageMode(location.hash).showcase,
+});
+
 /** The application's providers. */
 export const appConfig: ApplicationConfig = {
   providers: [provideBrowserGlobalErrorListeners(), provideNdop(), provideIcons()],

@@ -76,4 +76,26 @@ describe('OfficeStore', () => {
     stop();
     expect(stopped).toBe(true);
   });
+
+  it('forgets everything when a source resets it', () => {
+    const s = store();
+    let reset = (): void => undefined;
+    s.connect({
+      start(events) {
+        reset = () => {
+          events.reset();
+        };
+        return () => undefined;
+      },
+    });
+    s.apply(msg(SNAPSHOT), 1);
+    s.apply(msg({ type: 'leave', v: 1, key: SNAPSHOT.robots[0]?.key }), 2);
+    s.selected.set('someone');
+    expect(s.feed().length).toBeGreaterThan(0);
+    reset();
+    expect(s.view().robots).toEqual([]);
+    expect(s.view().rooms).toEqual([]);
+    expect(s.feed()).toEqual([]);
+    expect(s.selected()).toBeUndefined();
+  });
 });

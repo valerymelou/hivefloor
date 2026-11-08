@@ -360,3 +360,155 @@
     animation: none;
   }
 }
+
+/*
+ * The office at night: the colours of the 3D scene, for everything that floats
+ * over it. Ndop UI reads these tokens, so its components need no changes.
+ */
+.hf-night {
+  color-scheme: dark;
+  --background: #14152b;
+  --foreground: #f2f2fb;
+  --card: rgb(20 21 45 / 0.56);
+  --card-foreground: #f2f2fb;
+  --popover: #1c1d3a;
+  --popover-foreground: #f2f2fb;
+  --primary: #ffb867;
+  --primary-foreground: #1b1420;
+  --secondary: rgb(255 255 255 / 0.12);
+  --secondary-foreground: #f2f2fb;
+  --muted: rgb(255 255 255 / 0.08);
+  --muted-foreground: #d6d7ee;
+  --accent: rgb(255 255 255 / 0.14);
+  --accent-foreground: #fff;
+  --border: rgb(190 190 255 / 0.22);
+  --input: rgb(190 190 255 / 0.3);
+  --ring: #ffcf94;
+}
+
+body:has(.hf-night) {
+  background: #14152b;
+}
+
+.hf-glass,
+.hf-night [data-slot='card'] {
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  background: var(--card);
+  box-shadow: none;
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.hf-night [data-slot='card'] {
+  gap: 0.75rem;
+  padding-block: 1rem;
+}
+
+.hf-night [data-slot='card-title'] {
+  font-family: var(--font-mono);
+  font-size: 0.71875rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.hf-solid {
+  --card: rgb(20 21 45 / 0.88);
+}
+
+.hf-solid .hf-glass,
+.hf-solid [data-slot='card'] {
+  backdrop-filter: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .hf-night {
+    --card: rgb(20 21 45 / 0.92);
+  }
+}
+
+.hf-dot {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+/* From a laptop up, the office fills the page and the panels float over it. */
+@media (min-width: 64rem) {
+  .hf-stage-page {
+    position: relative;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .hf-stage-page hf-office-canvas {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+  }
+
+  .hf-stage-page .hf-top {
+    position: absolute;
+    z-index: 10;
+    top: 1.25rem;
+    inset-inline: 1.5rem;
+    padding: 0;
+    pointer-events: none;
+  }
+
+  .hf-stage-page .hf-top > * {
+    pointer-events: auto;
+  }
+
+  .hf-aside {
+    display: contents;
+  }
+
+  .hf-pins-left {
+    position: absolute;
+    z-index: 10;
+    bottom: 1.5rem;
+    inset-inline-start: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 20.5rem);
+    align-items: end;
+    gap: 1rem;
+  }
+
+  .hf-pins-right {
+    position: absolute;
+    z-index: 10;
+    top: 5.75rem;
+    inset-inline-end: 1.5rem;
+    width: 20rem;
+  }
+
+  .hf-card-pin {
+    inset-inline-end: 1.5rem;
+    bottom: 3.75rem;
+  }
+
+  .hf-capped > :nth-child(n + 6) {
+    display: none;
+  }
+
+  /* The landing page draws its own name, links and credits around these. */
+  .hf-showcase-badge {
+    top: 5.75rem;
+    inset-inline: auto 1.5rem;
+  }
+
+  .hf-showcase .hf-pins-right {
+    top: 8.25rem;
+  }
+
+  .hf-showcase .hf-pins-left {
+    bottom: 4.75rem;
+  }
+
+  .hf-showcase .hf-card-pin {
+    bottom: 4.75rem;
+  }
+}

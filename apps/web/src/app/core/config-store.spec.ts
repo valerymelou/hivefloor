@@ -33,4 +33,13 @@ describe('ConfigStore', () => {
     await store.load(() => Promise.reject(new Error('down')), 'https://x.example/');
     expect(store.config()).toBeUndefined();
   });
+
+  it('shows the example office only while the simulator runs', () => {
+    const store = create(false);
+    expect(store.config()).toBeUndefined();
+    store.useSimulator(true);
+    expect(store.config()).toBe(DEMO_CONFIG);
+    store.useSimulator(false);
+    expect(store.config()).toBeUndefined();
+  });
 });

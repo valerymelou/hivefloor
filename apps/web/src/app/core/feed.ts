@@ -1,5 +1,5 @@
 import type { Room } from '@hivefloor/schema';
-import { activity, robotName, roomName, type RobotChange } from './office-view';
+import { activity, robotName, roomColor, roomName, type RobotChange } from './office-view';
 import { STRINGS } from './strings';
 
 /** One line of the activity feed. All parts are rendered as text, never HTML (W4). */
@@ -9,6 +9,8 @@ export interface FeedEntry {
   readonly at: number;
   readonly who: string;
   readonly where: string;
+  /** The room's `#rrggbb` colour, for the entry's marker. */
+  readonly color: string;
   readonly what: string;
 }
 
@@ -33,7 +35,13 @@ export function describeChange(
 ): FeedEntry | undefined {
   const robot = change.after ?? change.before;
   if (robot === undefined) return undefined;
-  const base = { id, at, who: robotName(robot), where: roomName(robot, rooms) };
+  const base = {
+    id,
+    at,
+    who: robotName(robot),
+    where: roomName(robot, rooms),
+    color: roomColor(robot, rooms),
+  };
   if (change.before === undefined) return { ...base, what: STRINGS.feed.arrived };
   if (change.after === undefined) return { ...base, what: STRINGS.feed.left };
   const before = activity(change.before);

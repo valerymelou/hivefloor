@@ -117,23 +117,169 @@
   }
 }
 
-/* Rendered Markdown in the guides. */
-.hf-prose h1 {
-  margin-bottom: 1rem;
-  font-size: 1.875rem;
+/* The colours of the 3D office, for every page of the site. */
+.hf-night {
+  color-scheme: dark;
+  --background: #14152b;
+  --foreground: #ececf8;
+  --card: rgb(20 21 45 / 0.6);
+  --card-foreground: #f2f2fb;
+  --primary: #ffb867;
+  --primary-foreground: #1b1420;
+  --secondary: rgb(255 255 255 / 0.12);
+  --secondary-foreground: #f2f2fb;
+  --muted: rgb(255 255 255 / 0.08);
+  --muted-foreground: #d6d7ee;
+  --accent: rgb(255 255 255 / 0.14);
+  --accent-foreground: #fff;
+  --border: rgb(190 190 255 / 0.22);
+  --input: rgb(190 190 255 / 0.3);
+  --ring: #ffcf94;
+}
+
+body {
+  background: #14152b;
+}
+
+.hf-glass {
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  background: var(--card);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .hf-glass {
+    background: rgb(20 21 45 / 0.92);
+  }
+}
+
+.hf-poster {
+  background: #14152b url('/assets/office.jpg') center / cover no-repeat;
+}
+
+.hf-banner {
+  background: #14152b url('/assets/office.jpg') 78% 42% / 1500px auto no-repeat;
+}
+
+.hf-navlink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 0.875rem;
+  border-radius: 0.5625rem;
+  font-size: 0.90625rem;
+  font-weight: 500;
+}
+
+@media (max-width: 30rem) {
+  .hf-navlink {
+    padding-inline: 0.5rem;
+  }
+}
+
+.hf-navlink:hover {
+  background: var(--accent);
+}
+
+.hf-cta,
+.hf-cta:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
   font-weight: 600;
 }
 
-.hf-prose h2 {
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  font-size: 1.375rem;
+.hf-cta:hover {
+  background: #ffcf94;
+}
+
+.hf-dot {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.hf-guide {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.5rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.5625rem;
+  color: #dcddf2;
+  font-size: 0.90625rem;
+}
+
+.hf-guide:hover {
+  background: var(--muted);
+  color: #fff;
+}
+
+.hf-guide-on {
+  background: rgb(255 184 103 / 0.16);
+  color: #fff;
   font-weight: 600;
+}
+
+.hf-guide-card {
+  display: block;
+  height: 100%;
+  padding: 1rem 1.125rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--muted);
+}
+
+.hf-guide-card:hover {
+  background: var(--accent);
+}
+
+/* Rendered Markdown in the guides. */
+.hf-prose h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 2.75rem;
+  margin-bottom: 0.875rem;
+  color: #fff;
+  font-size: 1.625rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.hf-prose h2:first-child {
+  margin-top: 0;
+}
+
+.hf-step {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 0.6875rem;
+  background: #ffb867;
+  color: #191327;
+  font-family: var(--font-mono);
+  font-size: 1.0625rem;
+}
+
+.hf-prose h2:nth-of-type(2) .hf-step {
+  background: #b79cff;
+}
+
+.hf-prose h2:nth-of-type(3) .hf-step {
+  background: #6ea8ff;
 }
 
 .hf-prose h3 {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   margin-bottom: 0.5rem;
+  color: #fff;
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
@@ -144,7 +290,13 @@
 .hf-prose table,
 .hf-prose blockquote {
   margin-bottom: 1rem;
-  line-height: 1.7;
+  color: #dcddf0;
+  font-size: 1.03125rem;
+  line-height: 1.65;
+}
+
+.hf-prose strong {
+  color: #fff;
 }
 
 .hf-prose ul {
@@ -158,27 +310,98 @@
 }
 
 .hf-prose a {
+  color: #ffcf94;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
+.hf-prose a:hover {
+  color: #ffe3c2;
+}
+
 .hf-prose code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.3125rem;
+  background: rgb(190 190 255 / 0.14);
+  color: #f5f5ff;
   font-family: var(--font-mono);
   font-size: 0.875em;
 }
 
 .hf-prose pre {
   overflow-x: auto;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  background: var(--muted);
+  padding: 1rem 3.75rem 1rem 1.125rem;
+  border: 1px solid rgb(190 190 255 / 0.16);
+  border-radius: 0.75rem;
+  background: #0c0d1e;
+  font-size: 0.90625rem;
+  line-height: 1.75;
+}
+
+.hf-prose pre code {
+  padding: 0;
+  background: none;
+  color: #e8e8f7;
+  font-size: inherit;
+}
+
+.hf-prose .token.function,
+.hf-prose .token.keyword,
+.hf-prose .token.builtin {
+  color: #ffb867;
+}
+
+.hf-prose .token.string,
+.hf-prose .token.attr-value {
+  color: #6ee7b7;
+}
+
+.hf-prose .token.parameter,
+.hf-prose .token.property {
+  color: #b79cff;
+}
+
+.hf-prose .token.comment {
+  color: #a9abc4;
+}
+
+.hf-prose .code-toolbar {
+  position: relative;
+}
+
+.hf-prose .code-toolbar .toolbar {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.hf-prose .code-toolbar button {
+  min-height: 2.75rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.5625rem;
+  color: #d6d7ee;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.hf-prose .code-toolbar button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* A paragraph that opens in bold is something to notice. */
+.hf-prose p:has(> strong:first-child) {
+  padding: 0.875rem 1.125rem;
+  border-radius: 0.75rem;
+  background: rgb(255 184 103 / 0.14);
+  color: #fff0dd;
 }
 
 .hf-prose blockquote {
-  padding-inline-start: 1rem;
-  border-inline-start: 3px solid var(--border);
-  color: var(--muted-foreground);
+  padding: 0.875rem 1.125rem;
+  border-radius: 0.75rem;
+  background: var(--muted);
 }
 
 .hf-prose table {
@@ -193,4 +416,8 @@
   padding: 0.375rem 0.75rem;
   border: 1px solid var(--border);
   text-align: start;
+}
+
+.hf-prose th {
+  color: #fff;
 }

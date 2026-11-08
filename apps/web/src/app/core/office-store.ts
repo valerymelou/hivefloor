@@ -90,6 +90,11 @@ export class OfficeStore {
         this.connection.set(state);
         this.closedUntil.set(closedUntil);
       },
+      reset: () => {
+        this.viewState.set(EMPTY_OFFICE);
+        this.feedState.set([]);
+        this.selected.set(undefined);
+      },
     });
   }
 }

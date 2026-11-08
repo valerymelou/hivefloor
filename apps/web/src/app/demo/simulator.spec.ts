@@ -55,7 +55,7 @@ describe('Simulator (W7)', () => {
       setInterval: vi.fn((fn: () => void, _ms: number) => fn),
       clearInterval: vi.fn(),
     };
-    const events = { message: vi.fn(), state: vi.fn() };
+    const events = { message: vi.fn(), state: vi.fn(), reset: vi.fn() };
     const stop = new DemoSource(DEMO_CONFIG, timers).start(events);
     expect(events.state).toHaveBeenCalledWith('demo');
     expect(events.message.mock.calls[0]?.[0]).toMatchObject({ type: 'snapshot' });

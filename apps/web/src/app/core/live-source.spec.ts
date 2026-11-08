@@ -51,6 +51,7 @@ function setup(responses: (() => Response)[] = []) {
   const stop = new LiveSource(deps).start({
     message: (m) => messages.push(m),
     state: (s, until) => states.push([s, until]),
+    reset: vi.fn(),
   });
   const flush = () => new Promise((r) => setTimeout(r, 0));
   return { sockets, timers, states, messages, fetch, stop, deps, flush };
@@ -149,7 +150,7 @@ describe('LiveSource (W6)', () => {
       random: Math.random,
       now: Date.now,
       timeZone: () => 'UTC',
-    }).start({ message: vi.fn(), state: vi.fn() });
+    }).start({ message: vi.fn(), state: vi.fn(), reset: vi.fn() });
     expect(sockets).toEqual(['ws://localhost:8787/live']);
   });
 });
