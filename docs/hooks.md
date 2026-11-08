@@ -2,7 +2,7 @@
 
 Hivefloor learns what Claude Code is doing through [hooks](https://code.claude.com/docs/en/hooks): Claude Code runs `hivefloor hook` with a JSON payload on stdin for each event. The hook turns that payload into at most one small event for your office, then exits.
 
-> `hivefloor init` (M3) registers these hooks in `~/.claude/settings.json`; this page documents what it adds and why.
+> `hivefloor init` registers these hooks in `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`), after backing the file up, and `hivefloor uninstall` removes them again. Neither touches any other hook or setting.
 
 ## What gets registered
 
@@ -59,7 +59,7 @@ Map MCP servers with `mcpCategories` in your [machine config](configuration.md).
 
 - A repeat of the same kind, category and goal within 10 s is skipped (C8). Lifecycle events (`start`, `idle`, `end`, `spawn`, `done`) are always sent.
 - Timestamps are rounded down to `timestampRoundingSec` (5 s by default).
-- `hivefloor pause` (M3) or `"paused": true` stops sending entirely.
+- `hivefloor pause` (or `"paused": true`) stops sending entirely; `hivefloor resume` starts again.
 
 ## Local files
 
