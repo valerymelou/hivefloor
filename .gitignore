@@ -49,3 +49,6 @@ vitest.config.*.timestamp*
 .ndop
 apps/web/angular.json
 apps/web/tsconfig.ndop-verify.json
+
+# Copied from docs/ by apps/site/scripts/sync-docs.mjs
+apps/site/src/content/
