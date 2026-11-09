@@ -9,6 +9,71 @@ async function mockOfficeRelay(page: Page): Promise<void> {
   });
 }
 
+/** The value of one tag in pre-rendered HTML, so nothing here relies on scripts running. */
+function attribute(html: string, tag: string, name: string): string | undefined {
+  for (const [element] of html.matchAll(new RegExp(`<${tag}\\b[^>]*>`, 'g'))) {
+    if (element.includes(name)) return /(?:content|href)="([^"]*)"/.exec(element)?.[1];
+  }
+  return undefined;
+}
+
+test.describe('search and link previews', () => {
+  const SITE = 'https://hivefloor.valerymelou.com';
+  const pages = [
+    {
+      path: '/',
+      title: 'Hivefloor: a live 3D office for your Claude Code sessions',
+      type: 'website',
+    },
+    { path: '/docs/', title: 'Documentation | Hivefloor', type: 'article' },
+    { path: '/docs/hooks/', title: 'Claude Code hooks | Hivefloor docs', type: 'article' },
+  ];
+
+  for (const { path, title, type } of pages) {
+    test(`${path} is described in its pre-rendered HTML`, async ({ request }) => {
+      const html = await (await request.get(path)).text();
+      expect(/<title[^>]*>([^<]*)</.exec(html)?.[1]).toBe(title);
+      expect(attribute(html, 'link', 'rel="canonical"')).toBe(`${SITE}${path}`);
+      expect(attribute(html, 'meta', 'property="og:url"')).toBe(`${SITE}${path}`);
+      expect(attribute(html, 'meta', 'property="og:type"')).toBe(type);
+      expect(attribute(html, 'meta', 'property="og:title"')).toBe(title);
+      expect(attribute(html, 'meta', 'name="description"')?.length).toBeGreaterThan(50);
+      expect(attribute(html, 'meta', 'property="og:image"')).toBe(`${SITE}/assets/og-image.jpg`);
+      expect(attribute(html, 'meta', 'name="twitter:card"')).toBe('summary_large_image');
+      expect(attribute(html, 'meta', 'name="twitter:creator"')).toBe('@valerymelou');
+      const data = /<script[^>]*ld\+json[^>]*>([^<]*)</.exec(html)?.[1] ?? '';
+      expect(data).toContain('Valery Melou');
+      expect(() => JSON.parse(data) as unknown).not.toThrow();
+    });
+  }
+
+  test('the tags follow the page when moving around in the browser', async ({ page }) => {
+    await mockOfficeRelay(page);
+    await page.goto('/');
+    await page.getByRole('link', { name: 'Docs', exact: true }).click();
+    await expect(page).toHaveTitle('Documentation | Hivefloor');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${SITE}/docs/`);
+    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  });
+
+  test('the images, icons, robots file and sitemap are served', async ({ request }) => {
+    for (const file of [
+      '/assets/og-image.jpg',
+      '/favicon.ico',
+      '/favicon.svg',
+      '/assets/icons/apple-touch-icon.png',
+      '/assets/site.webmanifest',
+      '/robots.txt',
+    ]) {
+      expect((await request.get(file)).status(), file).toBe(200);
+    }
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).toContain(`<loc>${SITE}/</loc>`);
+    expect(sitemap).toContain(`<loc>${SITE}/docs/self-hosting/</loc>`);
+    expect(sitemap).not.toContain('/office');
+  });
+});
+
 test.describe('the site', () => {
   test('the landing page is the office, with its name, links and credits', async ({ page }) => {
     await mockOfficeRelay(page);

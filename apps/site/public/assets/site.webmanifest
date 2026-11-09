@@ -1,0 +1,19 @@
+{
+  "name": "Hivefloor",
+  "short_name": "Hivefloor",
+  "description": "Your Claude Code sessions, live, as robots in a 3D office you host yourself.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14152b",
+  "theme_color": "#14152b",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "/assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

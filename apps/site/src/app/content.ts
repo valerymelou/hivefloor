@@ -27,6 +27,15 @@ export const COPY = {
   pitch: 'Your Claude Code sessions, live, as robots in a 3D office you host yourself.',
   nav: { docs: 'Docs', office: 'Full office', source: 'GitHub', start: 'Run your own' },
   frame: 'The live office, or a simulated one while nobody is working',
+  seo: {
+    title: 'Hivefloor: a live 3D office for your Claude Code sessions',
+    description:
+      'Watch your Claude Code sessions live as robots in a 3D office. Open source, private by default, and free to host yourself on Cloudflare.',
+    docs: 'Guides to run your own Hivefloor office: self-hosting on Cloudflare, configuration, Claude Code hooks, privacy and troubleshooting.',
+    guideSuffix: 'A guide to Hivefloor, the self-hosted 3D office for Claude Code sessions.',
+    imageAlt:
+      'Hivefloor: robots working at desks in coloured rooms of a 3D office, one room for each project.',
+  },
   credits: {
     line: 'Robots by Tomás Laulhé (Quaternius), CC0 · Three.js · Angular · Cloudflare Workers',
     legal: 'MIT licence · Not affiliated with or endorsed by Anthropic',
