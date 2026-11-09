@@ -86,7 +86,7 @@ Apply it to `/ingest` only. A rate limit on `/api/*` or `/live` answers visitors
 
 ## When the daily free-plan limit is reached
 
-Once the Workers daily limit is used up, Cloudflare answers with a 429 or error 1027 and the Worker can't run. Claude Code isn't affected: the hook drops its events. Visitors see "Office closed until" the next 00:00 UTC, in your time zone, and the page checks every few minutes until the office is back. Above the viewer cap (`viewerCap`, 500 by default), visitors get a "Busy" view that updates every few minutes.
+Once the Workers daily limit is used up, Cloudflare answers with a 429 or error 1027 and the Worker can't run. Once a Durable Objects daily limit is used up, the Worker still runs and answers with a 429 itself. Claude Code isn't affected: the hook drops its events. Visitors see "Office closed until" the next 00:00 UTC, in your time zone, and the page checks every few minutes until the office is back. Above the viewer cap (`viewerCap`, 500 by default), visitors get a "Busy" view that updates every few minutes.
 
 ## Rotate the shared secret
 

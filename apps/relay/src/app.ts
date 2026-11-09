@@ -10,6 +10,9 @@ export const CONFIG_MAX_AGE_SEC = 60;
 
 const bare = (status: number): Response => new Response(null, { status });
 
+/** How Cloudflare words a used-up Durable Objects free tier limit, for every metered operation. */
+const FREE_TIER_LIMIT = /\bin Durable Objects free tier\b/i;
+
 /**
  * The relay's routes. Responses to `/ingest` carry only a status code (R1), and
  * nothing here logs request bodies or headers.
@@ -64,4 +67,6 @@ app.get('/api/snapshot', async (c) => {
 });
 
 app.notFound(() => bare(404));
-app.onError(() => bare(500));
+// The Worker still runs when only the Durable Objects limit is used up. A 429 tells
+// the page to show "Office closed" and check rarely, instead of retrying (H11).
+app.onError((error) => bare(FREE_TIER_LIMIT.test(error.message) ? 429 : 500));

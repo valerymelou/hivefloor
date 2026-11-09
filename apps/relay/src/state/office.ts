@@ -389,11 +389,21 @@ export function rollDay(state: OfficeState, now: number, config: OfficeConfig): 
  * When the alarm should next run, or `undefined` when nothing is pending, so no
  * alarm runs while the office is empty (R5).
  *
+ * Only times after `now` count: an alarm set in the past fires at once, and each
+ * firing is a Durable Object request, so a threshold that has already been
+ * handled must never be scheduled again. The one exception is 0, which asks for
+ * an immediate wake to remove subagents of a departed session; that tick clears it.
+ *
  * @param state - The office state.
  * @param config - The office config.
+ * @param now - Unix seconds.
  * @returns Unix seconds, or `undefined`.
  */
-export function nextWake(state: OfficeState, config: OfficeConfig): number | undefined {
+export function nextWake(
+  state: OfficeState,
+  config: OfficeConfig,
+  now: number,
+): number | undefined {
   const { idleAfterSec, awayAfterSec, leaveAfterSec } = config.presence;
   const times: number[] = [];
   for (const robot of state.robots) {
@@ -408,7 +418,6 @@ export function nextWake(state: OfficeState, config: OfficeConfig): number | und
     if (room.emptySince !== undefined && room.id !== PRIVATE_ROOM_ID)
       times.push(room.emptySince + config.layout.roomCloseAfterSec);
   }
-  const lastEvent = Math.max(0, ...state.robots.map((r) => r.lastEventAt));
-  const pending = times.filter((t) => t > lastEvent || t === 0);
+  const pending = times.filter((t) => t > now || t === 0);
   return pending.length === 0 ? undefined : Math.min(...pending);
 }
