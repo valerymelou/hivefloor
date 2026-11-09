@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /office/api/
+Disallow: /office/ingest
+Disallow: /office/live
+
+Sitemap: https://hivefloor.valerymelou.com/sitemap.xml
