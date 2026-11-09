@@ -328,11 +328,34 @@ describe('rollDay (R8, H13)', () => {
 
 describe('nextWake', () => {
   it('schedules nothing for an empty office and the earliest threshold otherwise', () => {
-    expect(nextWake(emptyOffice(CONFIG, NOW), CONFIG)).toBeUndefined();
+    expect(nextWake(emptyOffice(CONFIG, NOW), CONFIG, NOW)).toBeUndefined();
     const one = run([event()]).state;
-    expect(nextWake(one, CONFIG)).toBe(NOW + 180);
+    expect(nextWake(one, CONFIG, NOW)).toBe(NOW + 180);
     const lone = run([sub()]).state;
-    expect(nextWake({ ...lone, departed: [{ key: 'a9f3c2', seq: 1, at: NOW }] }, CONFIG)).toBe(0);
+    expect(nextWake({ ...lone, departed: [{ key: 'a9f3c2', seq: 1, at: NOW }] }, CONFIG, NOW)).toBe(
+      0,
+    );
+  });
+
+  it('never schedules a time that has passed once the office goes quiet', () => {
+    const quiet = NOW + 200;
+    const idle = tick(run([event()]).state, quiet, CONFIG).state;
+    expect(nextWake(idle, CONFIG, quiet)).toBe(NOW + 900);
+  });
+
+  it('wakes once per presence threshold while a silent robot leaves', () => {
+    let state = run([event()]).state;
+    let now = NOW;
+    let alarms = 0;
+    for (let wake = nextWake(state, CONFIG, now); wake !== undefined; alarms++) {
+      expect(alarms).toBeLessThan(10);
+      now = Math.max(wake, now);
+      state = tick(state, now, CONFIG).state;
+      wake = nextWake(state, CONFIG, now);
+    }
+    // Idle, away, leave, then the empty room's row and closing thresholds at most.
+    expect(state.robots).toEqual([]);
+    expect(alarms).toBeGreaterThanOrEqual(3);
   });
 });
 

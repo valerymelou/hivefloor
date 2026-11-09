@@ -57,7 +57,7 @@ export class Office extends DurableObject {
     this.ctx.storage.transactionSync(() => persist(this.ctx.storage.sql, before, change.state));
     this.state = change.state;
     this.broadcast(change.messages);
-    const wake = nextWake(this.state, config);
+    const wake = nextWake(this.state, config, Math.floor(Date.now() / 1000));
     if (wake === undefined) await this.ctx.storage.deleteAlarm();
     else await this.ctx.storage.setAlarm(wake * 1000);
   }

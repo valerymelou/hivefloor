@@ -41,7 +41,7 @@ The folder Claude Code runs in must be inside a `projects[].path` marked `"publi
 
 ## The office says "Office closed"
 
-Cloudflare's free daily limit is used up, so the Worker can't run until the reset at 00:00 UTC. Claude Code isn't affected. The page checks every few minutes and comes back by itself. If it happens often, see [rate limiting](self-hosting.md#protect-ingest-from-floods).
+Cloudflare's free daily limit for Workers or Durable Objects is used up, so the office can't run until the reset at 00:00 UTC. Claude Code isn't affected. The page checks every few minutes and comes back by itself. If it happens often, see [rate limiting](self-hosting.md#protect-ingest-from-floods).
 
 ## The office is blank or shows only the list
 
