@@ -99,7 +99,7 @@ jobs:
       # The landing page, docs and the office under /office, assembled as deployed.
       - run: pnpm nx run web-e2e:site
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-results
