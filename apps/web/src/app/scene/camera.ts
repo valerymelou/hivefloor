@@ -20,6 +20,22 @@ export interface Framing {
 export const NARROW_WIDTH = 760;
 
 /**
+ * Keeps the point the camera looks at over the building, so panning can't lose it.
+ *
+ * @param target - Where the camera would look.
+ * @param plan - The building.
+ * @returns The nearest point that is over the building.
+ */
+export function clampToBuilding(target: Point, plan: Plan): Point {
+  const edge = DIMENSIONS.corridorWidth / 2;
+  return {
+    x: Math.min(plan.length, Math.max(0, target.x)),
+    y: target.y,
+    z: Math.min(edge + plan.frontDepth, Math.max(-(edge + plan.backDepth), target.z)),
+  };
+}
+
+/**
  * Frames the whole building: every floor and both sides of the corridor (E4).
  * Phones get a wider default view (W12).
  *

@@ -15,6 +15,19 @@ export interface CharacterSet {
   readonly hips: string;
   /** The clip for each animation role. */
   readonly clips: Readonly<Record<ClipRole, string>>;
+  /** How to reach for the keyboard. Without it, working robots keep the sitting pose. */
+  readonly typing?: Readonly<Record<'left' | 'right', ArmRig>>;
+}
+
+/** Rotations in radians, on each axis, added to a bone's sitting pose. */
+export type BoneTilt = readonly [x: number, y: number, z: number];
+
+/** The bones of one arm, and how each turns from sitting to typing. */
+export interface ArmRig {
+  readonly upper: string;
+  readonly lower: string;
+  readonly upperTilt: BoneTilt;
+  readonly lowerTilt: BoneTilt;
 }
 
 /**
@@ -28,6 +41,20 @@ export const ROBOT_EXPRESSIVE: CharacterSet = {
   tintMaterial: 'Main',
   hips: 'Hips',
   clips: { idle: 'Idle', walk: 'Walking', sit: 'Sitting', wave: 'Wave' },
+  typing: {
+    left: {
+      upper: 'UpperArmL',
+      lower: 'LowerArmL',
+      upperTilt: [0.305, 0, -0.807],
+      lowerTilt: [-0.208, 0.705, -0.193],
+    },
+    right: {
+      upper: 'UpperArmR',
+      lower: 'LowerArmR',
+      upperTilt: [-0.023, 0, 0.766],
+      lowerTilt: [-0.42, 0.586, 0.328],
+    },
+  },
 };
 
 /** Subagents are smaller "contractor" robots (W2). */

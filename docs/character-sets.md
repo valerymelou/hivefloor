@@ -6,13 +6,14 @@ A character set is a glTF model plus a map of its animation clips to the four th
 
 A set is a `CharacterSet` object (`apps/web/src/app/scene/character.ts`):
 
-| Field          | Meaning                                                                                  |
-| -------------- | ---------------------------------------------------------------------------------------- |
-| `url`          | The model, relative to the page, usually under `apps/web/public/models/`.                |
-| `height`       | How tall a main-session robot stands, in metres. Subagents are drawn at 78% of this.     |
-| `tintMaterial` | The name of the material that takes the room's colour.                                   |
-| `hips`         | The bone used to place a sitting robot on its seat.                                      |
-| `clips`        | The clip names for `idle`, `walk`, `sit` and `wave`. `wave` plays once, the others loop. |
+| Field          | Meaning                                                                                                                                 |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`          | The model, relative to the page, usually under `apps/web/public/models/`.                                                               |
+| `height`       | How tall a main-session robot stands, in metres. Subagents are drawn at 78% of this.                                                    |
+| `tintMaterial` | The name of the material that takes the room's colour.                                                                                  |
+| `hips`         | The bone used to place a sitting robot on its seat.                                                                                     |
+| `clips`        | The clip names for `idle`, `walk`, `sit` and `wave`. `wave` plays once, the others loop.                                                |
+| `typing`       | Optional. The arm bones, and the rotations from the sitting pose that reach the desk. Without it, working robots keep the sitting pose. |
 
 The model must face +z. To use your own set, pass it as `character` when the scene is created in `apps/web/src/app/office/office-canvas.ts`.
 

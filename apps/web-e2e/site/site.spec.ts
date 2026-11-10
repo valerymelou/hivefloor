@@ -88,7 +88,7 @@ test.describe('the site', () => {
     await expect(office.locator('hf-office-header')).toHaveCount(0);
     await expect(page.getByRole('link', { name: 'Docs' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'GitHub' })).toBeVisible();
-    await expect(page.getByText('Not affiliated with or endorsed by Anthropic')).toBeVisible();
+    await expect(page.getByText('MIT licence')).toBeVisible();
   });
 
   test('simulated robots fill an empty office, labelled, until a real one arrives', async ({

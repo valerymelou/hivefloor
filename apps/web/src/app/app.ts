@@ -48,11 +48,9 @@ export type ViewMode = '3d' | 'list';
   template: `
     <ng-template #pins>
       <aside class="hf-aside flex flex-col gap-4 p-4" [attr.aria-label]="strings.panels">
-        <div class="hf-pins-left flex flex-col gap-4">
-          <hf-public-work><hf-privacy-note /></hf-public-work>
-          <hf-activity-feed />
-        </div>
-        <div class="hf-pins-right"><hf-today-counts /></div>
+        <hf-public-work><hf-privacy-note /></hf-public-work>
+        <hf-activity-feed />
+        <hf-today-counts />
       </aside>
     </ng-template>
 
@@ -84,7 +82,7 @@ export type ViewMode = '3d' | 'list';
           <hf-live-badge [labelDemo]="true" />
         </div>
         <div class="hidden lg:contents">
-          <ng-container [ngTemplateOutlet]="pins" />
+          <div class="hf-rail"><ng-container [ngTemplateOutlet]="pins" /></div>
         </div>
         <div class="hf-card-pin fixed end-4 bottom-4 z-20">
           @if (selected(); as robot) {
@@ -98,26 +96,30 @@ export type ViewMode = '3d' | 'list';
         [class.hf-solid]="solid"
         [class.hf-stage-page]="mode() === '3d'"
       >
-        <hf-office-header>
-          <button
-            ndButton
-            variant="outline"
-            size="sm"
-            type="button"
-            [attr.aria-pressed]="mode() === 'list'"
-            [disabled]="!webgl"
-            (click)="toggle()"
-          >
-            {{ strings.showList }}
-          </button>
-        </hf-office-header>
-        @if (notice(); as notice) {
-          <p class="px-4 pb-2 text-sm text-muted-foreground" role="status">{{ notice }}</p>
-        }
-        @if (mode() === '3d') {
-          <main>
-            <hf-office-canvas class="h-[60dvh]" (failed)="sceneFailed()" />
+        <div class="hf-rail">
+          <hf-office-header>
+            <button
+              ndButton
+              variant="outline"
+              size="sm"
+              type="button"
+              [attr.aria-pressed]="mode() === 'list'"
+              [disabled]="!webgl"
+              (click)="toggle()"
+            >
+              {{ strings.showList }}
+            </button>
+          </hf-office-header>
+          @if (notice(); as notice) {
+            <p class="px-4 pb-2 text-sm text-muted-foreground" role="status">{{ notice }}</p>
+          }
+          @if (mode() === '3d') {
             <ng-container [ngTemplateOutlet]="pins" />
+          }
+        </div>
+        @if (mode() === '3d') {
+          <main class="order-2">
+            <hf-office-canvas class="h-[60dvh]" (failed)="sceneFailed()" />
           </main>
         } @else {
           <main class="mx-auto grid w-full max-w-6xl gap-4 p-4 lg:grid-cols-3">

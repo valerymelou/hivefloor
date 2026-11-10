@@ -98,7 +98,7 @@ export const STRINGS = {
       if (subagents === 0) return main;
       return `${main} + ${subagents === 1 ? '1 subagent' : `${String(subagents)} subagents`}`;
     },
-    hint: 'Drag or use the arrow keys to orbit · scroll to zoom · hover a robot for details',
+    hint: 'Drag to orbit · right-drag to move · scroll to zoom · hover a robot',
   },
   card: {
     close: 'Close',
@@ -108,7 +108,7 @@ export const STRINGS = {
     since: 'For',
   },
   privacy: {
-    body: 'Private projects share only which agent, what kind of work and when. Paths, commands, prompts and their names never leave the owner’s machine.',
+    body: 'Private projects show only the agent, its kind of work and the time.',
   },
   duration: (seconds: number): string => {
     if (seconds < 60) return 'under a minute';

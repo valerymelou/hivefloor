@@ -38,7 +38,7 @@ export const COPY = {
   },
   credits: {
     line: 'Robots by Tomás Laulhé (Quaternius), CC0 · Three.js · Angular · Cloudflare Workers',
-    legal: 'MIT licence · Not affiliated with or endorsed by Anthropic',
+    legal: 'MIT licence',
     all: 'All credits',
     url: `${REPOSITORY}/blob/main/THIRD_PARTY_NOTICES.md`,
   },
