@@ -1,3 +1,13 @@
+## 0.1.1 (2026-11-10)
+
+### 🩹 Fixes
+
+- Fix `hivefloor init` after `npm install -g`: it registered `node hook` with no script, so the hook never ran and no robots appeared. Running `init` again replaces the broken entries, and `uninstall` now removes them. ([257f2f9](https://github.com/valerymelou/hivefloor/commit/257f2f9))
+
+### ❤️ Thank You
+
+- Valery Melou @valerymelou
+
 ## 0.1.0 (2026-11-08)
 
 ### 🚀 Features

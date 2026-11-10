@@ -1,6 +1,6 @@
 {
   "name": "hivefloor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect Claude Code to your Hivefloor office: a live 3D view of your sessions as robots.",
   "keywords": [
     "claude-code",
