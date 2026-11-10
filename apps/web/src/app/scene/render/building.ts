@@ -29,6 +29,13 @@ const DARK = new THREE.Color(0x30354e);
 const SCREEN_OFF = new THREE.Color(0x0b0d16);
 const GROW_SECONDS = 0.6;
 
+/** The height of the building's tall outer walls, in metres. */
+const TALL_WALL = 2.7;
+/** How far outside the outer wall a room's name sits. */
+const LABEL_OUTSET = 0.6;
+/** How far above the tall wall a back room's name sits. */
+const LABEL_RISE = 0.25;
+
 const material = (color: THREE.ColorRepresentation, roughness = 0.8): THREE.MeshStandardMaterial =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness: 0 });
 
@@ -447,9 +454,9 @@ export class Building {
       }
 
       // Outer walls: tall at the back and west, low at the front; windows on the back wall.
-      this.wall(s, 0, back, plan.length, back, y, 2.7, this.m.wallTall);
+      this.wall(s, 0, back, plan.length, back, y, TALL_WALL, this.m.wallTall);
       this.wall(s, 0, front, plan.length, front, y, 0.45);
-      this.wall(s, 0, back, 0, -half, y, 2.7, this.m.wallTall);
+      this.wall(s, 0, back, 0, -half, y, TALL_WALL, this.m.wallTall);
       this.wall(s, 0, half, 0, front, y, 0.45);
       if (floor > 0) this.wall(s, 0, -half, 0, half, y, 1.1);
       this.wall(s, plan.length, back, plan.length, front, y, 1.1);
@@ -532,7 +539,7 @@ export class Building {
     if (back < counterZ - 1)
       this.wall(parent, coffee.x0, -(half + depth), coffee.x1, -(half + depth), y, 1.1);
     this.plant(parent, coffee.x1 - 0.5, y, -(half + depth) + 0.5, 0.9);
-    const label = this.label(parent, cx, y + 0.15, -half - 0.55);
+    const label = this.label(parent, cx, y + TALL_WALL + LABEL_RISE, back - LABEL_OUTSET);
     renderRoomLabel(label.element, STRINGS.scene.coffee, '#d9b48a', '', undefined, false);
     this.coffeeLabels.push(label);
   }
@@ -582,10 +589,10 @@ export class Building {
     group.add(this.mesh(this.cylinder, this.m.wood, [0.55, 0.05, 0.55], [table.x, 0.72, table.z]));
     group.add(this.mesh(this.cylinder, this.m.metal, [0.06, 0.7, 0.06], [table.x, 0.35, table.z]));
 
-    // Back rooms are labelled by the corridor, front rooms by their far wall, so
-    // labels on both sides of the corridor don't overlap on screen.
-    const labelZ = room.side === 'left' ? room.zWall + s * 0.55 : room.zBack - s * 0.6;
-    const label = this.label(group, cx, 0.15, labelZ);
+    // Names sit outside the outer wall, so they never cover desks or robots: above
+    // the wall for back rooms, at its foot for front rooms, as seen from the front.
+    const labelY = room.side === 'left' ? TALL_WALL + LABEL_RISE : 0.15;
+    const label = this.label(group, cx, labelY, room.zBack + s * LABEL_OUTSET);
     this.group.add(group);
     return { shape, group, floorMat, rugMat, label };
   }

@@ -40,7 +40,7 @@ export type SceneState = 'loading' | 'ready' | 'failed';
     }
     @if (showHint()) {
       <p
-        class="pointer-events-none hf-glass absolute end-6 bottom-6 hidden px-3 py-1.5 font-mono text-xs text-foreground sm:block"
+        class="pointer-events-none hf-glass absolute start-6 bottom-6 hidden px-3 py-1.5 font-mono text-xs text-foreground sm:block"
       >
         {{ strings.hint }}
       </p>
