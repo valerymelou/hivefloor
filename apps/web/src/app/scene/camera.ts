@@ -53,7 +53,7 @@ export function frame(plan: Plan, narrow: boolean, aspect: number): Framing {
   const fitHeight = (depth * 0.7 + height) / 2 / halfTall;
   const distance = Math.min(
     200,
-    Math.max(22, Math.max(fitWidth, fitHeight) * (narrow ? 1.15 : 1.05)),
+    Math.max(22, Math.max(fitWidth, fitHeight) * (narrow ? 1.25 : 1.15)),
   );
   return {
     target: { x: plan.length / 2, y: height / 2 + 0.4, z: (plan.frontDepth - plan.backDepth) / 2 },

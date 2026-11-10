@@ -464,7 +464,7 @@ body:has(.hf-night) {
     position: absolute;
     z-index: 10;
     top: 1rem;
-    inset-inline-start: 1rem;
+    inset-inline-end: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -554,26 +554,27 @@ body:has(.hf-night) {
     font-size: 0.6875rem;
   }
 
+  /* The rail has the right, so a selected robot's card opens on the left. */
   .hf-card-pin {
-    inset-inline-end: 1rem;
-    bottom: 1rem;
+    inset-inline: 1rem auto;
+    bottom: 3.5rem;
   }
 
   .hf-capped > :nth-child(n + 6) {
     display: none;
   }
 
-  /* The landing page draws its name above this rail, and only needs the highlights. */
+  /* The landing page draws its links above this rail, and only needs the highlights. */
   .hf-showcase-badge {
-    top: 8.25rem;
-    inset-inline-start: 1.5rem;
+    top: 6rem;
+    inset-inline: auto 1.5rem;
   }
 
   .hf-showcase .hf-rail {
-    top: 10.5rem;
-    inset-inline-start: 1.5rem;
+    top: 8.25rem;
+    inset-inline-end: 1.5rem;
     width: 18rem;
-    max-height: calc(100dvh - 13.5rem);
+    max-height: calc(100dvh - 12rem);
   }
 
   .hf-showcase hf-today-counts {
