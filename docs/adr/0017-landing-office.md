@@ -26,7 +26,7 @@ The first version of the site put a heading, a boxed office and feature cards on
 Chosen option: 3, because the page is alive at any hour and stays honest about what it shows.
 
 - The office fills the page from a laptop up, and its panels float over it as translucent glass. On phones they stack under the scene as before. Devices that count as low power get near-solid panels, since blurring a moving 3D scene costs frames.
-- The landing page is an iframe of `/office/#showcase` filling the screen, with the project's name, links and credits drawn over it by the site. A pre-rendered shot of the office shows until it loads.
+- The landing page is an iframe of `/office/#showcase` filling the screen, with the project's name, links and credits drawn over it by the site. A pre-rendered shot of the office shows until it loads. `/#demo` swaps the frame for `/office/#showcase&demo`, which always runs the simulator, so there is a shareable demo address that keeps the site's links.
 - `#showcase` keeps the relay connected and feeds the page from `ShowcaseSource`. Real robots win at once. The simulator starts when the first snapshot is empty or the relay can't be reached, and takes over from a real office only after 30 seconds without agents. Every switch clears the view and the feed, so the two never mix, and a badge reads "Demo: simulated robots" while the simulator runs.
 - `/office/` never falls back: empty there means empty. `/office/#demo` stays as a direct link.
 - Guides are laid out by `pages/docs.page.ts`, because Analog makes every Markdown file in `src/content` a route of its own, and those routes take precedence over a `[slug]` page.

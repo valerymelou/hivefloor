@@ -120,7 +120,7 @@ Three deliverables: a CLI that runs on the owner's machine, a relay on Cloudflar
 | W12 | Phone layout: the feed collapses to two rows with a "Show more" button, and the camera uses a wider default angle.                                                                                                                                                                                                | Must     |
 | W13 | Character sets are pluggable: a model file plus a map of clip names. The default is the CC0 RobotExpressive model.                                                                                                                                                                                                | Should   |
 
-**Also required in the web app:** a configurable base path (`/` by default, `/office/` on the maintainer's site) an embed mode (`#embed`) that hides the overlay except a small live badge, and a showcase mode (`#showcase`) for the landing page: the office with its panels and no header, showing the simulator, clearly labelled, while the real office is empty ([ADR 0017](adr/0017-landing-office.md)).
+**Also required in the web app:** a configurable base path (`/` by default, `/office/` on the maintainer's site) an embed mode (`#embed`) that hides the overlay except a small live badge, and a showcase mode (`#showcase`) for the landing page: the office with its panels and no header, showing the simulator, clearly labelled, while the real office is empty, or always when the landing page is opened with `#demo` ([ADR 0017](adr/0017-landing-office.md)).
 
 **Elastic office: one room per project**
 

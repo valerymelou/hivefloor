@@ -111,6 +111,32 @@ test.describe('the site', () => {
     );
   });
 
+  test('the landing page shows the simulator with #demo, even with real robots', async ({
+    page,
+  }) => {
+    await mockOfficeRelay(page);
+    await page.goto('/#demo');
+    const badge = page.frameLocator('iframe').locator('hf-live-badge a');
+    await expect(badge).toContainText('Demo: simulated robots', { timeout: 20_000 });
+    await expect(page.getByRole('link', { name: 'GitHub' })).toBeVisible();
+    await expect(page.frameLocator('iframe').locator('hf-office-header')).toHaveCount(0);
+  });
+
+  test('adding and removing #demo on the landing page switches the office', async ({ page }) => {
+    await mockOfficeRelay(page);
+    await page.goto('/');
+    const badge = page.frameLocator('iframe').locator('hf-live-badge a');
+    await expect(badge).toContainText('1 agent working', { timeout: 20_000 });
+    await page.evaluate(() => {
+      location.hash = 'demo';
+    });
+    await expect(badge).toContainText('Demo: simulated robots', { timeout: 20_000 });
+    await page.evaluate(() => {
+      location.hash = '';
+    });
+    await expect(badge).toContainText('1 agent working', { timeout: 20_000 });
+  });
+
   test('its policy allows only the inline scripts it ships', async ({ page }) => {
     await mockOfficeRelay(page);
     const response = await page.goto('/');
