@@ -10,6 +10,8 @@ import {
   type Pose,
   type Target,
 } from '../behaviour';
+import type { ArmRig, BoneTilt } from '../character';
+import { typingSeed, typingSwing } from '../typing';
 import { SUBAGENT_LIGHTEN, SUBAGENT_SCALE } from '../character';
 import { advance, route } from '../navigation';
 import type { Plan, Point, SpotPlan } from '../plan';
@@ -19,6 +21,24 @@ import { renderTag } from './tags';
 /** Walking speed in metres per second. */
 const SPEED = 1.7;
 const FADE = 0.3;
+
+/** The local axis that lifts and lowers a forearm. */
+const FOREARM_AXIS = new THREE.Vector3(1, 0, 0);
+
+/** Reused every frame, so that typing allocates nothing. */
+const BLEND = new THREE.Quaternion();
+
+/** One arm's bones, and how it turns to reach the keyboard. */
+interface Arm {
+  readonly side: 'left' | 'right';
+  readonly upper: THREE.Object3D;
+  readonly lower: THREE.Object3D;
+  readonly upperTilt: THREE.Quaternion;
+  readonly lowerTilt: THREE.Quaternion;
+  /** The clip's pose under the typing, saved so it can be put back. */
+  readonly upperClipPose: THREE.Quaternion;
+  readonly lowerClipPose: THREE.Quaternion;
+}
 
 /**
  * One robot in the scene (W2, W3): a tinted clone of the character, its
@@ -53,6 +73,12 @@ export class RobotActor {
   private rendered = false;
   private changed = false;
   private tagState = '';
+  private readonly arms: readonly Arm[];
+  private readonly typingSeed: number;
+  private typingTime = 0;
+  /** From 0 (hands in the sitting pose) to 1 (on the keyboard). */
+  private typingBlend = 0;
+  private handsPosed = false;
 
   /**
    * @param template - The loaded character.
@@ -108,6 +134,9 @@ export class RobotActor {
       if (this.after !== undefined && this.motion === 'resting') this.play(this.after);
       this.after = undefined;
     });
+
+    this.arms = this.findArms();
+    this.typingSeed = typingSeed(robot.key);
 
     this.tagElement = document.createElement('div');
     this.tagElement.className = 'hf-tag';
@@ -268,14 +297,23 @@ export class RobotActor {
    * @param stride - Advance the animation every n-th frame (E9).
    * @param plan - The building.
    * @param rooms - The open rooms, for the tag.
+   * @param reducedMotion - Keep hands still on the keyboard.
    * @returns `true` once it has left the building for good.
    */
-  step(dt: number, stride: number, plan: Plan, rooms: readonly Room[]): boolean {
+  step(
+    dt: number,
+    stride: number,
+    plan: Plan,
+    rooms: readonly Room[],
+    reducedMotion: boolean,
+  ): boolean {
     if (this.done) return true;
     this.frames++;
     this.pendingDt += dt;
     if (this.frames % stride === 0) {
+      this.releaseHands();
       this.mixer.update(this.pendingDt);
+      this.poseHands(this.pendingDt, reducedMotion);
       this.pendingDt = 0;
     }
     if (this.motion !== 'resting' && !this.outside) {
@@ -289,6 +327,67 @@ export class RobotActor {
       if (this.path.length === 0) this.arrive(plan);
     }
     return this.finish(rooms);
+  }
+
+  private findArms(): readonly Arm[] {
+    const typing = this.template.set.typing;
+    if (typing === undefined) return [];
+    const arm = (rig: ArmRig, side: Arm['side']): Arm[] => {
+      const upper = this.object.getObjectByName(rig.upper);
+      const lower = this.object.getObjectByName(rig.lower);
+      if (upper === undefined || lower === undefined) return [];
+      const tilt = (t: BoneTilt): THREE.Quaternion =>
+        new THREE.Quaternion().setFromEuler(new THREE.Euler(t[0], t[1], t[2]));
+      return [
+        {
+          side,
+          upper,
+          lower,
+          upperTilt: tilt(rig.upperTilt),
+          lowerTilt: tilt(rig.lowerTilt),
+          upperClipPose: new THREE.Quaternion(),
+          lowerClipPose: new THREE.Quaternion(),
+        },
+      ];
+    };
+    return [...arm(typing.left, 'left'), ...arm(typing.right, 'right')];
+  }
+
+  /**
+   * Puts the arms back as the clip left them. The mixer only writes a bone when
+   * its value changes, so without this typing would add up from frame to frame.
+   */
+  private releaseHands(): void {
+    if (!this.handsPosed) return;
+    for (const arm of this.arms) {
+      arm.upper.quaternion.copy(arm.upperClipPose);
+      arm.lower.quaternion.copy(arm.lowerClipPose);
+    }
+    this.handsPosed = false;
+  }
+
+  /** Adds typing on top of the sitting clip. */
+  private poseHands(dt: number, reducedMotion: boolean): void {
+    if (this.arms.length === 0) return;
+    const change = dt / FADE;
+    this.typingBlend =
+      this.workingAtDesk === undefined
+        ? Math.max(0, this.typingBlend - change)
+        : Math.min(1, this.typingBlend + change);
+    if (this.typingBlend === 0) return;
+    this.typingTime += dt;
+    const swing = reducedMotion
+      ? { left: 0, right: 0 }
+      : typingSwing(this.typingTime, this.typingSeed);
+    this.handsPosed = true;
+    for (const arm of this.arms) {
+      arm.upperClipPose.copy(arm.upper.quaternion);
+      arm.lowerClipPose.copy(arm.lower.quaternion);
+      arm.upper.quaternion.multiply(BLEND.identity().slerp(arm.upperTilt, this.typingBlend));
+      arm.lower.quaternion
+        .multiply(BLEND.identity().slerp(arm.lowerTilt, this.typingBlend))
+        .multiply(BLEND.setFromAxisAngle(FOREARM_AXIS, swing[arm.side] * this.typingBlend));
+    }
   }
 
   private finish(rooms: readonly Room[]): boolean {

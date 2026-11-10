@@ -44,12 +44,13 @@ test.describe('the 3D office in demo mode (W1–W4, W7)', () => {
   });
 
   test('a robot takes a coffee break', async ({ page }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(150_000);
     await openDemo(page);
     const robot = tag(page, DEMO.coffee);
     await expect(robot).toHaveAttribute('data-status', 'idle', { timeout: 80_000 });
     await expect(robot).toHaveAttribute('data-pose', 'coffee');
-    await expect(robot).toHaveAttribute('data-motion', 'resting', { timeout: 30_000 });
+    // The walk from the far rooms is slow on the software renderer CI uses.
+    await expect(robot).toHaveAttribute('data-motion', 'resting', { timeout: 60_000 });
     await expect(robot.locator('.hf-badge')).toHaveText('On a break');
     await expect(page.locator('.hf-room-label', { hasText: 'Coffee corner' })).toContainText(
       '1 on a break',

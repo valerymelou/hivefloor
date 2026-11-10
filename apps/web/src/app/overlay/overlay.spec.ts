@@ -200,6 +200,6 @@ describe('overlay components', () => {
 
   it('privacy note states the promise', async () => {
     const { element } = await render(PrivacyNote, false);
-    expect(element.textContent).toContain('never leave');
+    expect(element.textContent).toContain('only the agent');
   });
 });

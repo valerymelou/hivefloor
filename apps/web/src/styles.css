@@ -436,6 +436,15 @@ body:has(.hf-night) {
 }
 
 /* From a laptop up, the office fills the page and the panels float over it. */
+/* Below the wide layout the rail dissolves and its parts join the page's column. */
+.hf-rail {
+  display: contents;
+}
+
+.hf-aside {
+  order: 3;
+}
+
 @media (min-width: 64rem) {
   .hf-stage-page {
     position: relative;
@@ -449,66 +458,129 @@ body:has(.hf-night) {
     height: 100%;
   }
 
-  .hf-stage-page .hf-top {
+  /* Everything that stays on screen shares one narrow column, so the office keeps the rest. */
+  .hf-stage-page .hf-rail,
+  .hf-showcase .hf-rail {
     position: absolute;
     z-index: 10;
-    top: 1.25rem;
-    inset-inline: 1.5rem;
+    top: 1rem;
+    inset-inline-start: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 17rem;
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    scrollbar-width: none;
+    pointer-events: none;
+  }
+
+  .hf-rail > *,
+  .hf-rail .hf-aside > * {
+    pointer-events: auto;
+  }
+
+  .hf-rail .hf-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
     padding: 0;
     pointer-events: none;
   }
 
-  .hf-stage-page .hf-top > * {
+  .hf-rail .hf-top > * {
     pointer-events: auto;
   }
 
-  .hf-aside {
-    display: contents;
+  .hf-rail .hf-top .hf-glass {
+    padding: 0.5rem 0.75rem;
   }
 
-  .hf-pins-left {
-    position: absolute;
-    z-index: 10;
-    bottom: 1.5rem;
-    inset-inline-start: 1.5rem;
-    display: grid;
-    grid-template-columns: repeat(2, 20.5rem);
-    align-items: end;
-    gap: 1rem;
+  .hf-rail .hf-top h1 {
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
   }
 
-  .hf-pins-right {
-    position: absolute;
-    z-index: 10;
-    top: 5.75rem;
-    inset-inline-end: 1.5rem;
-    width: 20rem;
+  .hf-rail .hf-top p {
+    font-size: 0.75rem;
+  }
+
+  .hf-rail .hf-aside {
+    gap: 0.5rem;
+    padding: 0;
+  }
+
+  .hf-rail [data-slot='card'] {
+    gap: 0.375rem;
+    padding-block: 0.5rem;
+  }
+
+  .hf-rail [data-slot='card-header'],
+  .hf-rail [data-slot='card-content'] {
+    padding-inline: 0.75rem;
+  }
+
+  .hf-rail ul,
+  .hf-rail ol {
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .hf-rail .hf-capped > :nth-child(n + 4) {
+    display: none;
+  }
+
+  /* One line per entry; the list view has the full text. */
+  .hf-rail hf-activity-feed li,
+  .hf-rail hf-public-work li .block {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hf-rail hf-public-work li > .min-w-0 {
+    overflow: hidden;
+  }
+
+  .hf-rail hf-privacy-note,
+  .hf-rail hf-privacy-note p {
+    font-size: 0.6875rem;
+    line-height: 0.875rem;
+  }
+
+  .hf-rail [data-slot='badge'] {
+    padding-inline: 0.375rem;
+    font-size: 0.6875rem;
   }
 
   .hf-card-pin {
-    inset-inline-end: 1.5rem;
-    bottom: 3.75rem;
+    inset-inline-end: 1rem;
+    bottom: 1rem;
   }
 
   .hf-capped > :nth-child(n + 6) {
     display: none;
   }
 
-  /* The landing page draws its own name, links and credits around these. */
+  /* The landing page draws its name above this rail, and only needs the highlights. */
   .hf-showcase-badge {
-    top: 5.75rem;
-    inset-inline: auto 1.5rem;
-  }
-
-  .hf-showcase .hf-pins-right {
     top: 8.25rem;
+    inset-inline-start: 1.5rem;
   }
 
-  .hf-showcase .hf-pins-left {
-    bottom: 4.75rem;
+  .hf-showcase .hf-rail {
+    top: 10.5rem;
+    inset-inline-start: 1.5rem;
+    width: 18rem;
+    max-height: calc(100dvh - 13.5rem);
+  }
+
+  .hf-showcase hf-today-counts {
+    display: none;
   }
 
   .hf-showcase .hf-card-pin {
-    bottom: 4.75rem;
+    bottom: 4rem;
   }
 }

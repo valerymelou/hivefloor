@@ -9,8 +9,8 @@ import type { Layout, LayoutLimits, PlacedRoom, Spot } from '@hivefloor/schema';
 export const DIMENSIONS = {
   corridorWidth: 3.2,
   floorHeight: 4.2,
-  /** Spacing of desks along a row. */
-  deskPitch: 2,
+  /** Spacing of desks along a row, wide enough to walk between chair and desk. */
+  deskPitch: 2.7,
   /** Spacing of desk rows into the room. */
   rowPitch: 2,
   /** Depth of the team-table zone between the corridor wall and the first desk row. */

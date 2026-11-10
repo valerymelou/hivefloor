@@ -18,6 +18,7 @@ import {
   defaultOffset,
   FIELD_OF_VIEW,
   frame,
+  clampToBuilding,
   keyOrbit,
   NARROW_WIDTH,
   orbit,
@@ -161,7 +162,8 @@ export class OfficeScene {
 
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = true;
-    this.controls.enablePan = false;
+    // Right-drag, shift-drag or two fingers slide along the floor.
+    this.controls.screenSpacePanning = false;
     this.controls.minPolarAngle = POLAR_LIMITS.min;
     this.controls.maxPolarAngle = POLAR_LIMITS.max;
     this.controls.autoRotateSpeed = 0.35;
@@ -405,6 +407,16 @@ export class OfficeScene {
     };
   }
 
+  private keepCameraOverBuilding(): void {
+    if (this.plan === undefined) return;
+    const target = this.controls.target;
+    const limit = clampToBuilding(target, this.plan);
+    const shift = new THREE.Vector3(limit.x - target.x, 0, limit.z - target.z);
+    if (shift.lengthSq() === 0) return;
+    target.add(shift);
+    this.camera.position.add(shift);
+  }
+
   private applyFraming(target: THREE.Vector3, distance: number): void {
     const direction = this.camera.position.clone().sub(this.controls.target).normalize();
     this.controls.target.copy(target);
@@ -457,12 +469,13 @@ export class OfficeScene {
       );
       if (this.ease.t >= 1) this.ease = undefined;
     }
+    this.keepCameraOverBuilding();
     this.controls.update(dt);
     this.building.tick(dt);
     if (plan !== undefined) {
       for (const [key, actor] of this.actors) {
         const stride = animationStride(this.camera.position.distanceTo(actor.object.position));
-        if (actor.step(dt, stride, plan, this.rooms)) {
+        if (actor.step(dt, stride, plan, this.rooms, this.reducedMotion)) {
           actor.dispose();
           this.actors.delete(key);
           continue;

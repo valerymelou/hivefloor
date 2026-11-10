@@ -1,6 +1,7 @@
 import { DEFAULT_LAYOUT_LIMITS as limits, layout } from '@hivefloor/schema';
 import { describe, expect, it } from 'vitest';
 import {
+  clampToBuilding,
   animationStride,
   defaultOffset,
   frame,
@@ -9,7 +10,7 @@ import {
   pick,
   POLAR_LIMITS,
 } from './camera';
-import { buildPlan } from './plan';
+import { buildPlan, DIMENSIONS, type Plan } from './plan';
 
 const planOf = (n: number) =>
   buildPlan(
@@ -20,6 +21,21 @@ const planOf = (n: number) =>
     ),
     limits,
   );
+
+describe('clampToBuilding', () => {
+  const plan = { length: 20, backDepth: 8, frontDepth: 6 } as unknown as Plan;
+  const edge = DIMENSIONS.corridorWidth / 2;
+
+  it('leaves a point over the building alone', () => {
+    const inside = { x: 10, y: 1, z: 2 };
+    expect(clampToBuilding(inside, plan)).toEqual(inside);
+  });
+
+  it('pulls a point back to the nearest edge, keeping its height', () => {
+    expect(clampToBuilding({ x: -5, y: 3, z: 50 }, plan)).toEqual({ x: 0, y: 3, z: edge + 6 });
+    expect(clampToBuilding({ x: 99, y: 3, z: -50 }, plan)).toEqual({ x: 20, y: 3, z: -(edge + 8) });
+  });
+});
 
 describe('frame (W8, W12, E4)', () => {
   it('centres on the building and eases out as it grows', () => {

@@ -19,12 +19,12 @@ import { Logo } from '../logo';
         [title]="copy.frame"
         class="hf-poster order-2 h-[100vw] max-h-[70dvh] min-h-72 w-full rounded-xl border-0 lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:rounded-none"
       ></iframe>
-      <header class="hf-glass order-1 p-4 lg:absolute lg:start-6 lg:top-5 lg:w-96 lg:px-5">
+      <header class="hf-glass order-1 p-4 lg:absolute lg:start-6 lg:top-4 lg:w-72 lg:p-3">
         <div class="flex items-center gap-2.5">
           <hf-logo />
-          <h1 class="text-2xl font-bold tracking-tight">{{ copy.brand }}</h1>
+          <h1 class="text-xl font-bold tracking-tight">{{ copy.brand }}</h1>
         </div>
-        <p class="mt-2 leading-snug text-foreground/90">{{ copy.pitch }}</p>
+        <p class="mt-1.5 text-sm leading-snug text-foreground/90">{{ copy.pitch }}</p>
       </header>
       <nav
         class="hf-glass order-3 flex flex-wrap items-center gap-1 p-1.5 lg:absolute lg:end-6 lg:top-5"
@@ -36,7 +36,7 @@ import { Logo } from '../logo';
         <a routerLink="/docs/self-hosting" class="hf-navlink hf-cta">{{ copy.nav.start }}</a>
       </nav>
       <footer
-        class="hf-glass order-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2.5 text-[0.8125rem] text-muted-foreground lg:absolute lg:inset-x-6 lg:bottom-4"
+        class="hf-glass order-4 flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-1.5 text-xs text-muted-foreground lg:absolute lg:end-6 lg:bottom-4"
       >
         <span>{{ copy.credits.line }}</span>
         <span>
