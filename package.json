@@ -40,7 +40,7 @@
     "@nx/js": "24.0.5",
     "@nx/vitest": "24.0.5",
     "@nx/web": "24.0.5",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.65.0",
     "@schematics/angular": "~22.2.0",
     "@swc/helpers": "~0.5.18",
     "@tailwindcss/postcss": "^4.3.5",
