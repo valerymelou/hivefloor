@@ -258,8 +258,8 @@ importers:
         specifier: ~22.2.0
         version: 22.2.5(@angular/compiler@22.2.5)(typescript@6.0.3)
       '@angular/language-service':
-        specifier: ~22.2.0
-        version: 22.2.5
+        specifier: ~22.2.6
+        version: 22.2.6
       '@commitlint/cli':
         specifier: ^21.2.4
         version: 21.2.4(conventional-commits-parser@7.1.4)(typescript@6.0.3)
@@ -708,8 +708,8 @@ packages:
       '@angular/platform-browser': 22.2.5
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/language-service@22.2.5':
-    resolution: {integrity: sha512-ydusxhnBNoHBWsIPy37w7sxoEbo+jp+7i5Rs3bo3sDj5VWbN275590tLyLSruZbmUvUpRmkjyaa7vTt7tjZ+1Q==}
+  '@angular/language-service@22.2.6':
+    resolution: {integrity: sha512-/6vZCGLMhXGvrrMgfCTKw+lTB50e7a1dwWIBp5ykJ80Ub8YTVI1pCJSAIuJw3b3e0ML2uFQYJLPwa/9glg9YIQ==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
 
   '@angular/platform-browser@22.2.5':
@@ -8378,7 +8378,7 @@ snapshots:
       tslib: 2.9.1
       zod: 4.6.7
 
-  '@angular/language-service@22.2.5': {}
+  '@angular/language-service@22.2.6': {}
 
   '@angular/platform-browser@22.2.5(@angular/common@22.2.5(@angular/core@22.2.5(@angular/compiler@22.2.5)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.5(@angular/compiler@22.2.5)(rxjs@7.8.2))':
     dependencies:
